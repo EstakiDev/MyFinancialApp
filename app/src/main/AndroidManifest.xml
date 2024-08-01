@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name="dev.estaki.myfinancialapp.MyAppClass"
+        android:name="dev.estaki.myFinancialApp.MyAppClass"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFinancialApp"
         tools:targetApi="31">
-        <activity android:name="dev.estaki.myfinancialapp.SplashActivity"
+        <activity android:name="dev.estaki.myFinancialApp.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MyFinancialApp">
             <intent-filter>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="dev.estaki.myfinancialapp.MainActivity"
+            android:name="dev.estaki.myFinancialApp.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyFinancialApp">
 

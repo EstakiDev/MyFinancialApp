@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.presentation
+package dev.estaki.myFinancialApp.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,11 +30,11 @@ import androidx.compose.ui.unit.sp
 import dev.estaki.data.entities.SmsEntity
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.myapplication.R
-import dev.estaki.myfinancialapp.ui.theme.ColorCardExpenses
-import dev.estaki.myfinancialapp.ui.theme.ColorCardIncome
-import dev.estaki.myfinancialapp.ui.theme.ColorGrayLite
-import dev.estaki.myfinancialapp.ui.theme.GreenDark
-import dev.estaki.myfinancialapp.ui.theme.RedDark
+import dev.estaki.myFinancialApp.ui.theme.ColorCardExpenses
+import dev.estaki.myFinancialApp.ui.theme.ColorCardIncome
+import dev.estaki.myFinancialApp.ui.theme.ColorGrayLite
+import dev.estaki.myFinancialApp.ui.theme.GreenDark
+import dev.estaki.myFinancialApp.ui.theme.RedDark
 
 
 @Composable

@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp
+package dev.estaki.myFinancialApp
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

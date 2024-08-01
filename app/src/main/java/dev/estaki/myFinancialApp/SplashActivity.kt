@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp
+package dev.estaki.myFinancialApp
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -36,11 +36,11 @@ import androidx.lifecycle.lifecycleScope
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.AndroidEntryPoint
-import dev.estaki.myfinancialapp.presentation.SplashScreen
-import dev.estaki.myfinancialapp.ui.theme.ColorTextGrayOnDarkTheme
-import dev.estaki.myfinancialapp.ui.theme.ColorTextGrayOnLiteTheme
-import dev.estaki.myfinancialapp.ui.theme.FinancialTheme
-import dev.estaki.myfinancialapp.ui.theme.coolakFaNumFontFamily
+import dev.estaki.myFinancialApp.presentation.SplashScreen
+import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
+import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
+import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
+import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

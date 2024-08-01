@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.di.modules
+package dev.estaki.myFinancialApp.di.modules
 
 import android.content.Context
 import androidx.room.Room

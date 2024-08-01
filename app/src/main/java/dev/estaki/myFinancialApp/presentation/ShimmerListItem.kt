@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.presentation
+package dev.estaki.myFinancialApp.presentation
 
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -41,10 +41,10 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
-import dev.estaki.myfinancialapp.ui.theme.ColorBorderWhite
-import dev.estaki.myfinancialapp.ui.theme.ColorOfCenterShimmer
-import dev.estaki.myfinancialapp.ui.theme.ColorOfShimmer
-import dev.estaki.myfinancialapp.ui.theme.ColorShimmerGrayMedium
+import dev.estaki.myFinancialApp.ui.theme.ColorBorderWhite
+import dev.estaki.myFinancialApp.ui.theme.ColorOfCenterShimmer
+import dev.estaki.myFinancialApp.ui.theme.ColorOfShimmer
+import dev.estaki.myFinancialApp.ui.theme.ColorShimmerGrayMedium
 
 
 @Composable

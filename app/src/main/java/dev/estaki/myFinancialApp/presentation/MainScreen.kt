@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.presentation
+package dev.estaki.myFinancialApp.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import dev.estaki.myfinancialapp.MainViewModel
-import dev.estaki.myfinancialapp.ui.theme.ariaFaNumFontFamily
+import dev.estaki.myFinancialApp.MainViewModel
+import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

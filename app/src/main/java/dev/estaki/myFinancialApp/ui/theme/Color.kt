@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.ui.theme
+package dev.estaki.myFinancialApp.ui.theme
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
