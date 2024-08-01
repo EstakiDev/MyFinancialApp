@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.presentation
+package dev.estaki.myFinancialApp.presentation
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.estaki.myfinancialapp.ui.theme.FinancialTheme
-import dev.estaki.myfinancialapp.ui.theme.ariaFaNumFontFamily
+import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
+import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 
 @Composable

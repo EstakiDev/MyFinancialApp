@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.ui.theme
+package dev.estaki.myFinancialApp.ui.theme
 
 import android.app.Activity
 import android.os.Build

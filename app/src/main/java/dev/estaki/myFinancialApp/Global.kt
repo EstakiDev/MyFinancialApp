@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp
+package dev.estaki.myFinancialApp
 
 import android.content.Context
 import android.content.pm.PackageManager

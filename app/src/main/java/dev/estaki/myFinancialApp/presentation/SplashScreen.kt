@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.presentation
+package dev.estaki.myFinancialApp.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

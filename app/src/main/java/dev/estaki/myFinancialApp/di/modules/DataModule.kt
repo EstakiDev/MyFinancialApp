@@ -1,4 +1,4 @@
-package dev.estaki.myfinancialapp.di.modules
+package dev.estaki.myFinancialApp.di.modules
 
 import dagger.Module
 import dagger.Provides
