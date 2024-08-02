@@ -84,6 +84,7 @@ dependencies {
 
     //Compose navigation
     implementation(libs.composeNavigation)
+    implementation(libs.hilt.navigation)
 
     //Room
     implementation(libs.room.android)

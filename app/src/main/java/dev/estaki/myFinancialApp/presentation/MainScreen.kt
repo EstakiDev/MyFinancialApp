@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import dev.estaki.myFinancialApp.MainViewModel
@@ -27,9 +28,8 @@ import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController?) {
+fun MainScreen(navController: NavHostController?,viewModel: MainViewModel = hiltViewModel()) {
 
-    val viewModel: MainViewModel = viewModel<MainViewModel>()
     val contentResolver = LocalContext.current.contentResolver
 
 
