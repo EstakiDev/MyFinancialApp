@@ -73,10 +73,8 @@ class SplashActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 lifecycleScope.launch {
+                    viewModel.viewState.value = ViewState.SUCCESS_IN_PERMISSION
                     readSms(contentResolver, viewModel)
-                    delay(2000)
-                    modalBottomSheetState.hide()
-                    finishAndGotoMain()
                 }
             } else {
                 viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
@@ -165,11 +163,11 @@ class SplashActivity : ComponentActivity() {
 
 
                         }
-                        if (checkPermissions(this)) {
+                        if (!isPermissionsGranted(this)) {
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
                                 ModalBottomSheet(
-                                    onDismissRequest = { /*TODO*/ },
+                                    onDismissRequest = {  viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION },
                                     sheetState = modalBottomSheetState
                                 ) {
 
@@ -189,7 +187,8 @@ class SplashActivity : ComponentActivity() {
                                         )
                                         Button(modifier = Modifier
                                             .padding(12.dp)
-                                            .fillMaxWidth(), onClick = {
+                                            .fillMaxWidth(),
+                                            onClick = {
                                             requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
                                         }) {
                                             Text(
@@ -202,6 +201,11 @@ class SplashActivity : ComponentActivity() {
                                     }
                                 }
                             }
+
+                        }else{
+                            LaunchedEffect(key1 = "readSms&gotoMain") {
+                                readSms(contentResolver, viewModel)
+                            }
                         }
 
 
@@ -211,10 +215,9 @@ class SplashActivity : ComponentActivity() {
                                 CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
                                     LaunchedEffect(key1 = "hide") {
                                         modalBottomSheetState.hide()
-                                        delay(1000)
                                         scope.launch {
-
                                             snackBarHostState.showSnackbar(message = "متاسفانه شما دسترسی مورد نیاز رو تایید نکردید... 😯")
+                                            finishAndGotoMain()
                                         }
                                     }
                                 }
@@ -223,6 +226,16 @@ class SplashActivity : ComponentActivity() {
 
                             ViewState.LOADING -> {}
                             ViewState.FAULT -> {}
+                            ViewState.FINISH_SPLASH_ACTIVITY -> {
+                                finishAndGotoMain()
+                            }
+                            ViewState.SUCCESS_IN_PERMISSION ->{
+                                LaunchedEffect(key1 = "DismissBottomSheet") {
+                                    lifecycleScope.launch {
+                                        modalBottomSheetState.hide()
+                                    }
+                                }
+                            }
                             else -> {}
                         }
                     }

@@ -4,11 +4,11 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 
-fun checkPermissions(context:Context): Boolean {
+fun isPermissionsGranted(context:Context): Boolean {
     return ContextCompat.checkSelfPermission(
         context,
         android.Manifest.permission.READ_SMS
-    ) != PackageManager.PERMISSION_GRANTED
+    ) == PackageManager.PERMISSION_GRANTED
 }
 
 fun String.removeSpecialChar():String =

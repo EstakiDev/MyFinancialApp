@@ -10,6 +10,7 @@ import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.domain.usecases.CacheSmsToDb
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,7 +20,7 @@ class MainViewModel @Inject constructor(
     private val cashSmsToDb: CacheSmsToDb
 ) : ViewModel() {
 
-    val smsLiveDataList = MutableLiveData<List<SmsEntity>>(listOf())
+    val smsLiveDataList = MutableLiveData<MutableList<SmsEntity>>(mutableListOf())
     val isLoading = MutableLiveData<Boolean>()
     val viewState = MutableLiveData<ViewState>()
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
@@ -114,8 +115,10 @@ class MainViewModel @Inject constructor(
                         )
                     }
                     cashSmsToDb.invoke(listOfModel)
+                    delay(4000)
 //                    smsLiveDataList.postValue(listOfModel)
                     isLoading.postValue(false)
+                    viewState.postValue(ViewState.FINISH_SPLASH_ACTIVITY)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

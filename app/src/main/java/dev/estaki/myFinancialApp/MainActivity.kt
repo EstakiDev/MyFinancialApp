@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (checkPermissions(this))
+        if (!isPermissionsGranted(this))
             requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
         else {
             setContent {
