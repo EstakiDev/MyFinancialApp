@@ -68,7 +68,6 @@ class SplashActivity : ComponentActivity() {
     lateinit var modalBottomSheetState: SheetState
 
 
-    @OptIn(ExperimentalMaterial3Api::class)
     val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {

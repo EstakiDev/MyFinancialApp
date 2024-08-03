@@ -1,7 +1,7 @@
 package dev.estaki.domain.models
 
 data class SmsModel(
-    private val id:Long,
+    val id:Long,
     val bankName:String,
     val bankAccountNumber:String,
     val transactionType: TransactionType,

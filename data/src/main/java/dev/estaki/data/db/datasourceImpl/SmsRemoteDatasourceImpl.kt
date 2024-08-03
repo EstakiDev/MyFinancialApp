@@ -2,33 +2,35 @@ package dev.estaki.data.db.datasourceImpl
 
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.repo.datasource.SmsDataSource
+import kotlinx.coroutines.flow.Flow
 
 class SmsRemoteDatasourceImpl: SmsDataSource.Remote {
-    override fun readAll(): List<SmsModel> {
+    override suspend fun readAll(): Flow<List<SmsModel>> {
         TODO("Not yet implemented")
     }
 
-    override fun read(id: Long): SmsModel {
+    override suspend fun read(id: Long): Flow<SmsModel> {
         TODO("Not yet implemented")
     }
 
-    override fun delete(id: Long): Int {
+    override suspend fun delete(id: Long): Flow<Int> {
         TODO("Not yet implemented")
     }
 
-    override fun deleteAll(): Int {
+    override suspend fun deleteAll(): Flow<Int> {
         TODO("Not yet implemented")
     }
 
-    override fun update(id: Long): Int {
+    override suspend fun update(id: Long): Flow<Int> {
         TODO("Not yet implemented")
     }
 
-    override fun add(id: SmsModel) {
+    override suspend fun add(id: SmsModel) {
         TODO("Not yet implemented")
     }
 
-    override fun addAll(item: List<SmsModel>) {
+    override suspend fun addAll(item: List<SmsModel>) {
         TODO("Not yet implemented")
     }
+
 }
