@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,12 +25,22 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Composition
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -49,6 +60,7 @@ import dev.estaki.myFinancialApp.presentation.SplashScreen
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
+import dev.estaki.myFinancialApp.ui.theme.Pink40
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
 import kotlinx.coroutines.delay
@@ -57,135 +69,179 @@ import kotlinx.coroutines.launch
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
-    val viewModel: MainViewModel by viewModels<MainViewModel>()
+    private val viewModel: MainViewModel by viewModels<MainViewModel>()
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    lateinit var modalBottomSheetState: SheetState
+
+
+    @OptIn(ExperimentalMaterial3Api::class)
     val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
                 lifecycleScope.launch {
                     readSms(contentResolver, viewModel)
                     delay(2000)
+                    modalBottomSheetState.hide()
                     finishAndGotoMain()
                 }
             } else {
-//                Snackbar {
-//                    Text(text = "")
-//                }
+                viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
             }
         }
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
-
-
         setContent {
             FinancialTheme {
-                Scaffold {
-                    val alpha = remember {
-                        Animatable(0f)
-                    }
+                val viewState = viewModel.viewState.observeAsState()
+                val scope = rememberCoroutineScope()
+                val snackBarHostState = remember {
+                    SnackbarHostState()
+                }
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+
+                    Scaffold(snackbarHost = { SnackbarHost(hostState = snackBarHostState){
+                        Snackbar(snackbarData = it, containerColor = Pink40)
+                    } }) {
+                        val alpha = remember {
+                            Animatable(0f)
+                        }
+
+                        modalBottomSheetState = rememberModalBottomSheetState()
 //                    if (checkPermissions(this)) {
 //                        requestPermissionLauncher.launch(Manifest.permission.READ_SMS)
 //                    }
-                    LaunchedEffect(key1 = true) {
-                        alpha.animateTo(1f, animationSpec = tween(2000))
-                    }
-
-
-                    Box {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            SplashScreen(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(300.dp)
-                                    .alpha(alpha.value)
-                                    .padding(it)
-
-                            )
-                            Text(
-                                text = "سلام رفیق 👋🏻",
-                                fontFamily = coolakFaNumFontFamily,
-                                fontSize = 18.sp,
-                                modifier = Modifier
-                                    .alpha(alpha.value)
-                                    .shimmer()
-
-                            )
-                            Text(
-                                text = "به اپلیکیشن مدیریت خودکار دخل و خرج با استفاده از پیامک های بانکی خوش اومدی...",
-                                modifier = Modifier
-                                    .padding(12.dp)
-                                    .alpha(alpha.value)
-                                    .shimmer(),
-                                fontSize = 18.sp,
-                                fontFamily = coolakFaNumFontFamily,
-                                textAlign = TextAlign.Center,
-                                style = TextStyle(textDirection = TextDirection.Rtl)
-                            )
-
+                        LaunchedEffect(key1 = true) {
+                            alpha.animateTo(1f, animationSpec = tween(2000))
                         }
 
-                        BallPulseProgressIndicator(
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(0.dp, 32.dp),
-                            color = if (isSystemInDarkTheme()) ColorTextGrayOnDarkTheme else ColorTextGrayOnLiteTheme,
-                            animationDuration = 800,
-                            animationDelay = 200,
-                            startDelay = 0,
-                            ballCount = 3,
-                            maxBallDiameter = 7.dp
 
-                        )
+                        Box {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                SplashScreen(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .height(300.dp)
+                                        .alpha(alpha.value)
+                                        .padding(it)
 
-
-                    }
-                    if (checkPermissions(this)) {
-                        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-
-                            ModalBottomSheet(onDismissRequest = { /*TODO*/ }) {
-                                Column(
+                                )
+                                Text(
+                                    text = "سلام رفیق 👋🏻",
+                                    fontFamily = coolakFaNumFontFamily,
+                                    fontSize = 18.sp,
                                     modifier = Modifier
-                                        .padding(16.dp)
-                                        .fillMaxWidth(),
-                                    verticalArrangement = Arrangement.SpaceBetween,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(12.dp),
-                                        text = "سلام رفیق\n اپلیکیشن برای این که بتونه پیامک تراکنش های بانکی تو رو بهت نشون بده نیاز داره که تو این دسترسی رو تایید کنی.",
-                                        fontFamily = ariaFaNumFontFamily, fontSize = 15.sp, fontWeight = FontWeight.Bold,
-                                    )
-                                    Button(modifier = Modifier
+                                        .alpha(alpha.value)
+                                        .shimmer()
+
+                                )
+                                Text(
+                                    text = "به اپلیکیشن مدیریت خودکار دخل و خرج با استفاده از پیامک های بانکی خوش اومدی...",
+                                    modifier = Modifier
                                         .padding(12.dp)
-                                        .fillMaxWidth(), onClick = {
-                                        requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
-                                    }) {
+                                        .alpha(alpha.value)
+                                        .shimmer(),
+                                    fontSize = 18.sp,
+                                    fontFamily = coolakFaNumFontFamily,
+                                    textAlign = TextAlign.Center,
+                                    style = TextStyle(textDirection = TextDirection.Rtl)
+                                )
+
+                            }
+
+                            BallPulseProgressIndicator(
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(0.dp, 32.dp),
+                                color = if (isSystemInDarkTheme()) ColorTextGrayOnDarkTheme else ColorTextGrayOnLiteTheme,
+                                animationDuration = 800,
+                                animationDelay = 200,
+                                startDelay = 0,
+                                ballCount = 3,
+                                maxBallDiameter = 7.dp
+
+                            )
+
+
+                        }
+                        if (checkPermissions(this)) {
+                            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+
+                                ModalBottomSheet(
+                                    onDismissRequest = { /*TODO*/ },
+                                    sheetState = modalBottomSheetState
+                                ) {
+
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        verticalArrangement = Arrangement.SpaceBetween,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
                                         Text(
-                                            text = "تایید دسترسی",
+                                            modifier = Modifier.padding(12.dp),
+                                            text = "سلام رفیق\n اپلیکیشن برای این که بتونه پیامک تراکنش های بانکی تو رو بهت نشون بده نیاز داره که تو این دسترسی رو تایید کنی.",
                                             fontFamily = ariaFaNumFontFamily,
-                                            fontSize = 17.sp,
-                                            fontWeight = FontWeight.Black,
+                                            fontSize = 15.sp,
+                                            fontWeight = FontWeight.Bold,
                                         )
+                                        Button(modifier = Modifier
+                                            .padding(12.dp)
+                                            .fillMaxWidth(), onClick = {
+                                            requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
+                                        }) {
+                                            Text(
+                                                text = "تایید دسترسی",
+                                                fontFamily = ariaFaNumFontFamily,
+                                                fontSize = 17.sp,
+                                                fontWeight = FontWeight.Black,
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
+
+
+
+                        when (viewState.value) {
+                            ViewState.FAULT_IN_PERMISSION -> {
+                                CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
+                                    LaunchedEffect(key1 = "hide") {
+                                        modalBottomSheetState.hide()
+                                        delay(1000)
+                                        scope.launch {
+
+                                            snackBarHostState.showSnackbar(message = "متاسفانه شما دسترسی مورد نیاز رو تایید نکردید... 😯")
+                                        }
+                                    }
+                                }
+
+                            }
+
+                            ViewState.LOADING -> {}
+                            ViewState.FAULT -> {}
+                            else -> {}
+                        }
                     }
 
                 }
-
             }
+
         }
     }
 
-    fun finishAndGotoMain(){
+
+    fun finishAndGotoMain() {
         val intent = Intent(this@SplashActivity, MainActivity::class.java)
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)

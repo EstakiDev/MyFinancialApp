@@ -21,6 +21,7 @@ class MainViewModel @Inject constructor(
 
     val smsLiveDataList = MutableLiveData<List<SmsEntity>>(listOf())
     val isLoading = MutableLiveData<Boolean>()
+    val viewState = MutableLiveData<ViewState>()
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
         viewModelScope.launch {
 
