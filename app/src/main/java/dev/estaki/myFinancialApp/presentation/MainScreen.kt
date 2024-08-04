@@ -30,12 +30,12 @@ import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 @Composable
 fun MainScreen(navController: NavHostController?,viewModel: MainViewModel = hiltViewModel()) {
 
-    val contentResolver = LocalContext.current.contentResolver
 
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val isloading = viewModel.isLoading.observeAsState().value ?: true
+    viewModel.getAllSms()
     val smsList = viewModel.smsLiveDataList.observeAsState()
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),

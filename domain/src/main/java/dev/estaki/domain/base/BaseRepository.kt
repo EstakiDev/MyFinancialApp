@@ -1,9 +1,10 @@
 package dev.estaki.domain.base
 
 import android.content.ClipData.Item
+import kotlinx.coroutines.flow.Flow
 
 interface BaseRepository<Entity,AffectedRow,Id> {
-    suspend fun readAll():List<Entity>
+    suspend fun readAll():Flow<List<Entity>>
     suspend fun read(id:Id):Entity
     suspend fun delete(id: Id):AffectedRow
     suspend fun deleteAll():AffectedRow

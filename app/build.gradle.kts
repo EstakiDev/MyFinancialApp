@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "dev.estaki.myapplication"
+    namespace = "dev.estaki.myFinancialApp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.estaki.myapplication"
+        applicationId = "dev.estaki.myFinancialApp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

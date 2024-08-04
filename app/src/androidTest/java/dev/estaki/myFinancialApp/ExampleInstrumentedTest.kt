@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("dev.estaki.myapplication", appContext.packageName)
+        assertEquals("dev.estaki.myFinancialApp", appContext.packageName)
     }
 }

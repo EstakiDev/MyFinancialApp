@@ -9,7 +9,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
-import dev.estaki.myapplication.R
+import dev.estaki.myFinancialApp.R
 
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier) {

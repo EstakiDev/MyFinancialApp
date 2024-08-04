@@ -11,6 +11,7 @@ import dev.estaki.data.db.repositoryImpl.SmsRepositoryImpl
 import dev.estaki.domain.repo.datasource.SmsDataSource
 import dev.estaki.domain.repo.reposities.SmsRepository
 import dev.estaki.domain.usecases.CacheSmsToDb
+import dev.estaki.domain.usecases.GetAllSms
 import javax.inject.Singleton
 
 @Module
@@ -29,6 +30,11 @@ class DataModule {
     @Provides
     fun provideCacheSmsUseCase(smsRepository:SmsRepository): CacheSmsToDb {
         return CacheSmsToDb(smsRepository)
+    }
+
+    @Provides
+    fun provideGetAllSmsUseCase(smsRepository:SmsRepository):GetAllSms {
+        return GetAllSms(smsRepository)
     }
 
     @Provides

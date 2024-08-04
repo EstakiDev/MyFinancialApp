@@ -12,9 +12,7 @@ import dev.estaki.data.db.dao.SmsDao
 import dev.estaki.data.db.dbClass.AppDatabase
 import javax.inject.Singleton
 
-/**
- * Created by Ali Asadi on 15/05/2020
- **/
+
 @Module
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {

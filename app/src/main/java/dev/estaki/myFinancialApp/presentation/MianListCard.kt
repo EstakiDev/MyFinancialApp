@@ -28,8 +28,9 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.estaki.data.entities.SmsEntity
+import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
-import dev.estaki.myapplication.R
+import dev.estaki.myFinancialApp.R
 import dev.estaki.myFinancialApp.ui.theme.ColorCardExpenses
 import dev.estaki.myFinancialApp.ui.theme.ColorCardIncome
 import dev.estaki.myFinancialApp.ui.theme.ColorGrayLite
@@ -119,7 +120,7 @@ fun MyCardItem(smsEntity: dev.estaki.data.entities.SmsRawModel?, position: Int =
 }
 
 @Composable
-fun MyCardItemNew(smsEntity: dev.estaki.data.entities.SmsEntity, onCardClick: () -> Unit) {
+fun MyCardItemNew(smsEntity: SmsModel, onCardClick: () -> Unit) {
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
@@ -218,7 +219,7 @@ fun IconWithCircleBackground(resId:Int){
 fun MyCardItemPreview() {
     Column {
         MyCardItemNew(
-            SmsEntity(
+            SmsModel(
                 id = 1L,
                 "تجارت",
                 "12558484.247",

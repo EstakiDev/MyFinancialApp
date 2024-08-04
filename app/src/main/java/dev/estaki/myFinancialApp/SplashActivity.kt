@@ -94,9 +94,11 @@ class SplashActivity : ComponentActivity() {
                 }
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
-                    Scaffold(snackbarHost = { SnackbarHost(hostState = snackBarHostState){
-                        Snackbar(snackbarData = it, containerColor = Pink40)
-                    } }) {
+                    Scaffold(snackbarHost = {
+                        SnackbarHost(hostState = snackBarHostState) {
+                            Snackbar(snackbarData = it, containerColor = Pink40)
+                        }
+                    }) {
                         val alpha = remember {
                             Animatable(0f)
                         }
@@ -166,7 +168,9 @@ class SplashActivity : ComponentActivity() {
                             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
                                 ModalBottomSheet(
-                                    onDismissRequest = {  viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION },
+                                    onDismissRequest = {
+                                        viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
+                                    },
                                     sheetState = modalBottomSheetState
                                 ) {
 
@@ -188,8 +192,8 @@ class SplashActivity : ComponentActivity() {
                                             .padding(12.dp)
                                             .fillMaxWidth(),
                                             onClick = {
-                                            requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
-                                        }) {
+                                                requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
+                                            }) {
                                             Text(
                                                 text = "تایید دسترسی",
                                                 fontFamily = ariaFaNumFontFamily,
@@ -201,7 +205,7 @@ class SplashActivity : ComponentActivity() {
                                 }
                             }
 
-                        }else{
+                        } else {
                             LaunchedEffect(key1 = "readSms&gotoMain") {
                                 readSms(contentResolver, viewModel)
                             }
@@ -228,13 +232,13 @@ class SplashActivity : ComponentActivity() {
                             ViewState.FINISH_SPLASH_ACTIVITY -> {
                                 finishAndGotoMain()
                             }
-                            ViewState.SUCCESS_IN_PERMISSION ->{
+
+                            ViewState.SUCCESS_IN_PERMISSION -> {
                                 LaunchedEffect(key1 = "DismissBottomSheet") {
-                                    lifecycleScope.launch {
-                                        modalBottomSheetState.hide()
-                                    }
+                                    modalBottomSheetState.hide()
                                 }
                             }
+
                             else -> {}
                         }
                     }
