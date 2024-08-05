@@ -1,4 +1,4 @@
-package dev.estaki.myFinancialApp
+package dev.estaki.myFinancialApp.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.estaki.myFinancialApp.presentation.Nav
+import dev.estaki.myFinancialApp.isPermissionsGranted
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 
 

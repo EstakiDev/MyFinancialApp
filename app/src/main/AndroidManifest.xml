@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFinancialApp"
         tools:targetApi="31">
-        <activity android:name="dev.estaki.myFinancialApp.SplashActivity"
+        <activity android:name="dev.estaki.myFinancialApp.presentation.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.MyFinancialApp">
             <intent-filter>
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="dev.estaki.myFinancialApp.MainActivity"
+            android:name="dev.estaki.myFinancialApp.presentation.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.MyFinancialApp">
 

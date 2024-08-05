@@ -1,4 +1,4 @@
-package dev.estaki.myFinancialApp
+package dev.estaki.myFinancialApp.presentation
 
 enum class ViewState {
     LOADING,

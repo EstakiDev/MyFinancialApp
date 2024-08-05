@@ -1,4 +1,4 @@
-package dev.estaki.myFinancialApp
+package dev.estaki.myFinancialApp.presentation
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -49,14 +49,13 @@ import androidx.lifecycle.lifecycleScope
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.AndroidEntryPoint
-import dev.estaki.myFinancialApp.presentation.SplashScreen
+import dev.estaki.myFinancialApp.isPermissionsGranted
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.Pink40
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("CustomSplashScreen")

@@ -1,16 +1,17 @@
-package dev.estaki.myFinancialApp
+package dev.estaki.myFinancialApp.presentation
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.estaki.data.entities.SmsEntity
 import dev.estaki.data.entities.SmsRawModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.domain.usecases.CacheSmsToDb
 import dev.estaki.domain.usecases.GetAllSms
+import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
+import dev.estaki.myFinancialApp.removeSpecialChar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch

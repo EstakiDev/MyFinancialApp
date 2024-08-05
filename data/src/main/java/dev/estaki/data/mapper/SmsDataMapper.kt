@@ -12,7 +12,8 @@ fun SmsModel.toDbEntity() = SmsEntity(
     transactionDate = transactionDate,
     transactionTime = transactionTime,
     bankCardBalance = bankCardBalance,
-    categoryId = categoryId
+    categoryId = categoryId,
+    description = description
 
     )
 
@@ -25,6 +26,7 @@ fun SmsEntity.toDomainModel() = SmsModel(
     transactionDate = transactionDate,
     transactionTime = transactionTime,
     bankCardBalance = bankCardBalance,
-    categoryId = categoryId
+    categoryId = categoryId,
+    description = description
 
 )

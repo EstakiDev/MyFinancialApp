@@ -16,4 +16,5 @@ data class SmsEntity(
     val transactionTime:String,
     val bankCardBalance:String,
     val categoryId:Long,
+    val description:String?,
 )
