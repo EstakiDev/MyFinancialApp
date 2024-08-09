@@ -10,6 +10,7 @@ import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.domain.usecases.CacheSmsToDb
 import dev.estaki.domain.usecases.GetAllSms
+import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
 import dev.estaki.myFinancialApp.removeSpecialChar
 import kotlinx.coroutines.Dispatchers
@@ -55,6 +56,11 @@ class MainViewModel @Inject constructor(
                         "+98"
                     )
                 }
+
+                filterWithSender.forEach{
+                    Log.d("TAG", "readSms: date: ${it.receiveDate.convertToTime()}")
+                    it.receiveDate = it.receiveDate.convertToTime()
+                }
                 parseSmsToModel(filterWithSender)
             }
 
@@ -93,6 +99,7 @@ class MainViewModel @Inject constructor(
                             }
                         }
                     })
+
                     listOfModel.add(
                         SmsModel(
                             id = i++,
@@ -113,14 +120,15 @@ class MainViewModel @Inject constructor(
                                         || it.contains("-")
                                         || it.contains("+")
                             } ?: "-").split(":", "+", "-").last(),
-                            transactionDate = date ?: "-",
+                            transactionDate = sms.receiveDate ?: "-",
                             transactionTime = time ?: "-",
                             bankCardBalance = split.find {
                                 (it.contains("موجودی") ||
                                         it.contains("مانده") ||
                                         it.contains("موجودي"))
                             } ?: "-",
-                            categoryId = 0L
+                            categoryId = 0L,
+                            description = null
                         )
                     )
                 }

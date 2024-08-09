@@ -228,8 +228,8 @@ fun MyCardItemPreview() {
                 "21/66/99",
                 "22:10",
                 "123,153,155",
-                0L
-
+                0L,
+                description = null
                 ),
             onCardClick = {}
         )

@@ -27,7 +27,7 @@ val RedDark = Color(0xFFAA0014)
 val ColorCardIncomeB = Color(0xCC54BB6A)
 val ColorCardIncomeA = Color(0xCCABD6B4)
 val ColorCardExpensesA = Color(0xCCDA9D9D)
-val ColorCardExpensesB = Color(0xCCCF5856)
+val ColorCardExpensesB = Color(0xFFFF3F3C)
 val ColorCardIncome = Brush.horizontalGradient(
     colors = listOf(
         ColorCardIncomeB, ColorCardIncomeA

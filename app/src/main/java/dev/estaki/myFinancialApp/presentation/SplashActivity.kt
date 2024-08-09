@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Telephony
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -49,6 +50,7 @@ import androidx.lifecycle.lifecycleScope
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.AndroidEntryPoint
+import dev.estaki.data.entities.SmsRawModel
 import dev.estaki.myFinancialApp.isPermissionsGranted
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
@@ -258,7 +260,7 @@ class SplashActivity : ComponentActivity() {
 
 
     private suspend fun readSms(contentResolver: ContentResolver, mainViewModel: MainViewModel) {
-        val smsList = ArrayList<dev.estaki.data.entities.SmsRawModel>()
+        val smsList = ArrayList<SmsRawModel>()
         val cursor = contentResolver.query(
             Telephony.Sms.CONTENT_URI,
             null,
@@ -270,7 +272,8 @@ class SplashActivity : ComponentActivity() {
             do {
                 val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
                 val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                smsList.add(dev.estaki.data.entities.SmsRawModel(address, body))
+                val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                smsList.add(SmsRawModel(address, body,date))
             } while (cursor.moveToNext())
 
             mainViewModel.filterSmsData(smsList)
