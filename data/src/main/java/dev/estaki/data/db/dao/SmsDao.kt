@@ -9,7 +9,7 @@ import dev.estaki.data.entities.SmsEntity
 interface SmsDao {
 
     @Insert
-    fun insertAll(smsList :List<SmsEntity>)
+    fun insertAll(smsList :List<SmsEntity>):List<Long>
 
     @Query("SELECT * FROM tb_sms")
     fun readAll():List<SmsEntity>

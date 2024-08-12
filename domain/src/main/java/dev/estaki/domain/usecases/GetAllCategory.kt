@@ -10,8 +10,8 @@ class GetAllCategory(
     private val categoryRepository: CategoryRepository
 ) {
 
-    suspend operator fun invoke(): Flow<List<CategoryModel>> =
-        categoryRepository.readAll()
+    suspend operator fun invoke(): Flow<Long> =
+        categoryRepository.getAllCount()
 
 
 }

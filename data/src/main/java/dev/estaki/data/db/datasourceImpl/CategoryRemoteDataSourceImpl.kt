@@ -29,7 +29,11 @@ class CategoryRemoteDataSourceImpl:CategoryDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<CategoryModel>) {
+    override suspend fun addAll(item: List<CategoryModel>): Flow<List<Long>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllCount(): Flow<Long> {
         TODO("Not yet implemented")
     }
 

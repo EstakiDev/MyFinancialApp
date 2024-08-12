@@ -1,6 +1,7 @@
 package dev.estaki.data.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import dev.estaki.domain.models.TransactionType
 

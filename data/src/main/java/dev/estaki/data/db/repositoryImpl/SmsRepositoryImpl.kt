@@ -3,9 +3,7 @@ package dev.estaki.data.db.repositoryImpl
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.repo.datasource.SmsDataSource
 import dev.estaki.domain.repo.reposities.SmsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 class SmsRepositoryImpl(
     private val localDS: SmsDataSource.Local,
@@ -34,8 +32,12 @@ class SmsRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<SmsModel>) {
+    override suspend fun addAll(item: List<SmsModel>): Flow<List<Long>> =
         localDS.addAll(item)
+
+
+    override suspend fun getAllCount(): Flow<Long> {
+        TODO("Not yet implemented")
     }
 
 }

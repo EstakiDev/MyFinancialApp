@@ -1,14 +1,9 @@
 package dev.estaki.data.db.repositoryImpl
 
 import dev.estaki.domain.models.CategoryModel
-import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.repo.datasource.CategoryDataSource
-import dev.estaki.domain.repo.datasource.SmsDataSource
 import dev.estaki.domain.repo.reposities.CategoryRepository
-import dev.estaki.domain.repo.reposities.SmsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 class CategoryRepositoryImpl(
     private val localDS: CategoryDataSource.Local,
@@ -37,8 +32,11 @@ class CategoryRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<CategoryModel>) {
+    override suspend fun addAll(item: List<CategoryModel>): Flow<List<Long>> =
         localDS.addAll(item)
-    }
+
+
+    override suspend fun getAllCount(): Flow<Long> =
+        localDS.getAllCount()
 
 }

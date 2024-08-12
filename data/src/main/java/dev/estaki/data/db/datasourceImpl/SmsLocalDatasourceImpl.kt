@@ -38,11 +38,11 @@ class SmsLocalDatasourceImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<SmsModel>) {
-        withContext(Dispatchers.IO) {
-            smsDao.insertAll(item.map {
-                it.toDbEntity()
-            })
-        }
+    override suspend fun addAll(item: List<SmsModel>): Flow<List<Long>> =
+        flow{ emit(smsDao.insertAll(item.map { it.toDbEntity() })) }.flowOn(Dispatchers.IO)
+
+
+    override suspend fun getAllCount(): Flow<Long> {
+        TODO("Not yet implemented")
     }
 }

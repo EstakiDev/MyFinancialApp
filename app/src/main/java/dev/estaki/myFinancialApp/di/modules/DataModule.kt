@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.estaki.data.db.dao.CategoryDao
 import dev.estaki.data.db.dao.SmsDao
 import dev.estaki.data.db.datasourceImpl.CategoryLocalDataSourceImpl
 import dev.estaki.data.db.datasourceImpl.CategoryRemoteDataSourceImpl
@@ -84,8 +85,8 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideCategoryLocalDataSource(): CategoryDataSource.Local {
-        return CategoryLocalDataSourceImpl()
+    fun provideCategoryLocalDataSource(categoryDao: CategoryDao): CategoryDataSource.Local {
+        return CategoryLocalDataSourceImpl(categoryDao)
     }
 
 }

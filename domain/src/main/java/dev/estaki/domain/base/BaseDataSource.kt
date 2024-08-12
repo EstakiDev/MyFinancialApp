@@ -10,5 +10,6 @@ interface BaseDataSource<Entity,AffectedRow,Id> {
     suspend fun deleteAll():Flow<AffectedRow>
     suspend fun update(id: Id):Flow<AffectedRow>
     suspend fun add(id: Entity)
-    suspend fun addAll(item: List<Entity>)
+    suspend fun addAll(item: List<Entity>):Flow<List<Id>>
+    suspend fun getAllCount():Flow<Long>
 }

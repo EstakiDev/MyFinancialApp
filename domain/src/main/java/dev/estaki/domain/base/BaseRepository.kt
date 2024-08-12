@@ -1,6 +1,5 @@
 package dev.estaki.domain.base
 
-import android.content.ClipData.Item
 import kotlinx.coroutines.flow.Flow
 
 interface BaseRepository<Entity,AffectedRow,Id> {
@@ -10,5 +9,6 @@ interface BaseRepository<Entity,AffectedRow,Id> {
     suspend fun deleteAll():AffectedRow
     suspend fun update(id: Id):AffectedRow
     suspend fun add(id: Entity)
-    suspend fun addAll(item: List<Entity>)
+    suspend fun addAll(item: List<Entity>):Flow<List<Id>>
+    suspend fun getAllCount():Flow<Long>
 }

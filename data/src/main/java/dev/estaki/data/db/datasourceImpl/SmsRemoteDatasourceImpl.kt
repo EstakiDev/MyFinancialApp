@@ -29,7 +29,11 @@ class SmsRemoteDatasourceImpl: SmsDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<SmsModel>) {
+    override suspend fun addAll(item: List<SmsModel>): Flow<List<Long>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getAllCount(): Flow<Long> {
         TODO("Not yet implemented")
     }
 

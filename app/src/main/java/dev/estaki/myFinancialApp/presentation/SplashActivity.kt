@@ -58,7 +58,9 @@ import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.Pink40
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -85,6 +87,7 @@ class SplashActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel.getAllCategory()
 
         setContent {
             FinancialTheme {
@@ -260,25 +263,28 @@ class SplashActivity : ComponentActivity() {
 
 
     private suspend fun readSms(contentResolver: ContentResolver, mainViewModel: MainViewModel) {
-        val smsList = ArrayList<SmsRawModel>()
-        val cursor = contentResolver.query(
-            Telephony.Sms.CONTENT_URI,
-            null,
-            null,
-            null,
-            null
-        )
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
-                val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
-                smsList.add(SmsRawModel(address, body,date))
-            } while (cursor.moveToNext())
+        withContext(Dispatchers.IO){
+            val smsList = ArrayList<SmsRawModel>()
+            val cursor = contentResolver.query(
+                Telephony.Sms.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+            )
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                    val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                    val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                    smsList.add(SmsRawModel(address, body, date))
+                } while (cursor.moveToNext())
 
-            mainViewModel.filterSmsData(smsList)
+                mainViewModel.filterSmsData(smsList)
 
+            }
+            cursor?.close()
         }
-        cursor?.close()
+
     }
 }

@@ -25,8 +25,7 @@ import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController?,viewModel: MainViewModel = hiltViewModel()) {
-
+fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hiltViewModel()) {
 
 
     val scrollBehavior =
@@ -82,31 +81,30 @@ fun MainScreen(navController: NavHostController?,viewModel: MainViewModel = hilt
     ) { innerPadding ->
 
 
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .wrapContentHeight(),
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                userScrollEnabled = true,
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight(),
+            contentPadding = innerPadding,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            userScrollEnabled = true,
 
-                ) {
-                items(if (smsList.value?.isEmpty() == true) 10 else smsList.value?.size!!) { itemIndex ->
-                    ShimmerListItems(
-                        isLoading = isloading,
-                        contentAfterLoading = {
-                            MyCardItemNew(smsList.value!![itemIndex], onCardClick = { navController?.navigate("AddDetailScreen") })
-                        })
+            ) {
+            items(if (smsList.value?.isEmpty() == true) 10 else smsList.value?.size!!) { itemIndex ->
 
-                }
-                smsList.value?.let {
+                ShimmerListItems(
+                    isLoading = isloading,
+                    contentAfterLoading = {
+                        MyCardItemNew(
+                            smsList.value!![itemIndex],
+                            onCardClick = { navController?.navigate("AddDetailScreen") })
+                    })
 
-                }
             }
+            smsList.value?.let {
 
-
-
-
+            }
+        }
 
 
     }
