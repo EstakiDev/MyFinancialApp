@@ -18,7 +18,8 @@ import dev.estaki.domain.repo.reposities.CategoryRepository
 import dev.estaki.domain.repo.reposities.SmsRepository
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
-import dev.estaki.domain.usecases.GetAllCategory
+import dev.estaki.domain.usecases.GetAllCategoryCount
+import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetAllSms
 import javax.inject.Singleton
 
@@ -37,13 +38,18 @@ class DataModule {
     }
 
     @Provides
-    fun provideGetAllCategoryUseCase(categoryRepository: CategoryRepository):GetAllCategory {
-        return GetAllCategory(categoryRepository)
+    fun provideGetAllCategoryUseCase(categoryRepository: CategoryRepository):GetAllCategoryCount {
+        return GetAllCategoryCount(categoryRepository)
     }
 
     @Provides
     fun provideCacheCategoryToDbUseCase(categoryRepository: CategoryRepository):CacheCategoryToDb {
         return CacheCategoryToDb(categoryRepository)
+    }
+
+    @Provides
+    fun provideGetAllCategoryListUseCase(categoryRepository: CategoryRepository):GetAllCategoryList{
+        return GetAllCategoryList(categoryRepository)
     }
 
     @Provides

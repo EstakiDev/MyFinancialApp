@@ -1,4 +1,4 @@
-package dev.estaki.myFinancialApp.presentation
+package dev.estaki.myFinancialApp.presentation.main
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
@@ -11,26 +11,24 @@ import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
-import dev.estaki.domain.usecases.GetAllCategory
+import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
+import dev.estaki.myFinancialApp.presentation.ViewState
 import dev.estaki.myFinancialApp.removeSpecialChar
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val cashSmsToDb: CacheSmsToDb,
     private val getAllSms: GetAllSms,
-    private val getAllCategory: GetAllCategory,
+    private val getAllCategoryCount: GetAllCategoryCount,
     private val cacheCategoryToDb: CacheCategoryToDb
 ) : ViewModel() {
-
     val smsLiveDataList = MutableLiveData<MutableList<SmsModel>>(mutableListOf())
     val isLoading = MutableLiveData<Boolean>()
     val viewState = MutableLiveData<ViewState>()
@@ -152,10 +150,8 @@ class MainViewModel @Inject constructor(
             getAllSms.invoke().catch {
                 it.printStackTrace()
             }.collect { smsList ->
-                isLoading.postValue(false)
-
                 smsLiveDataList.postValue(smsList.toMutableList())
-
+                isLoading.postValue(false)
             }
         }
 
@@ -163,7 +159,7 @@ class MainViewModel @Inject constructor(
 
     fun getAllCategory() {
         viewModelScope.launch {
-            getAllCategory.invoke().catch {
+            getAllCategoryCount.invoke().catch {
                 it.printStackTrace()
             }.collect { count ->
                 if (count < 1)

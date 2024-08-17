@@ -1,11 +1,10 @@
-package dev.estaki.myFinancialApp.presentation
+package dev.estaki.myFinancialApp.presentation.splash
 
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Telephony
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,6 +51,9 @@ import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.AndroidEntryPoint
 import dev.estaki.data.entities.SmsRawModel
 import dev.estaki.myFinancialApp.isPermissionsGranted
+import dev.estaki.myFinancialApp.presentation.ViewState
+import dev.estaki.myFinancialApp.presentation.main.MainActivity
+import dev.estaki.myFinancialApp.presentation.main.MainViewModel
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme

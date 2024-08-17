@@ -1,4 +1,4 @@
-package dev.estaki.myFinancialApp.presentation
+package dev.estaki.myFinancialApp.presentation.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import dev.estaki.myFinancialApp.presentation.ShimmerListItems
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)

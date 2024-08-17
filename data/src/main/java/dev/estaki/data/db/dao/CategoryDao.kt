@@ -12,6 +12,9 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertCategory(categoryEntity: List<CategoryEntity>):List<Long>
 
+    @Query("SELECT * FROM tb_category")
+    fun selectAll():List<CategoryEntity>
+
     @Query("SELECT COUNT(*) FROM tb_category")
     fun getCategoryCount():Long
 }
