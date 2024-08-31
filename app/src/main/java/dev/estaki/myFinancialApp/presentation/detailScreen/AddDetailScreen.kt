@@ -87,34 +87,37 @@ fun AddDetailScreen(detailScreenViewModel: DetailScreenViewModel = hiltViewModel
                             onValueChange = {
                                 text = it
                             })
-                        LazyRow(
-                            Modifier
-                                .padding(12.dp)
-                                .fillMaxHeight(0.6F)
-                                .fillMaxWidth()
-                        ) {
+                        if(!categoryList.isNullOrEmpty()){
+                            LazyRow(
+                                Modifier
+                                    .padding(12.dp)
+                                    .fillMaxHeight(0.6F)
+                                    .fillMaxWidth()
+                            ) {
 
-                            items(categoryList?.size!!, itemContent = { ind ->
-                                Card(
-                                    modifier = Modifier
-                                        .size(100.dp)
-                                        .padding(4.dp),
+                                items(categoryList?.size!!, itemContent = { ind ->
+                                    Card(
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .padding(4.dp),
 
-                                    ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ){
-                                        Text(
-                                            text = categoryList!![ind].title,
-                                            textAlign = TextAlign.Center,
-                                            style = TextStyle(fontSize = 16.sp),
-                                        )
+                                        ) {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ){
+                                            Text(
+                                                text = categoryList!![ind].title,
+                                                textAlign = TextAlign.Center,
+                                                style = TextStyle(fontSize = 16.sp),
+                                            )
+                                        }
+
                                     }
-
-                                }
-                            })
+                                })
+                            }
                         }
+
                     }
                     BallPulseProgressIndicator(
                         modifier = Modifier

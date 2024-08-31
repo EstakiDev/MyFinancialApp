@@ -58,7 +58,7 @@ class MainViewModel @Inject constructor(
         }
 
         filterWithSender.forEach {
-            Log.d("TAG", "readSms: date: ${it.receiveDate.convertToTime()}")
+//            Log.d("TAG", "readSms: date: ${it.receiveDate.convertToTime()}")
             it.receiveDate = it.receiveDate.convertToTime()
         }
         parseSmsToModel(filterWithSender)
@@ -67,6 +67,7 @@ class MainViewModel @Inject constructor(
 
 
     private suspend fun parseSmsToModel(smsList: List<SmsRawModel>) {
+
         val listOfModel = mutableListOf<SmsModel>()
         try {
             var i = 1L
@@ -129,6 +130,10 @@ class MainViewModel @Inject constructor(
                     )
                 )
             }
+            val smsListInDb = getSavedSmsInDb()
+            listOfModel.removeAll(smsListInDb)
+
+            Log.d("TAG", "parseSmsToModel: ${listOfModel.size}")
             cashSmsToDb.invoke(listOfModel).catch {
                 it.printStackTrace()
             }.collect{
@@ -143,6 +148,16 @@ class MainViewModel @Inject constructor(
             e.printStackTrace()
         }
 
+    }
+
+    private suspend fun getSavedSmsInDb():List<SmsModel>{
+        var result = listOf<SmsModel>()
+        getAllSms.invoke().catch {
+            it.printStackTrace()
+        }.collect { smsList ->
+            result = smsList
+        }
+        return result
     }
 
     fun getAllSms() {

@@ -78,7 +78,6 @@ class SplashActivity : ComponentActivity() {
             if (isGranted) {
                 lifecycleScope.launch {
                     viewModel.viewState.value = ViewState.SUCCESS_IN_PERMISSION
-                    readSms(contentResolver, viewModel)
                 }
             } else {
                 viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
@@ -274,18 +273,20 @@ class SplashActivity : ComponentActivity() {
                 null,
                 null
             )
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
-                    val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                    val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
-                    smsList.add(SmsRawModel(address, body, date))
-                } while (cursor.moveToNext())
+            cursor?.let {
+                if (it.moveToFirst()){
+                    do {
+                        val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                        val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                        val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                        smsList.add(SmsRawModel(address, body, date))
+                    } while (cursor.moveToNext())
 
-                mainViewModel.filterSmsData(smsList)
-
+                    mainViewModel.filterSmsData(smsList)
+                }
+                it.close()
             }
-            cursor?.close()
+
         }
 
     }
