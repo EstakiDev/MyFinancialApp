@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.estaki.domain.models.CategoryModel
-import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllCategoryList
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,8 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(private val getAllCategoryList: GetAllCategoryList): ViewModel() {
 
-    val showLoading:MutableLiveData<Boolean> = MutableLiveData()
     val categoryListLiveData = MutableLiveData<List<CategoryModel>>()
+    val isLoading = MutableStateFlow(true)
 
     init {
         getCategoryList()
@@ -24,12 +24,11 @@ class DetailScreenViewModel @Inject constructor(private val getAllCategoryList: 
 
     private fun getCategoryList(){
         viewModelScope.launch {
-            showLoading.value = true
             getAllCategoryList.invoke().catch {
                 it.printStackTrace()
             }.collect{ items ->
                 categoryListLiveData.value = items
-                showLoading.value = false
+                isLoading.value = false
             }
         }
     }

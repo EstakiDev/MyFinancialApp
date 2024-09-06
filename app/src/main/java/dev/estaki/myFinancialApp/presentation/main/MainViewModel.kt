@@ -18,6 +18,8 @@ import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
 import dev.estaki.myFinancialApp.presentation.ViewState
 import dev.estaki.myFinancialApp.removeSpecialChar
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +34,9 @@ class MainViewModel @Inject constructor(
     val smsLiveDataList = MutableLiveData<MutableList<SmsModel>>(mutableListOf())
     val isLoading = MutableLiveData<Boolean>()
     val viewState = MutableLiveData<ViewState>()
+    private val _smsList = MutableStateFlow<List<SmsModel>>(listOf())
+    val smsList: StateFlow<List<SmsModel>>
+        get() = _smsList
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
         val list = smsL.filter { sms ->
             (sms.description.contains("واریز") ||
@@ -166,6 +171,7 @@ class MainViewModel @Inject constructor(
                 it.printStackTrace()
             }.collect { smsList ->
                 smsLiveDataList.postValue(smsList.toMutableList())
+                _smsList.value = smsList.toMutableList()
                 isLoading.postValue(false)
             }
         }

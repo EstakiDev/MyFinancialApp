@@ -12,7 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +35,8 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val isloading = viewModel.isLoading.observeAsState().value ?: true
     viewModel.getAllSms()
-    val smsList = viewModel.smsLiveDataList.observeAsState()
+    val smsList = viewModel.smsList.collectAsState()
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
@@ -91,13 +94,13 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
             userScrollEnabled = true,
 
             ) {
-            items(if (smsList.value?.isEmpty() == true) 10 else smsList.value?.size!!) { itemIndex ->
+            items(if (smsList.value.isEmpty()) 10 else smsList.value.size) { itemIndex ->
 
                 ShimmerListItems(
                     isLoading = isloading,
                     contentAfterLoading = {
                         MyCardItemNew(
-                            smsList.value!![itemIndex],
+                            smsList.value[itemIndex],
                             onCardClick = { navController?.navigate("AddDetailScreen") })
                     })
 
