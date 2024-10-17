@@ -9,6 +9,6 @@ data class SmsModel(
     val transactionDate:String,
     val transactionTime:String,
     val bankCardBalance:String,
-    val categoryId:Long,
+    var categoryIds:List<Long>,
     val description:String?,
     )

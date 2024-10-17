@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import dev.estaki.data.entities.SmsEntity
+import dev.estaki.domain.models.SmsModel
 
 @Dao
 interface SmsDao {
@@ -13,5 +14,9 @@ interface SmsDao {
 
     @Query("SELECT * FROM tb_sms")
     fun readAll():List<SmsEntity>
+
+
+    @Query("SELECT * FROM tb_sms WHERE id=:id")
+    fun read(id: Long): SmsEntity
 
 }

@@ -130,7 +130,7 @@ class MainViewModel @Inject constructor(
                                     it.contains("مانده") ||
                                     it.contains("موجودي"))
                         } ?: "-",
-                        categoryId = 0L,
+                        categoryIds = listOf(0L),
                         description = null
                     )
                 )

@@ -1,35 +1,66 @@
 package dev.estaki.myFinancialApp.presentation.detailScreen
 
 
+import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.MutableSnapshot
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.estaki.domain.models.CategoryModel
+import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.usecases.GetAllCategoryList
+import dev.estaki.domain.usecases.GetSingleSms
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.log
 
 @HiltViewModel
-class DetailScreenViewModel @Inject constructor(private val getAllCategoryList: GetAllCategoryList): ViewModel() {
+class DetailScreenViewModel @Inject constructor(
+    private val getAllCategoryList: GetAllCategoryList,
+    private val getSingleSmsUseCase: GetSingleSms
+) :
+    ViewModel() {
 
-    val categoryListLiveData = MutableLiveData<List<CategoryModel>>()
+    private var _categoryList = mutableListOf<CategoryModel>()
+    val categoryList:List <CategoryModel> = _categoryList
+
     val isLoading = MutableStateFlow(true)
+    private var _sms: MutableStateFlow<SmsModel?> = MutableStateFlow(null)
+    val sms: StateFlow<SmsModel?>
+        get() = _sms.asStateFlow()
 
     init {
-        getCategoryList()
+        viewModelScope.launch {
+            Log.d("TAG", "Load category has been started: ")
+            getCategoryList()
+            Log.d("TAG", "load category has been finished: ")
+        }
     }
 
-    private fun getCategoryList(){
+    fun loadSmsById(id: Long) {
         viewModelScope.launch {
-            getAllCategoryList.invoke().catch {
+            getSingleSmsUseCase.invoke(id).catch {
                 it.printStackTrace()
-            }.collect{ items ->
-                categoryListLiveData.value = items
-                isLoading.value = false
+            }.collect {
+                _sms.value = it
             }
         }
+    }
+
+    private suspend fun getCategoryList() {
+        getAllCategoryList.invoke().catch {
+            it.printStackTrace()
+        }.collect { items ->
+            _categoryList.addAll(items)
+            isLoading.value = false
+        }
+
     }
 }

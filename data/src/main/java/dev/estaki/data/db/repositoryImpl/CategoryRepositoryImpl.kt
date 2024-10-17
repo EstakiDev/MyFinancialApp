@@ -12,7 +12,7 @@ class CategoryRepositoryImpl(
     override suspend fun readAll(): Flow<List<CategoryModel>> =
         localDS.readAll()
 
-    override suspend fun read(id: Long): CategoryModel {
+    override suspend fun read(id: Long): Flow<CategoryModel> {
         TODO("Not yet implemented")
     }
 

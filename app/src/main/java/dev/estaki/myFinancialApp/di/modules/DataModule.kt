@@ -21,6 +21,7 @@ import dev.estaki.domain.usecases.CacheSmsToDb
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetAllSms
+import dev.estaki.domain.usecases.GetSingleSms
 import javax.inject.Singleton
 
 @Module
@@ -35,6 +36,10 @@ class DataModule {
     @Provides
     fun provideGetAllSmsUseCase(smsRepository:SmsRepository):GetAllSms {
         return GetAllSms(smsRepository)
+    }
+    @Provides
+    fun provideGetSingleSmsUseCase(smsRepository:SmsRepository):GetSingleSms {
+        return GetSingleSms(smsRepository)
     }
 
     @Provides
@@ -51,6 +56,11 @@ class DataModule {
     fun provideGetAllCategoryListUseCase(categoryRepository: CategoryRepository):GetAllCategoryList{
         return GetAllCategoryList(categoryRepository)
     }
+
+
+
+
+    //-----------------------------
 
     @Provides
     @Singleton

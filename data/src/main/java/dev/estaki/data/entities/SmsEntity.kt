@@ -1,7 +1,6 @@
 package dev.estaki.data.entities
 
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import dev.estaki.domain.models.TransactionType
 
@@ -16,6 +15,6 @@ data class SmsEntity(
     val transactionDate:String,
     val transactionTime:String,
     val bankCardBalance:String,
-    val categoryId:Long,
+    val categoryIds:String,
     val description:String?,
 )

@@ -12,9 +12,8 @@ class SmsRepositoryImpl(
     override suspend fun readAll(): Flow<List<SmsModel>> =
         localDS.readAll()
 
-    override suspend fun read(id: Long): SmsModel {
-        TODO("Not yet implemented")
-    }
+    override suspend fun read(id: Long): Flow<SmsModel> =
+        localDS.read(id)
 
     override suspend fun delete(id: Long): Int {
         TODO("Not yet implemented")
