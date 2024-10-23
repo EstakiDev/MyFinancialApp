@@ -37,6 +37,7 @@ class MainViewModel @Inject constructor(
     private val _smsList = MutableStateFlow<List<SmsModel>>(listOf())
     val smsList: StateFlow<List<SmsModel>>
         get() = _smsList
+
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
         val list = smsL.filter { sms ->
             (sms.description.contains("واریز") ||
