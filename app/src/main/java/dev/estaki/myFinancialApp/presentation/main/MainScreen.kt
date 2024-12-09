@@ -98,9 +98,12 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
                 ShimmerListItems(
                     isLoading = isloading,
                     contentAfterLoading = {
-                        MyCardItem(
-                            smsList.value[itemIndex],
-                            onCardClick = { navController?.navigate("AddDetailScreen/${smsList.value[itemIndex].id}") })
+                        if (smsList.value.isNotEmpty()) {
+                            MyCardItem(
+                                smsList.value[itemIndex],
+                                onCardClick = { navController?.navigate("AddDetailScreen/${smsList.value[itemIndex].id}") })
+                        }
+                        
                     })
 
             }
