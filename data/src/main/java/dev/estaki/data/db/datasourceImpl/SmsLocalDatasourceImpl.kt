@@ -1,7 +1,6 @@
 package dev.estaki.data.db.datasourceImpl
 
 import dev.estaki.data.db.dao.SmsDao
-import dev.estaki.data.entities.SmsEntity
 import dev.estaki.data.mapper.toDbEntity
 import dev.estaki.data.mapper.toDomainModel
 import dev.estaki.domain.models.SmsModel
@@ -29,11 +28,14 @@ class SmsLocalDatasourceImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Flow<Int> {
-        TODO("Not yet implemented")
+    override suspend fun upsert(entity: SmsModel){
+        withContext(Dispatchers.IO){
+            val en = entity.toDbEntity()
+            smsDao.upsert(en)
+        }
     }
 
-    override suspend fun add(id: SmsModel) {
+    override suspend fun add(entity: SmsModel) {
         TODO("Not yet implemented")
     }
 

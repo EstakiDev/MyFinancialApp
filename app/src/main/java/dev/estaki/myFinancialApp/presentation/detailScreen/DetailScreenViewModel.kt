@@ -16,6 +16,8 @@ import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetSingleSms
+import dev.estaki.domain.usecases.UpsertSms
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +32,8 @@ import kotlin.math.log
 @HiltViewModel
 class DetailScreenViewModel @Inject constructor(
     private val getAllCategoryList: GetAllCategoryList,
-    private val getSingleSmsUseCase: GetSingleSms
+    private val getSingleSmsUseCase: GetSingleSms,
+    private val saveSmsUseCase: UpsertSms
 ) : ViewModel() {
 
     val categoryList : MutableStateFlow<List<CategoryModel>> = MutableStateFlow(emptyList())
@@ -53,8 +56,13 @@ class DetailScreenViewModel @Inject constructor(
             getSingleSmsUseCase.invoke(id).catch {
                 it.printStackTrace()
             }.collect {
-                _sms.value = it
+                _sms.emit(it)
             }
+        }
+    }
+    fun saveSms(smsModel: SmsModel) {
+        viewModelScope.launch {
+            saveSmsUseCase.invoke(smsModel)
         }
     }
 
@@ -66,6 +74,7 @@ class DetailScreenViewModel @Inject constructor(
             Log.d("TAG", "getCategoryList: ")
 
             categoryList.emit(items)
+            delay(1_000)
             isLoading.value = false
         }
 

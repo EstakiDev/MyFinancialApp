@@ -21,9 +21,10 @@ class CategoryRemoteDataSourceImpl:CategoryDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Flow<Int> {
+    override suspend fun upsert(entity: CategoryModel) {
         TODO("Not yet implemented")
     }
+
 
     override suspend fun add(id: CategoryModel) {
         TODO("Not yet implemented")

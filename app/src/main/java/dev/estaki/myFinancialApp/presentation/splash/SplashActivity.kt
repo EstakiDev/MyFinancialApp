@@ -31,6 +31,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -75,13 +77,15 @@ class SplashActivity : ComponentActivity() {
 
     val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                lifecycleScope.launch {
-                    viewModel.viewState.value = ViewState.SUCCESS_IN_PERMISSION
+            lifecycleScope.launch {
+                if (isGranted) {
+
+                    viewModel.viewState.emit(ViewState.SUCCESS_IN_PERMISSION)
+                } else {
+                    viewModel.viewState.emit(ViewState.FAULT_IN_PERMISSION)
                 }
-            } else {
-                viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
             }
+
         }
 
 
@@ -92,7 +96,7 @@ class SplashActivity : ComponentActivity() {
 
         setContent {
             FinancialTheme {
-                val viewState = viewModel.viewState.observeAsState()
+                val viewState by viewModel.viewState.collectAsState()
                 val scope = rememberCoroutineScope()
                 val snackBarHostState = remember {
                     SnackbarHostState()
@@ -174,7 +178,9 @@ class SplashActivity : ComponentActivity() {
 
                                 ModalBottomSheet(
                                     onDismissRequest = {
-                                        viewModel.viewState.value = ViewState.FAULT_IN_PERMISSION
+                                        lifecycleScope.launch {
+                                            viewModel.viewState.emit(ViewState.FAULT_IN_PERMISSION)
+                                        }
                                     },
                                     sheetState = modalBottomSheetState
                                 ) {
@@ -218,7 +224,7 @@ class SplashActivity : ComponentActivity() {
 
 
 
-                        when (viewState.value) {
+                        when (viewState) {
                             ViewState.FAULT_IN_PERMISSION -> {
                                 CompositionLocalProvider(value = LocalLayoutDirection provides LayoutDirection.Rtl) {
                                     LaunchedEffect(key1 = "hide") {
@@ -264,7 +270,7 @@ class SplashActivity : ComponentActivity() {
 
 
     private suspend fun readSms(contentResolver: ContentResolver, mainViewModel: MainViewModel) {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             val smsList = ArrayList<SmsRawModel>()
             val cursor = contentResolver.query(
                 Telephony.Sms.CONTENT_URI,
@@ -274,7 +280,7 @@ class SplashActivity : ComponentActivity() {
                 null
             )
             cursor?.let {
-                if (it.moveToFirst()){
+                if (it.moveToFirst()) {
                     do {
                         val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
                         val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))

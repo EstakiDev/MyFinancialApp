@@ -21,7 +21,7 @@ fun Nav(navController: NavHostController) {
                 type = NavType.LongType
             }
         ) ) {backStackEntry ->
-            AddDetailScreen(smsId = backStackEntry.arguments?.getLong("smsId"))
+            AddDetailScreen(smsId = backStackEntry.arguments?.getLong("smsId"), navController = navController)
         }
 
     }

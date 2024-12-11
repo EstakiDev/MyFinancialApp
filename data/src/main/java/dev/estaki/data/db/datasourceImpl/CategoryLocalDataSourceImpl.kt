@@ -25,7 +25,7 @@ class CategoryLocalDataSourceImpl(private val categoryDao: CategoryDao):Category
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Flow<Int> {
+    override suspend fun upsert(entity: CategoryModel) {
         TODO("Not yet implemented")
     }
 

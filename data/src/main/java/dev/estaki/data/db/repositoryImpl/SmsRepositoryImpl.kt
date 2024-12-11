@@ -23,8 +23,8 @@ class SmsRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Int {
-        TODO("Not yet implemented")
+    override suspend fun upsert(entity: SmsModel) {
+        localDS.upsert(entity)
     }
 
     override suspend fun add(id: SmsModel) {

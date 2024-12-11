@@ -21,9 +21,10 @@ class SmsRemoteDatasourceImpl: SmsDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Flow<Int> {
+    override suspend fun upsert(entity: SmsModel) {
         TODO("Not yet implemented")
     }
+
 
     override suspend fun add(id: SmsModel) {
         TODO("Not yet implemented")

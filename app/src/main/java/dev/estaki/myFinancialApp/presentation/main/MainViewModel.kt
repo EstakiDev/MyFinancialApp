@@ -33,7 +33,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
     val smsLiveDataList = MutableLiveData<MutableList<SmsModel>>(mutableListOf())
     val isLoading = MutableLiveData<Boolean>()
-    val viewState = MutableLiveData<ViewState>()
+    val viewState = MutableStateFlow(ViewState.LOADING)
     private val _smsList = MutableStateFlow<List<SmsModel>>(listOf())
     val smsList: StateFlow<List<SmsModel>>
         get() = _smsList
@@ -106,7 +106,7 @@ class MainViewModel @Inject constructor(
 
                 listOfModel.add(
                     SmsModel(
-                        id = i++,
+                        id = null,
                         bankName = if (split.first()
                                 .isProbablyArabicOrPersian()
                         ) split.first().removeSpecialChar() else sms.senderName,
@@ -145,9 +145,9 @@ class MainViewModel @Inject constructor(
             }.collect{
                 Log.d("TAG", "parseSmsToModel: cashSmsToDb done $it")
 
-                delay(4000)
+                delay(2000)
                 isLoading.postValue(false)
-                viewState.postValue(ViewState.FINISH_SPLASH_ACTIVITY)
+                viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
             }
 
         } catch (e: Exception) {

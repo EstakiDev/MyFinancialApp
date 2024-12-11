@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,9 +20,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -35,6 +38,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +53,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
+import dev.estaki.data.mapper.toDbEntity
 import dev.estaki.domain.models.CategoryModel
+import dev.estaki.myFinancialApp.presentation.main.MyCardItem
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
@@ -60,6 +67,7 @@ import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 @Composable
 fun AddDetailScreen(
     detailScreenViewModel: DetailScreenViewModel = hiltViewModel(),
+    navController: NavHostController? = null,
     smsId: Long? = null
 ) {
     smsId?.let {
@@ -69,7 +77,7 @@ fun AddDetailScreen(
     FinancialTheme {
         Scaffold {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                var text by remember {
+                var text by rememberSaveable {
                     mutableStateOf("")
                 }
                 val scrollState = rememberScrollState()
@@ -82,25 +90,36 @@ fun AddDetailScreen(
                 val loadingState by detailScreenViewModel.isLoading.collectAsState()
                 val smsModel by detailScreenViewModel.sms.collectAsState()
                 val cat by detailScreenViewModel.categoryList.collectAsState()
-                var categoryList by remember(cat) { mutableStateOf(cat) }
+                var categoryList by rememberSaveable(cat) { mutableStateOf(cat) }
 
-//                smsModel?.let { smsM ->
-//                    if (smsM.categoryIds.isNotEmpty())
-//                        categoryList.forEach { category ->
-//                            category.isChecked = smsM.categoryIds.contains(category.id)
-//                        }
-//                }
+                LaunchedEffect(key1 = cat) {
+                    smsModel?.let { smsM ->
+                        if (smsM.categoryIds.isNotEmpty())
+                            categoryList = categoryList.map {
+                                if (smsM.categoryIds.contains(it.id))
+                                    it.copy(isChecked = true)
+                                else
+                                    it
+                            }
+                    }
+                }
 
                 Box(
                     Modifier.fillMaxSize(),
                 ) {
                     Column(
                         Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
+                            .fillMaxSize()
                             .verticalScroll(scrollState)
+                            .alpha(if (loadingState) 0f else 1f)
                     ) {
+                        Spacer(Modifier.size(8.dp))
 
+                        smsModel?.let {
+                            MyCardItem(
+                                smsEntity = it
+                            ) { }
+                        }
                         TextField(
                             modifier = Modifier
                                 .padding(12.dp)
@@ -139,7 +158,9 @@ fun AddDetailScreen(
                             items(categoryList, key = {
                                 it.id
                             }) { item ->
-                                Surface(onClick = {
+                                Surface(
+                                    shape = RoundedCornerShape(10.dp),
+                                    onClick = {
                                     Log.d("TAG", "check before clickable $categoryList.value ")
                                     categoryList = categoryList.map {
                                         if (it.id == item.id)
@@ -192,6 +213,31 @@ fun AddDetailScreen(
                         }
 
 
+                    }
+                    Button(
+                        onClick = {
+                            smsModel?.let {sms ->
+                                detailScreenViewModel.saveSms(
+                                    sms.copy(
+                                        description = text,
+                                        categoryIds = categoryList.filter { it.isChecked }.map { it.id }
+                                    )
+                                )
+                                navController?.navigate("MainScreen")
+                            }
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                            .align(Alignment.BottomCenter)
+                            .alpha(if (loadingState) 0f else 1f)
+
+                    ) {
+                        Text(
+                            text = "ذخیره",
+                            fontFamily = ariaFaNumFontFamily,
+                            fontWeight = FontWeight.Bold,
+                        )
                     }
                     BallPulseProgressIndicator(
                         modifier = Modifier

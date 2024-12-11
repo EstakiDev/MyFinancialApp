@@ -24,7 +24,7 @@ class CategoryRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(id: Long): Int {
+    override suspend fun upsert(entity: CategoryModel) {
         TODO("Not yet implemented")
     }
 

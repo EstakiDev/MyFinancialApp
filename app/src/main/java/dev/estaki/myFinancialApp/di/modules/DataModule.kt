@@ -22,6 +22,7 @@ import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.domain.usecases.GetSingleSms
+import dev.estaki.domain.usecases.UpsertSms
 import javax.inject.Singleton
 
 @Module
@@ -29,35 +30,39 @@ import javax.inject.Singleton
 class DataModule {
 
     @Provides
-    fun provideCacheSmsUseCase(smsRepository:SmsRepository): CacheSmsToDb {
+    fun provideCacheSmsUseCase(smsRepository: SmsRepository): CacheSmsToDb {
         return CacheSmsToDb(smsRepository)
     }
 
     @Provides
-    fun provideGetAllSmsUseCase(smsRepository:SmsRepository):GetAllSms {
+    fun provideGetAllSmsUseCase(smsRepository: SmsRepository): GetAllSms {
         return GetAllSms(smsRepository)
     }
+
     @Provides
-    fun provideGetSingleSmsUseCase(smsRepository:SmsRepository):GetSingleSms {
+    fun provideGetSingleSmsUseCase(smsRepository: SmsRepository): GetSingleSms {
         return GetSingleSms(smsRepository)
     }
 
     @Provides
-    fun provideGetAllCategoryUseCase(categoryRepository: CategoryRepository):GetAllCategoryCount {
+    fun provideGetAllCategoryUseCase(categoryRepository: CategoryRepository): GetAllCategoryCount {
         return GetAllCategoryCount(categoryRepository)
     }
 
     @Provides
-    fun provideCacheCategoryToDbUseCase(categoryRepository: CategoryRepository):CacheCategoryToDb {
+    fun provideCacheCategoryToDbUseCase(categoryRepository: CategoryRepository): CacheCategoryToDb {
         return CacheCategoryToDb(categoryRepository)
     }
 
     @Provides
-    fun provideGetAllCategoryListUseCase(categoryRepository: CategoryRepository):GetAllCategoryList{
+    fun provideGetAllCategoryListUseCase(categoryRepository: CategoryRepository): GetAllCategoryList {
         return GetAllCategoryList(categoryRepository)
     }
 
-
+    @Provides
+    fun provideUpsertSmsUseCase(smsRepository: SmsRepository): UpsertSms {
+        return UpsertSms(smsRepository)
+    }
 
 
     //-----------------------------
