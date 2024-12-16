@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -147,6 +148,15 @@ fun AddDetailScreen(
                         Log.d("TAG", "check categoryList size")
                         Log.d("TAG", "check $categoryList")
 
+                        Spacer(Modifier.size(8.dp))
+
+                        Text(
+                            text = "دسته بندی:", Modifier.padding(start = 12.dp),
+                            fontFamily = ariaFaNumFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                        )
+
                         LazyRow(
                             Modifier
                                 .fillMaxHeight(0.6F)
@@ -161,14 +171,14 @@ fun AddDetailScreen(
                                 Surface(
                                     shape = RoundedCornerShape(10.dp),
                                     onClick = {
-                                    Log.d("TAG", "check before clickable $categoryList.value ")
-                                    categoryList = categoryList.map {
-                                        if (it.id == item.id)
-                                            it.copy(isChecked = !it.isChecked)
-                                        else it
-                                    }
-                                    Log.d("TAG", "check after clickable $categoryList")
-                                }) {
+                                        Log.d("TAG", "check before clickable $categoryList.value ")
+                                        categoryList = categoryList.map {
+                                            if (it.id == item.id)
+                                                it.copy(isChecked = !it.isChecked)
+                                            else it
+                                        }
+                                        Log.d("TAG", "check after clickable $categoryList")
+                                    }) {
                                     Card(
                                         modifier = Modifier
                                             .wrapContentSize()
@@ -216,7 +226,7 @@ fun AddDetailScreen(
                     }
                     Button(
                         onClick = {
-                            smsModel?.let {sms ->
+                            smsModel?.let { sms ->
                                 detailScreenViewModel.saveSms(
                                     sms.copy(
                                         description = text,
@@ -236,7 +246,9 @@ fun AddDetailScreen(
                         Text(
                             text = "ذخیره",
                             fontFamily = ariaFaNumFontFamily,
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 16.sp
+
                         )
                     }
                     BallPulseProgressIndicator(
