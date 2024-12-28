@@ -94,6 +94,10 @@ dependencies {
     //Shimmer
     implementation(libs.shimmer)
 
+    //Persian Date Picker
+    implementation(libs.jalali.datepicker.compose)
+    implementation(libs.jalalicalendar)
+
 
 
 

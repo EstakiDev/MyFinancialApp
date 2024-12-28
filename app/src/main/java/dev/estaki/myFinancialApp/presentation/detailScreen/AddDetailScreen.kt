@@ -1,7 +1,6 @@
 package dev.estaki.myFinancialApp.presentation.detailScreen
 
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -27,11 +24,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -39,14 +38,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,9 +59,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
-import dev.estaki.data.mapper.toDbEntity
-import dev.estaki.domain.models.CategoryModel
-import dev.estaki.myFinancialApp.presentation.main.MyCardItem
+import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
+import dev.estaki.myFinancialApp.R
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
@@ -117,9 +119,12 @@ fun AddDetailScreen(
                         Spacer(Modifier.size(8.dp))
 
                         smsModel?.let {
-                            MyCardItem(
-                                smsEntity = it
-                            ) { }
+//                            MyCardItem(
+//                                smsEntity = it
+//                            ) { }
+                            CreateNewDetail()
+                        } ?: kotlin.run {
+                            CreateNewDetail()
                         }
                         TextField(
                             modifier = Modifier
@@ -271,6 +276,93 @@ fun AddDetailScreen(
         }
     }
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CreateNewDetail(modifier: Modifier = Modifier) {
+
+    val context = LocalContext.current
+    var amount by remember { mutableStateOf("") }
+    var bankName by remember { mutableStateOf("") }
+    val coroutine = rememberCoroutineScope()
+    val datePikerState = remember { mutableStateOf(false) }
+
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            TextField(
+                value = amount,
+                onValueChange = {
+                    amount = it
+                },
+                placeholder = {
+                    Text("مبلغ")
+                },
+                modifier = Modifier.fillMaxWidth(0.5F)
+
+            )
+            TextField(
+                value = bankName,
+                onValueChange = {
+                    bankName = it
+                },
+                placeholder = {
+                    Text("نام بانک")
+                },
+                modifier = Modifier.fillMaxWidth(0.5F)
+
+            )
+        }
+        Row(modifier = Modifier.fillMaxWidth()) {
+
+//                TextField(
+//                    value = amount,
+//                    onValueChange = {
+//                        amount = it
+//                    },
+//                    placeholder = {
+//                        Text("تاریخ")
+//                    },
+//                    modifier = Modifier.fillMaxWidth(0.5F)
+//
+//                )
+            Button(onClick = {
+                datePikerState.value = true
+            }) {
+                Text(text = "تاریخ")
+            }
+
+
+            TextField(
+                value = bankName,
+                onValueChange = {
+                    bankName = it
+                },
+                placeholder = {
+                    Text("ساعت")
+                },
+                modifier = Modifier.fillMaxWidth(0.5F)
+
+            )
+        }
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            JalaliDatePickerDialog(
+                openDialog = datePikerState,
+                onSelectDay = { //it:JalaliCalendar
+                    Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
+                },
+                onConfirm = {
+                    Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                },
+                fontFamily = FontFamily(
+                    Font(R.font.aria_bold)
+                ),
+                fontSize = 17.sp,
+            )
+        }
+
+    }
 }
 
 @Preview(showBackground = true, showSystemUi = true)
