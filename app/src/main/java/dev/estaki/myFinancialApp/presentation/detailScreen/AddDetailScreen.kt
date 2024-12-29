@@ -278,18 +278,23 @@ fun AddDetailScreen(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNewDetail(modifier: Modifier = Modifier) {
 
     val context = LocalContext.current
     var amount by remember { mutableStateOf("") }
     var bankName by remember { mutableStateOf("") }
+    var time by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
     val coroutine = rememberCoroutineScope()
     val datePikerState = remember { mutableStateOf(false) }
 
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(12.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             TextField(
                 value = amount,
@@ -297,53 +302,62 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                     amount = it
                 },
                 placeholder = {
-                    Text("مبلغ")
+                    Text("مبلغ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                 },
-                modifier = Modifier.fillMaxWidth(0.5F)
+                modifier = Modifier.fillMaxWidth(0.5F),
+                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
 
             )
+            Spacer(modifier = Modifier.size(12.dp))
+
             TextField(
                 value = bankName,
                 onValueChange = {
                     bankName = it
                 },
                 placeholder = {
-                    Text("نام بانک")
+                    Text("نام بانک", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                 },
-                modifier = Modifier.fillMaxWidth(0.5F)
+                modifier = Modifier.fillMaxWidth(1F),
+                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
 
             )
         }
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.size(12.dp))
 
-//                TextField(
-//                    value = amount,
-//                    onValueChange = {
-//                        amount = it
-//                    },
-//                    placeholder = {
-//                        Text("تاریخ")
-//                    },
-//                    modifier = Modifier.fillMaxWidth(0.5F)
-//
-//                )
-            Button(onClick = {
-                datePikerState.value = true
-            }) {
-                Text(text = "تاریخ")
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(0.5F),
+                onClick = {
+                    datePikerState.value = true
+                }) {
+                TextField(
+                    value = date,
+                    onValueChange = {
+                        date = it
+                    },
+                    enabled = false,
+                    placeholder = {
+                        Text(text = "تاریخ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
+                    },
+                    textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold)
+                )
             }
+
+            Spacer(modifier = Modifier.size(12.dp))
+
 
 
             TextField(
-                value = bankName,
+                value = time,
                 onValueChange = {
-                    bankName = it
+                    time = it
                 },
                 placeholder = {
-                    Text("ساعت")
+                    Text("ساعت", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                 },
-                modifier = Modifier.fillMaxWidth(0.5F)
-
+                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
+                modifier = Modifier.fillMaxWidth(1F),
             )
         }
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -354,6 +368,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 },
                 onConfirm = {
                     Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                    date = "${it.year}/${it.month}/${it.day}"
                 },
                 fontFamily = FontFamily(
                     Font(R.font.aria_bold)
