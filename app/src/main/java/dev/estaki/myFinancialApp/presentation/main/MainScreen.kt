@@ -3,6 +3,7 @@ package dev.estaki.myFinancialApp.presentation.main
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,22 +44,13 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
             MediumTopAppBar(
 
                 title = {
-
-                    Column {
-                        Text(
-                            text = "سلام ممد جون👋🏻 ",
-                            fontFamily = ariaFaNumFontFamily,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 12.sp
-                        )
-                        Text(
-                            text = "مدیریت اتوماتیک دخل و خرج ",
-                            fontFamily = ariaFaNumFontFamily,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 15.sp
-                        )
-                    }
-
+                    Text(
+                        text = "سلام ممد جون👋    مدیریت اتوماتیک دخل و خرج",
+                        fontFamily = ariaFaNumFontFamily,
+                        fontWeight = FontWeight.Black,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(12.dp)
+                    )
                 },
 
 //                            navigationIcon = {
@@ -103,7 +95,7 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
                                 smsList.value[itemIndex],
                                 onCardClick = { navController?.navigate("AddDetailScreen/${smsList.value[itemIndex].id}") })
                         }
-                        
+
                     })
 
             }
