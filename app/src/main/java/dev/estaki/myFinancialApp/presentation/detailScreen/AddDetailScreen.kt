@@ -30,7 +30,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -61,6 +60,7 @@ import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
 import dev.estaki.myFinancialApp.R
+import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
@@ -278,6 +278,7 @@ fun AddDetailScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateNewDetail(modifier: Modifier = Modifier) {
 
@@ -287,7 +288,8 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
     var time by remember { mutableStateOf("") }
     var date by remember { mutableStateOf("") }
     val coroutine = rememberCoroutineScope()
-    val datePikerState = remember { mutableStateOf(false) }
+    val datePickerState = remember { mutableStateOf(false) }
+    val timePickerState = remember { mutableStateOf(false) }
 
 
     Column(
@@ -307,7 +309,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(0.5F),
                 textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
 
-            )
+                )
             Spacer(modifier = Modifier.size(12.dp))
 
             TextField(
@@ -321,7 +323,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(1F),
                 textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
 
-            )
+                )
         }
         Spacer(modifier = Modifier.size(12.dp))
 
@@ -329,7 +331,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
             Surface(
                 modifier = Modifier.fillMaxWidth(0.5F),
                 onClick = {
-                    datePikerState.value = true
+                    datePickerState.value = true
                 }) {
                 TextField(
                     value = date,
@@ -347,22 +349,29 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.size(12.dp))
 
 
-
-            TextField(
-                value = time,
-                onValueChange = {
-                    time = it
-                },
-                placeholder = {
-                    Text("ساعت", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
-                },
-                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
+            Surface(
                 modifier = Modifier.fillMaxWidth(1F),
-            )
+                onClick = {
+                    timePickerState.value = true
+                }) {
+                TextField(
+                    value = time,
+                    onValueChange = {
+                        time = it
+                    },
+                    enabled = false,
+                    placeholder = {
+                        Text("ساعت", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
+                    },
+                    textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
         }
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
             JalaliDatePickerDialog(
-                openDialog = datePikerState,
+                openDialog = datePickerState,
                 onSelectDay = { //it:JalaliCalendar
                     Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
                 },
@@ -375,6 +384,13 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 ),
                 fontSize = 17.sp,
             )
+        }
+
+        if (timePickerState.value)
+        MyTimePicker(onConfirm = {
+            timePickerState.value = false
+        }) {
+            timePickerState.value = false
         }
 
     }
