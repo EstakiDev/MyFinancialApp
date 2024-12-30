@@ -285,7 +285,29 @@ class SplashActivity : ComponentActivity() {
                         val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
                         val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
                         val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
-                        smsList.add(SmsRawModel(address, body, date))
+                        val id = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms._ID))
+
+                        if (!address.startsWith("+989") &&
+                            !address.startsWith("98") &&
+                            !address.startsWith("+98") &&
+                            (body.contains("واریز") ||
+                                    body.contains("واريز") ||
+                                    body.contains("واریز به") ||
+                                    body.contains("واریز حقوق") ||
+                                    body.contains("برداشت") ||
+                                    body.contains("برداشت از") ||
+                                    body.contains("+") ||
+                                    body.contains("-")
+                                    )
+                            &&
+                            (body.contains("موجودی") ||
+                                    body.contains("مانده") ||
+                                    body.contains("موجودي") ||
+                                    body.contains("حساب"))
+                        ) {
+                            smsList.add(SmsRawModel(id, address, body, date))
+                        } else continue
+
                     } while (cursor.moveToNext())
 
                     mainViewModel.filterSmsData(smsList)

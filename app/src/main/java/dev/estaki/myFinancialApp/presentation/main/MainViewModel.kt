@@ -39,35 +39,10 @@ class MainViewModel @Inject constructor(
         get() = _smsList
 
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
-        val list = smsL.filter { sms ->
-            (sms.description.contains("واریز") ||
-                    sms.description.contains("واريز") ||
-                    sms.description.contains("واریز به") ||
-                    sms.description.contains("واریز حقوق") ||
-                    sms.description.contains("برداشت") ||
-                    sms.description.contains("برداشت از") ||
-                    sms.description.contains("+") ||
-                    sms.description.contains("-")
-                    )
-                    &&
-                    (sms.description.contains("موجودی") ||
-                            sms.description.contains("مانده") ||
-                            sms.description.contains("موجودي") ||
-                            sms.description.contains("حساب"))
-        }
-
-        /** filter private number as Sender */
-        val filterWithSender = list.filter {
-            !it.senderName.startsWith("+989") && !it.senderName.startsWith("98") && !it.senderName.startsWith(
-                "+98"
-            )
-        }
-
-        filterWithSender.forEach {
-//            Log.d("TAG", "readSms: date: ${it.receiveDate.convertToTime()}")
+        smsL.forEach {
             it.receiveDate = it.receiveDate.convertToTime()
         }
-        parseSmsToModel(filterWithSender)
+        parseSmsToModel(smsL)
 
     }
 
@@ -106,7 +81,7 @@ class MainViewModel @Inject constructor(
 
                 listOfModel.add(
                     SmsModel(
-                        id = null,
+                        id = sms._id.toLong(),
                         bankName = if (split.first()
                                 .isProbablyArabicOrPersian()
                         ) split.first().removeSpecialChar() else sms.senderName,
@@ -145,7 +120,6 @@ class MainViewModel @Inject constructor(
             }.collect{
                 Log.d("TAG", "parseSmsToModel: cashSmsToDb done $it")
 
-                delay(2000)
                 isLoading.postValue(false)
                 viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
             }
