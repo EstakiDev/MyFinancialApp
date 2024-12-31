@@ -303,7 +303,8 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 onValueChange = {
                     amount = it
                 },
-                placeholder = {
+
+                label = {
                     Text("مبلغ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                 },
                 modifier = Modifier.fillMaxWidth(0.5F),
@@ -317,7 +318,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                 onValueChange = {
                     bankName = it
                 },
-                placeholder = {
+                label = {
                     Text("نام بانک", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                 },
                 modifier = Modifier.fillMaxWidth(1F),
@@ -339,7 +340,8 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                         date = it
                     },
                     enabled = false,
-                    placeholder = {
+
+                    label = {
                         Text(text = "تاریخ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                     },
                     textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold)
@@ -360,7 +362,8 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                         time = it
                     },
                     enabled = false,
-                    placeholder = {
+
+                    label = {
                         Text("ساعت", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
                     },
                     textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
@@ -389,6 +392,8 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
         if (timePickerState.value)
         MyTimePicker(onConfirm = {
             timePickerState.value = false
+            Log.d("TAG", "CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
+
         }) {
             timePickerState.value = false
         }

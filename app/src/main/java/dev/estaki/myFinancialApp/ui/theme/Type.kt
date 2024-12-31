@@ -43,11 +43,11 @@ val coolakFaNumFontFamily = FontFamily(
     Font(R.font.colak_fa_num, FontWeight.Normal),
 )
 
-
 val TypographyDark = Typography(
+
     bodySmall = TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Thin,
+        fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 8.sp,
         letterSpacing = 1.sp,
@@ -55,7 +55,7 @@ val TypographyDark = Typography(
     ),
     bodyMedium = TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
         lineHeight = 8.sp,
         letterSpacing = 1.sp,
@@ -63,10 +63,10 @@ val TypographyDark = Typography(
     ),
     bodyLarge = TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 8.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 1.sp,
         color = ColorTextGrayOnDarkTheme,
     ),
 )
@@ -74,7 +74,7 @@ val TypographyDark = Typography(
 val TypographyLite = Typography(
     bodySmall =  TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Thin,
+        fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 8.sp,
         letterSpacing = 1.sp,
@@ -82,7 +82,7 @@ val TypographyLite = Typography(
     ),
     bodyMedium = TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Normal,
         fontSize = 17.sp,
         lineHeight = 8.sp,
         letterSpacing = 1.sp,
@@ -90,10 +90,10 @@ val TypographyLite = Typography(
     ),
     bodyLarge = TextStyle(
         fontFamily = ariaFaNumFontFamily,
-        fontWeight = FontWeight.Normal,
+        fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
         lineHeight = 8.sp,
-        letterSpacing = 0.5.sp,
+        letterSpacing = 1.sp,
         color = ColorTextGrayOnLiteTheme,
     ),
 )
