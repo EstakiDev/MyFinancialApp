@@ -21,15 +21,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -44,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
@@ -67,6 +76,7 @@ import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDetailScreen(
     detailScreenViewModel: DetailScreenViewModel = hiltViewModel(),
@@ -76,9 +86,47 @@ fun AddDetailScreen(
     smsId?.let {
         detailScreenViewModel.loadSmsById(it)
     }
+    val scrollBehavior =
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     FinancialTheme {
-        Scaffold {
+        Scaffold(
+            modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "ویرایش جزئیات تراکنش",
+                            fontFamily = ariaFaNumFontFamily,
+                            fontWeight = FontWeight.Black,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    },
+
+                            navigationIcon = {
+                                IconButton(onClick = {
+
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                        contentDescription = "back"
+                                    )
+                                }
+                            },
+                            actions = {
+                                IconButton(onClick = { /* do something */ }) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Menu,
+                                        contentDescription = "Localized description"
+                                    )
+                                }
+                            },
+                    scrollBehavior = scrollBehavior
+
+                )
+            }
+        ) {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                 var text by rememberSaveable {
                     mutableStateOf("")
@@ -112,6 +160,7 @@ fun AddDetailScreen(
                 ) {
                     Column(
                         Modifier
+                            .padding(paddingValues = it)
                             .fillMaxSize()
                             .verticalScroll(scrollState)
                             .alpha(if (loadingState) 0f else 1f)
