@@ -11,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import dev.estaki.data.db.dao.CategoryDao
 import dev.estaki.data.db.dao.SmsDao
 import dev.estaki.data.db.dbClass.AppDatabase
+import dev.estaki.data.db.dbClass.MIGRATION_1_2
 import javax.inject.Singleton
 
 
@@ -25,6 +26,7 @@ class DatabaseModule {
     ): AppDatabase {
         return Room
             .databaseBuilder(context, AppDatabase::class.java, "financial.db")
+//            .addMigrations(MIGRATION_1_2)
             .build()
     }
 

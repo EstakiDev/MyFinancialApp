@@ -33,7 +33,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -113,9 +112,9 @@ class SplashActivity : ComponentActivity() {
                         }
 
                         modalBottomSheetState = rememberModalBottomSheetState()
-//                    if (checkPermissions(this)) {
-//                        requestPermissionLauncher.launch(Manifest.permission.READ_SMS)
-//                    }
+
+                        requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
+
                         LaunchedEffect(key1 = true) {
                             alpha.animateTo(1f, animationSpec = tween(2000))
                         }

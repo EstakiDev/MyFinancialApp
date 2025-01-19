@@ -7,7 +7,7 @@ import dev.estaki.domain.models.TransactionType
 
 @Entity(tableName = "tb_sms")
 data class SmsEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long?,
+    @PrimaryKey(autoGenerate = true) val id: Long,
     val bankName:String,
     val bankAccountNumber:String,
     val transactionType: TransactionType,
@@ -15,6 +15,6 @@ data class SmsEntity(
     val transactionDate:String,
     val transactionTime:String,
     val bankCardBalance:String,
-    val categoryIds:String,
+    val categoryIds:String?,
     val description:String?,
 )

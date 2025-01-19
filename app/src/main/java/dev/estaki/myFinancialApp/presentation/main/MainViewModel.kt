@@ -115,7 +115,7 @@ class MainViewModel @Inject constructor(
             listOfModel.removeAll(smsListInDb)
 
             Log.d("TAG", "parseSmsToModel: ${listOfModel.size}")
-            cashSmsToDb.invoke(listOfModel).catch {
+             cashSmsToDb.invoke(listOfModel).catch {
                 it.printStackTrace()
             }.collect{
                 Log.d("TAG", "parseSmsToModel: cashSmsToDb done $it")
@@ -146,7 +146,7 @@ class MainViewModel @Inject constructor(
                 it.printStackTrace()
             }.collect { smsList ->
                 smsLiveDataList.postValue(smsList.toMutableList())
-                _smsList.value = smsList.toMutableList()
+                _smsList.value = smsList.toMutableList().distinctBy { it.id }
                 isLoading.postValue(false)
             }
         }
