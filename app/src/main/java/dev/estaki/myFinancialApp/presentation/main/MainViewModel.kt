@@ -16,12 +16,14 @@ import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
 import dev.estaki.myFinancialApp.presentation.ViewState
+import dev.estaki.myFinancialApp.removeFarsiChar
 import dev.estaki.myFinancialApp.removeSpecialChar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,8 +55,7 @@ class MainViewModel @Inject constructor(
         try {
             var i = 1L
             smsList.forEach { sms ->
-                val dateRegex =
-                    Regex("\\d{2,4}+\\/\\d{1,2}\\/\\d{2,4}|([0-1]?[0-9]|2[0-3])\\/[0-5][0-9]")
+                val dateRegex = Regex("\\d{2,4}+\\/\\d{1,2}\\/\\d{2,4}|([0-1]?[0-9]|2[0-3])\\/[0-5][0-9]")
                 val dateRegexMatch = dateRegex.find(sms.description)
                 val date = dateRegexMatch?.groups?.first()?.value
 
@@ -79,26 +80,30 @@ class MainViewModel @Inject constructor(
                     }
                 })
 
+
+                var amount = "" //amountRegex.options.first().value.toString()
+                val amountRegex = Regex("""(?:مبلغ:|برداشت:|واریز:)\s?(\d{1,3}(?:,\d{3})+)|(\d{1,3}(?:,\d{3})+)(?:\+|-)""")
+                    .findAll(sms.description).forEach {
+                        Log.d("amountRegex", "amountRegex: amount -> ${it.groups.first()?.value}")
+                        amount = it.groups.first()?.value.toString()
+                    }
+                Log.d("amount", "parseSmsToModel: amount -> $amount")
                 listOfModel.add(
+
                     SmsModel(
                         id = sms._id.toLong(),
                         bankName = if (split.first()
                                 .isProbablyArabicOrPersian()
                         ) split.first().removeSpecialChar() else sms.senderName,
                         bankAccountNumber = finalBankAccountNumber,
+
                         transactionType = if (!split.find {
                                 it.contains("برداشت") || it.contains(
                                     "-"
                                 )
                             }
                                 .isNullOrBlank()) TransactionType.WITHDRAW else TransactionType.DEPOSIT,
-                        transactionAmount = (split.find {
-                            it.contains("مبلغ") || it.contains(
-                                "برداشت"
-                            ) || it.contains("واریز")
-                                    || it.contains("-")
-                                    || it.contains("+")
-                        } ?: "-").split(":", "+", "-").last(),
+                        transactionAmount = amount.removeFarsiChar(),
                         transactionDate = sms.receiveDate ?: "-",
                         transactionTime = time ?: "-",
                         bankCardBalance = split.find {
@@ -111,14 +116,16 @@ class MainViewModel @Inject constructor(
                     )
                 )
             }
+
+            Timber.tag("TAG").i("parseSmsToModel --;;;")
             val smsListInDb = getSavedSmsInDb()
             listOfModel.removeAll(smsListInDb)
 
-            Log.d("TAG", "parseSmsToModel: ${listOfModel.size}")
+            Timber.tag("TAG").d("parseSmsToModel: ${listOfModel.size}")
              cashSmsToDb.invoke(listOfModel).catch {
                 it.printStackTrace()
             }.collect{
-                Log.d("TAG", "parseSmsToModel: cashSmsToDb done $it")
+                 Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
 
                 isLoading.postValue(false)
                 viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
@@ -146,7 +153,7 @@ class MainViewModel @Inject constructor(
                 it.printStackTrace()
             }.collect { smsList ->
                 smsLiveDataList.postValue(smsList.toMutableList())
-                _smsList.value = smsList.toMutableList().distinctBy { it.id }
+                _smsList.value = smsList.toMutableList()
                 isLoading.postValue(false)
             }
         }

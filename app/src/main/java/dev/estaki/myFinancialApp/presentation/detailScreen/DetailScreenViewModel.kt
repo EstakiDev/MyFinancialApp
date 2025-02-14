@@ -56,6 +56,7 @@ class DetailScreenViewModel @Inject constructor(
             getSingleSmsUseCase.invoke(id).catch {
                 it.printStackTrace()
             }.collect {
+                Log.d("TAG", "loadSmsById: ")
                 _sms.emit(it)
             }
         }

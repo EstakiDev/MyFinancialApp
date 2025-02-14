@@ -14,9 +14,8 @@ interface SmsDao {
     @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
     fun insertAll(smsList :List<SmsEntity>):List<Long>
 
-    @Query("SELECT * FROM tb_sms")
+    @Query("SELECT * FROM tb_sms ORDER BY id DESC")
     fun readAll():List<SmsEntity>
-
 
     @Query("SELECT * FROM tb_sms WHERE id=:id")
     fun read(id: Long): SmsEntity

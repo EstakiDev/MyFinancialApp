@@ -6,18 +6,40 @@ import androidx.core.content.ContextCompat
 import java.util.Date
 import java.util.Locale
 
-fun isPermissionsGranted(context:Context): Boolean {
+fun isPermissionsGranted(context: Context): Boolean {
     return ContextCompat.checkSelfPermission(
         context,
         android.Manifest.permission.READ_SMS
     ) == PackageManager.PERMISSION_GRANTED
 }
 
-fun String.removeSpecialChar():String =
+fun String.removeSpecialChar(): String =
     if (this.contains("*"))
         this.filter { it != '*' }
+    else if (this.contains("-"))
+        this.filter { it != '-' }
+    else if (this.contains("+"))
+        this.filter { it != '+' }
+    else if (this.contains(":"))
+        this.filter { it != ':' }
     else
         this
+
+fun String.removeFarsiChar(): String =
+    if (this.isProbablyArabicOrPersian())
+        this.removeArabicOrPersian().removeSpecialChar()
+    else
+        this.removeSpecialChar()
+
+private fun String.removeArabicOrPersian(): String {
+    val result = StringBuilder()
+    for (codePoint in this.codePoints().toArray()) {
+        if (codePoint !in 0x0600..0x06FF) { // Arabic and Persian Unicode range
+            result.appendCodePoint(codePoint)
+        }
+    }
+    return result.toString()
+}
 
 fun String.isProbablyArabicOrPersian(): Boolean {
     var i = 0
@@ -29,45 +51,46 @@ fun String.isProbablyArabicOrPersian(): Boolean {
     return false
 }
 
-fun String.extractionTimeOfDate():String =
-    if (this.length > 5){
-        if (this.contains(" ")){
-            this.split(" ").find { it.contains(":") }?:"-"
-        }else if (this.contains("_")){
-            this.split("_").find { it.contains(":") }?:"-"
-        }else{
+fun String.extractionTimeOfDate(): String =
+    if (this.length > 5) {
+        if (this.contains(" ")) {
+            this.split(" ").find { it.contains(":") } ?: "-"
+        } else if (this.contains("_")) {
+            this.split("_").find { it.contains(":") } ?: "-"
+        } else {
             this
         }
     } else
         this
 
-fun String.extractionDateOfTime():String =
-    if (this.length > 8){
-        if (this.contains(" ")){
-            this.split(" ").find { it.contains("/") }?:"-"
-        }else if (this.contains("_")){
-            this.split("_").find { it.contains("/") }?:"-"
-        }else{
+fun String.extractionDateOfTime(): String =
+    if (this.length > 8) {
+        if (this.contains(" ")) {
+            this.split(" ").find { it.contains("/") } ?: "-"
+        } else if (this.contains("_")) {
+            this.split("_").find { it.contains("/") } ?: "-"
+        } else {
             this
         }
     } else
         this
 
-fun String.addYearToDate(){
+fun String.addYearToDate() {
     val gc = Utilities.currentShamsidate
     val year = Utilities.SolarCalendar().year
     val arrayOfDate = this.split("/").toMutableList()
-    if (arrayOfDate.size == 2){
+    if (arrayOfDate.size == 2) {
         arrayOfDate.add(0, year.toString())
     }
     println(arrayOfDate.joinToString(separator = "/"))
 
 }
+
 fun String.convertToTime(): String {
     val date = Date(this.toLong())
     val cal = Utilities.SolarCalendar(date)
     val year = cal.year
-    val mo =cal.month
+    val mo = cal.month
     val day = cal.date
     return "$year/$mo/$day"
 }

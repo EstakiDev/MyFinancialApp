@@ -68,12 +68,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
+import dev.estaki.domain.models.SmsModel
 import dev.estaki.myFinancialApp.R
+import dev.estaki.myFinancialApp.presentation.component.AmountTextField
 import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
+import ir.huri.jcal.JalaliCalendar
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -88,7 +91,7 @@ fun AddDetailScreen(
     }
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-
+    var date = listOf<String>()
     FinancialTheme {
         Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -104,24 +107,24 @@ fun AddDetailScreen(
                         )
                     },
 
-                            navigationIcon = {
-                                IconButton(onClick = {
+                    navigationIcon = {
+                        IconButton(onClick = {
 
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                                        contentDescription = "back"
-                                    )
-                                }
-                            },
-                            actions = {
-                                IconButton(onClick = { /* do something */ }) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Menu,
-                                        contentDescription = "Localized description"
-                                    )
-                                }
-                            },
+                        }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                                contentDescription = "back"
+                            )
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /* do something */ }) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Localized description"
+                            )
+                        }
+                    },
                     scrollBehavior = scrollBehavior
 
                 )
@@ -167,14 +170,8 @@ fun AddDetailScreen(
                     ) {
                         Spacer(Modifier.size(8.dp))
 
-                        smsModel?.let {
-//                            MyCardItem(
-//                                smsEntity = it
-//                            ) { }
-                            CreateNewDetail()
-                        } ?: kotlin.run {
-                            CreateNewDetail()
-                        }
+                        CreateNewDetail(sms = smsModel)
+
                         TextField(
                             modifier = Modifier
                                 .padding(12.dp)
@@ -284,7 +281,8 @@ fun AddDetailScreen(
                                 detailScreenViewModel.saveSms(
                                     sms.copy(
                                         description = text,
-                                        categoryIds = categoryList.filter { it.isChecked }.map { it.id }
+                                        categoryIds = categoryList.filter { it.isChecked }
+                                            .map { it.id }
                                     )
                                 )
                                 navController?.navigate("MainScreen")
@@ -329,17 +327,30 @@ fun AddDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateNewDetail(modifier: Modifier = Modifier) {
+fun CreateNewDetail(modifier: Modifier = Modifier, sms: SmsModel?) {
 
     val context = LocalContext.current
-    var amount by remember { mutableStateOf("") }
-    var bankName by remember { mutableStateOf("") }
-    var time by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf("") }
+    var amount by remember { mutableStateOf(sms?.transactionAmount ?: "") }
+    var bankName by remember { mutableStateOf(sms?.bankName ?: "") }
+    var time by remember { mutableStateOf(sms?.transactionTime ?: "") }
+    var date by remember { mutableStateOf(sms?.transactionDate ?: "") }
     val coroutine = rememberCoroutineScope()
     val datePickerState = remember { mutableStateOf(false) }
     val timePickerState = remember { mutableStateOf(false) }
+    var initialDateForDatePicker by remember {
+        mutableStateOf(listOf<String>())
+    }
 
+    LaunchedEffect(key1 = sms) {
+        Log.d("TAG", "CreateNewDetail: $sms")
+        sms?.let {
+            amount = it.transactionAmount
+            bankName = it.bankName
+            time = it.transactionTime
+            date = it.transactionDate
+        }
+
+    }
 
     Column(
         modifier = Modifier
@@ -347,19 +358,13 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
             .padding(12.dp)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
-            TextField(
-                value = amount,
-                onValueChange = {
-                    amount = it
-                },
-
-                label = {
-                    Text("مبلغ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
-                },
+            AmountTextField(
+                amount = amount,
                 modifier = Modifier.fillMaxWidth(0.5F),
-                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
-
-                )
+                unit = "ريال"
+            ) {
+                amount = it
+            }
             Spacer(modifier = Modifier.size(12.dp))
 
             TextField(
@@ -368,10 +373,18 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                     bankName = it
                 },
                 label = {
-                    Text("نام بانک", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
+                    Text(
+                        "نام بانک",
+                        style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily),
+                        fontWeight = FontWeight.Bold
+                    )
                 },
                 modifier = Modifier.fillMaxWidth(1F),
-                textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
+                textStyle = TextStyle(
+                    fontSize = 17.sp,
+                    fontFamily = ariaFaNumFontFamily,
+                    fontWeight = FontWeight.Bold
+                ),
 
                 )
         }
@@ -381,7 +394,9 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
             Surface(
                 modifier = Modifier.fillMaxWidth(0.5F),
                 onClick = {
+                    initialDateForDatePicker = date.split("/")
                     datePickerState.value = true
+
                 }) {
                 TextField(
                     value = date,
@@ -391,9 +406,17 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                     enabled = false,
 
                     label = {
-                        Text(text = "تاریخ", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
+                        Text(
+                            text = "تاریخ",
+                            style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily),
+                            fontWeight = FontWeight.Bold
+                        )
                     },
-                    textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold)
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = ariaFaNumFontFamily,
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
 
@@ -413,39 +436,68 @@ fun CreateNewDetail(modifier: Modifier = Modifier) {
                     enabled = false,
 
                     label = {
-                        Text("ساعت", style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily), fontWeight = FontWeight.Bold)
+                        Text(
+                            "ساعت",
+                            style = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily),
+                            fontWeight = FontWeight.Bold
+                        )
                     },
-                    textStyle = TextStyle(fontSize = 17.sp, fontFamily = ariaFaNumFontFamily, fontWeight = FontWeight.Bold),
+                    textStyle = TextStyle(
+                        fontSize = 17.sp,
+                        fontFamily = ariaFaNumFontFamily,
+                        fontWeight = FontWeight.Bold
+                    ),
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
 
         }
         CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-            JalaliDatePickerDialog(
-                openDialog = datePickerState,
-                onSelectDay = { //it:JalaliCalendar
-                    Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
-                },
-                onConfirm = {
-                    Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
-                    date = "${it.year}/${it.month}/${it.day}"
-                },
-                fontFamily = FontFamily(
-                    Font(R.font.aria_bold)
-                ),
-                fontSize = 17.sp,
-            )
+            if (initialDateForDatePicker.isNotEmpty())
+                JalaliDatePickerDialog(
+                    openDialog = datePickerState,
+                    initialDate = JalaliCalendar(
+                        initialDateForDatePicker[0].toInt(),
+                        initialDateForDatePicker[1].toInt(),
+                        initialDateForDatePicker[2].toInt()
+                    ),
+                    onSelectDay = { //it:JalaliCalendar
+                        Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
+                    },
+                    onConfirm = {
+                        Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                        date = "${it.year}/${it.month}/${it.day}"
+                    },
+                    fontFamily = FontFamily(
+                        Font(R.font.aria_bold)
+                    ),
+                    fontSize = 17.sp,
+                )
+            else
+                JalaliDatePickerDialog(
+                    openDialog = datePickerState,
+                    onSelectDay = { //it:JalaliCalendar
+                        Log.d("Date", "onSelect: ${it.day} ${it.monthString} ${it.year}")
+                    },
+                    onConfirm = {
+                        Log.d("Date", "onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                        date = "${it.year}/${it.month}/${it.day}"
+                    },
+                    fontFamily = FontFamily(
+                        Font(R.font.aria_bold)
+                    ),
+                    fontSize = 17.sp,
+                )
         }
 
         if (timePickerState.value)
-        MyTimePicker(onConfirm = {
-            timePickerState.value = false
-            Log.d("TAG", "CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
+            MyTimePicker(onConfirm = {
+                timePickerState.value = false
+                Log.d("TAG", "CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
 
-        }) {
-            timePickerState.value = false
-        }
+            }) {
+                timePickerState.value = false
+            }
 
     }
 }

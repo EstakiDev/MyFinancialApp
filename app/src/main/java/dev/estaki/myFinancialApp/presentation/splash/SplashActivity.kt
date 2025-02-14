@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +20,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Snackbar
@@ -38,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +61,7 @@ import dev.estaki.myFinancialApp.presentation.main.MainActivity
 import dev.estaki.myFinancialApp.presentation.main.MainViewModel
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
+import dev.estaki.myFinancialApp.ui.theme.DarkYellow
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.Pink40
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
@@ -64,6 +69,7 @@ import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -78,7 +84,6 @@ class SplashActivity : ComponentActivity() {
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             lifecycleScope.launch {
                 if (isGranted) {
-
                     viewModel.viewState.emit(ViewState.SUCCESS_IN_PERMISSION)
                 } else {
                     viewModel.viewState.emit(ViewState.FAULT_IN_PERMISSION)
@@ -112,8 +117,6 @@ class SplashActivity : ComponentActivity() {
                         }
 
                         modalBottomSheetState = rememberModalBottomSheetState()
-
-                        requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
 
                         LaunchedEffect(key1 = true) {
                             alpha.animateTo(1f, animationSpec = tween(2000))
@@ -192,23 +195,29 @@ class SplashActivity : ComponentActivity() {
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            modifier = Modifier.padding(12.dp),
+                                            modifier = Modifier.padding(horizontal = 12.dp),
                                             text = "سلام رفیق\n اپلیکیشن برای این که بتونه پیامک تراکنش های بانکی تو رو بهت نشون بده نیاز داره که تو این دسترسی رو تایید کنی.",
                                             fontFamily = ariaFaNumFontFamily,
                                             fontSize = 15.sp,
+                                            lineHeight = 25.sp,
                                             fontWeight = FontWeight.Bold,
                                         )
-                                        Button(modifier = Modifier
-                                            .padding(12.dp)
-                                            .fillMaxWidth(),
-                                            onClick = {
-                                                requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS)
-                                            }) {
+
+                                        OutlinedButton(
+                                            modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                                            onClick = { requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS) },
+                                            border = BorderStroke(1.dp, DarkYellow),
+                                            shape = RoundedCornerShape(20), // = 20% percent
+                                            // or shape = CircleShape
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkYellow)
+                                        ){
                                             Text(
+                                                modifier = Modifier.padding(vertical = 6.dp),
                                                 text = "تایید دسترسی",
                                                 fontFamily = ariaFaNumFontFamily,
                                                 fontSize = 17.sp,
                                                 fontWeight = FontWeight.Black,
+                                                color = DarkYellow
                                             )
                                         }
                                     }
@@ -216,7 +225,8 @@ class SplashActivity : ComponentActivity() {
                             }
 
                         } else {
-                            LaunchedEffect(key1 = "readSms&gotoMain") {
+                            LaunchedEffect(key1 = true) {
+                                Timber.d("Permission granted read sms started")
                                 readSms(contentResolver, viewModel)
                             }
                         }

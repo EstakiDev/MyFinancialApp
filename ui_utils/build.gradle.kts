@@ -1,26 +1,17 @@
 plugins {
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.hilt)
-    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "dev.estaki.myFinancialApp"
+    namespace = "dev.estaki.ui_utils"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.estaki.myFinancialApp"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -33,19 +24,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
-    buildFeatures {
-        compose = true
-    }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion = "1.5.1"
-//    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    kotlinOptions {
+        jvmTarget = "11"
     }
 }
 
@@ -59,9 +42,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(project(":data"))
-    implementation(project(":domain"))
-    implementation(project(":ui_utils"))
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
@@ -70,10 +50,6 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    //Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
 
     //Lottie
     implementation(libs.lottieCompose)
@@ -88,9 +64,7 @@ dependencies {
     implementation(libs.composeNavigation)
     implementation(libs.hilt.navigation)
 
-    //Room
-    implementation(libs.room.android)
-    ksp(libs.room.compiler)
+
 
     //Shimmer
     implementation(libs.shimmer)
@@ -101,9 +75,5 @@ dependencies {
 
     //Persian Date Picker
     implementation(libs.timber)
-
-
-
-
 
 }
