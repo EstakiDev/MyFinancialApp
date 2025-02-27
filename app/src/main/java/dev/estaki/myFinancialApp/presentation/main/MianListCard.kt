@@ -48,7 +48,6 @@ fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 0.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
             shape = RoundedCornerShape(16.dp),

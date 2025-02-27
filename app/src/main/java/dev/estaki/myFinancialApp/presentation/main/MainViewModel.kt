@@ -67,9 +67,7 @@ class MainViewModel @Inject constructor(
                 var finalBankAccountNumber: String = ""
                 var splitBankAccountNumber: List<Any>? = null
                 (split.find {
-                    it.contains("برداشت از:") || it.contains("حساب:") || it.contains(
-                        "واریز به:"
-                    )
+                    it.contains("برداشت از:") || it.contains("حساب:") || it.contains("واريز به")
                 }.let {
                     if (!it.isNullOrBlank()) {
                         splitBankAccountNumber = it.split(":")
@@ -106,13 +104,13 @@ class MainViewModel @Inject constructor(
                         transactionAmount = amount.removeFarsiChar(),
                         transactionDate = sms.receiveDate ?: "-",
                         transactionTime = time ?: "-",
-                        bankCardBalance = split.find {
+                        bankCardBalance = (split.find {
                             (it.contains("موجودی") ||
                                     it.contains("مانده") ||
                                     it.contains("موجودي"))
-                        } ?: "-",
+                        } ?: "-").removeFarsiChar(),
                         categoryIds = listOf(0L),
-                        description = null
+                        description = sms.description
                     )
                 )
             }

@@ -5,6 +5,7 @@ import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Telephony
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -70,6 +71,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import kotlin.math.log
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -204,13 +206,17 @@ class SplashActivity : ComponentActivity() {
                                         )
 
                                         OutlinedButton(
-                                            modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 20.dp),
                                             onClick = { requestPermissionLauncher.launch(android.Manifest.permission.READ_SMS) },
                                             border = BorderStroke(1.dp, DarkYellow),
                                             shape = RoundedCornerShape(20), // = 20% percent
                                             // or shape = CircleShape
-                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = DarkYellow)
-                                        ){
+                                            colors = ButtonDefaults.outlinedButtonColors(
+                                                contentColor = DarkYellow
+                                            )
+                                        ) {
                                             Text(
                                                 modifier = Modifier.padding(vertical = 6.dp),
                                                 text = "تایید دسترسی",
@@ -286,39 +292,32 @@ class SplashActivity : ComponentActivity() {
                 null,
                 null,
                 null,
-                null
+                Telephony.Sms.DEFAULT_SORT_ORDER
             )
             cursor?.let {
                 if (it.moveToFirst()) {
                     do {
-                        val address = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
-                        val body = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                        val date = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                        val address =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                        val body =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                        val date =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
                         val id = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms._ID))
 
                         if (!address.startsWith("+989") &&
                             !address.startsWith("98") &&
                             !address.startsWith("+98") &&
-                            (body.contains("واریز") ||
-                                    body.contains("واريز") ||
-                                    body.contains("واریز به") ||
-                                    body.contains("واریز حقوق") ||
-                                    body.contains("برداشت") ||
-                                    body.contains("برداشت از") ||
-                                    body.contains("+") ||
-                                    body.contains("-")
-                                    )
+                            (body.contains("واریز") || body.contains("واريز") || body.contains("واریز به") || body.contains("واریز حقوق") || body.contains("برداشت") || body.contains("برداشت از") || body.contains("+") || body.contains("-") || body.contains("حساب"))
                             &&
-                            (body.contains("موجودی") ||
-                                    body.contains("مانده") ||
-                                    body.contains("موجودي") ||
-                                    body.contains("حساب"))
+                            (body.contains("موجودی") || body.contains("مانده") || body.contains("موجودي"))
                         ) {
                             smsList.add(SmsRawModel(id, address, body, date))
                         } else continue
 
                     } while (cursor.moveToNext())
 
+                    Log.d("TAG", "readSms: ")
                     mainViewModel.filterSmsData(smsList)
                 }
                 it.close()

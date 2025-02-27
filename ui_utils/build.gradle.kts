@@ -1,6 +1,9 @@
+import org.gradle.kotlin.dsl.libs
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -30,10 +33,12 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    buildFeatures {
+        compose = true
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -50,6 +55,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation (libs.androidx.graphics.shapes)
 
     //Lottie
     implementation(libs.lottieCompose)
@@ -75,5 +81,7 @@ dependencies {
 
     //Persian Date Picker
     implementation(libs.timber)
+
+    implementation(libs.gson)
 
 }
