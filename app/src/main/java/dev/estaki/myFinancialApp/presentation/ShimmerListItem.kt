@@ -55,8 +55,6 @@ fun ShimmerListItems(
 ) {
     if (isLoading) {
         ShimmerListItem()
-
-
     } else {
         contentAfterLoading()
     }
@@ -80,9 +78,9 @@ fun ShimmerListItem() {
                 ColorBorderWhite
             ),
             modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 4.dp)
+                .padding(horizontal = 12.dp)
                 .fillMaxWidth()
-                .height(130.dp)) {
+                .height(90.dp)) {
             Column(
                 modifier = Modifier.fillMaxSize().shimmer(),
                 horizontalAlignment = Alignment.End,
@@ -95,7 +93,6 @@ fun ShimmerListItem() {
                         .wrapContentHeight(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround
-
                 ) {
 
                     Box(

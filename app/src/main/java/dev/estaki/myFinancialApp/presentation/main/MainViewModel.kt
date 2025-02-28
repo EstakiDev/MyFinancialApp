@@ -1,7 +1,6 @@
 package dev.estaki.myFinancialApp.presentation.main
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,14 +15,17 @@ import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
 import dev.estaki.myFinancialApp.presentation.ViewState
+import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
+import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 import dev.estaki.myFinancialApp.removeFarsiChar
 import dev.estaki.myFinancialApp.removeSpecialChar
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.sql.SQLSyntaxErrorException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,12 +35,19 @@ class MainViewModel @Inject constructor(
     private val getAllCategoryCount: GetAllCategoryCount,
     private val cacheCategoryToDb: CacheCategoryToDb
 ) : ViewModel() {
-    val smsLiveDataList = MutableLiveData<MutableList<SmsModel>>(mutableListOf())
-    val isLoading = MutableLiveData<Boolean>()
     val viewState = MutableStateFlow(ViewState.LOADING)
-    private val _smsList = MutableStateFlow<List<SmsModel>>(listOf())
-    val smsList: StateFlow<List<SmsModel>>
-        get() = _smsList
+
+    private val _smsList = MutableStateFlow<MainScreenState>(MainScreenState())
+    val smsList = _smsList.asStateFlow()
+
+
+    fun onAction(action: MainScreenActions){
+        when(action){
+            is MainScreenActions.LoadSms -> getAllSms()
+            MainScreenActions.OpenSms -> Unit
+        }
+    }
+
 
     suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
         smsL.forEach {
@@ -47,7 +56,6 @@ class MainViewModel @Inject constructor(
         parseSmsToModel(smsL)
 
     }
-
 
     private suspend fun parseSmsToModel(smsList: List<SmsRawModel>) {
 
@@ -124,9 +132,7 @@ class MainViewModel @Inject constructor(
                 it.printStackTrace()
             }.collect{
                  Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
-
-                isLoading.postValue(false)
-                viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
+                 viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
             }
 
         } catch (e: Exception) {
@@ -147,15 +153,31 @@ class MainViewModel @Inject constructor(
 
     fun getAllSms() {
         viewModelScope.launch {
+            _smsList.update { state ->
+                state.copy(
+                    isLoading = true,
+                )
+            }
             getAllSms.invoke().catch {
+
+                _smsList.update { state ->
+                    state.copy(
+                        smsList = emptyList(),
+                        isLoading = false,
+                        isError = true,
+                        errorMessage = it.message
+                    )
+                }
                 it.printStackTrace()
             }.collect { smsList ->
-                smsLiveDataList.postValue(smsList.toMutableList())
-                _smsList.value = smsList.toMutableList()
-                isLoading.postValue(false)
+                _smsList.update {state ->
+                    state.copy(
+                        smsList = smsList,
+                        isLoading = false,
+                    )
+                }
             }
         }
-
     }
 
     fun getAllCategory() {

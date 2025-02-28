@@ -1,0 +1,13 @@
+package dev.estaki.domain.error
+
+enum class LocalDatabaseError : Error {
+
+    UNIQUE_CONSTRAINT_VIOLATION,
+    FOREIGN_KEY_CONSTRAINT_FAILED,
+    SQL_SYNTAX_ERROR,
+    TRANSACTION_FAILURE,
+    DATABASE_CLOSED,
+    MIGRATION_FAILURE,
+    ILLEGAL_ACCESS,
+    UNKNOWN,
+}
