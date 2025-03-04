@@ -44,6 +44,9 @@ import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 import dev.estaki.ui_utils.components.CreditCard
 import kotlin.math.absoluteValue
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import dev.estaki.domain.models.BankCardModel
+import dev.estaki.domain.usecases.GetAllBankAccountNumber
 import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 
@@ -114,7 +117,11 @@ fun MainScreenUi(
 
 
         Column(modifier = Modifier.padding(innerPadding)) {
-            BankCardView()
+            if (state.listBankAccountNumber.isNotEmpty()) {
+                BankCardView(listOfBackAccountNumber = state.listBankAccountNumber){ bankAccountNumber ->
+                    onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
+                }
+            }
             Surface(shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)) {
                 LazyColumn(
                     modifier = Modifier
@@ -147,11 +154,20 @@ fun MainScreenUi(
 
 
 @Composable
-fun BankCardView(modifier: Modifier = Modifier) {
+fun BankCardView(modifier: Modifier = Modifier, listOfBackAccountNumber: List<BankCardModel>,onScroll:(bankAccountNumber: String)  -> Unit) {
     val pagerState = rememberPagerState(
         initialPage = 0,
         initialPageOffsetFraction = 0.1F,
-        pageCount = { 10 })
+        pageCount = { listOfBackAccountNumber.size })
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            onScroll.invoke(listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber)
+        }
+    }
+    LaunchedEffect(Unit) {
+        pagerState.animateScrollToPage(0)
+    }
     Text(
         "حساب های موجود در پیامک ها",
         modifier = Modifier
@@ -163,9 +179,10 @@ fun BankCardView(modifier: Modifier = Modifier) {
     Surface(modifier = Modifier.padding(bottom = 8.dp)) {
         HorizontalPager(
             state = pagerState,
+            contentPadding = PaddingValues(horizontal = 22.dp),
             pageSpacing = 8.dp,
-            contentPadding = PaddingValues(horizontal = 22.dp)
         ) { page ->
+
             Surface(modifier = Modifier
                 .height(225.dp)
                 .graphicsLayer {
@@ -184,7 +201,9 @@ fun BankCardView(modifier: Modifier = Modifier) {
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     )
                 }) {
-                CreditCard()
+                CreditCard(
+                    item = listOfBackAccountNumber[pagerState.currentPage],
+                )
             }
         }
     }
@@ -208,19 +227,6 @@ fun BankCardView(modifier: Modifier = Modifier) {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @Preview(showBackground = true, showSystemUi = true)

@@ -169,6 +169,7 @@ fun MyCardItemPreview() {
                 TransactionType.DEPOSIT,
                 "123,152,125",
                 "21/66/99",
+                transactionDateTime = 0L,
                 "22:10",
                 "123,153,155",
                 listOf(0L),

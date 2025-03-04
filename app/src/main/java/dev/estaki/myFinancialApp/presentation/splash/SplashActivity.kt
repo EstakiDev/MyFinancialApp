@@ -1,11 +1,8 @@
 package dev.estaki.myFinancialApp.presentation.splash
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Telephony
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +39,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -55,7 +51,6 @@ import androidx.lifecycle.lifecycleScope
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.valentinilk.shimmer.shimmer
 import dagger.hilt.android.AndroidEntryPoint
-import dev.estaki.data.entities.SmsRawModel
 import dev.estaki.myFinancialApp.isPermissionsGranted
 import dev.estaki.myFinancialApp.presentation.ViewState
 import dev.estaki.myFinancialApp.presentation.main.MainActivity
@@ -67,11 +62,8 @@ import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
 import dev.estaki.myFinancialApp.ui.theme.Pink40
 import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
 import dev.estaki.myFinancialApp.ui.theme.coolakFaNumFontFamily
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
-import kotlin.math.log
 
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
@@ -233,7 +225,7 @@ class SplashActivity : ComponentActivity() {
                         } else {
                             LaunchedEffect(key1 = true) {
                                 Timber.d("Permission granted read sms started")
-                                readSms(contentResolver, viewModel)
+                                viewModel.readSms(contentResolver)
                             }
                         }
 
@@ -284,46 +276,5 @@ class SplashActivity : ComponentActivity() {
     }
 
 
-    private suspend fun readSms(contentResolver: ContentResolver, mainViewModel: MainViewModel) {
-        withContext(Dispatchers.IO) {
-            val smsList = ArrayList<SmsRawModel>()
-            val cursor = contentResolver.query(
-                Telephony.Sms.CONTENT_URI,
-                null,
-                null,
-                null,
-                Telephony.Sms.DEFAULT_SORT_ORDER
-            )
-            cursor?.let {
-                if (it.moveToFirst()) {
-                    do {
-                        val address =
-                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
-                        val body =
-                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
-                        val date =
-                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
-                        val id = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms._ID))
 
-                        if (!address.startsWith("+989") &&
-                            !address.startsWith("98") &&
-                            !address.startsWith("+98") &&
-                            (body.contains("واریز") || body.contains("واريز") || body.contains("واریز به") || body.contains("واریز حقوق") || body.contains("برداشت") || body.contains("برداشت از") || body.contains("+") || body.contains("-") || body.contains("حساب"))
-                            &&
-                            (body.contains("موجودی") || body.contains("مانده") || body.contains("موجودي"))
-                        ) {
-                            smsList.add(SmsRawModel(id, address, body, date))
-                        } else continue
-
-                    } while (cursor.moveToNext())
-
-                    Log.d("TAG", "readSms: ")
-                    mainViewModel.filterSmsData(smsList)
-                }
-                it.close()
-            }
-
-        }
-
-    }
 }

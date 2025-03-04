@@ -18,19 +18,23 @@ hiltVersion = "2.51.1"
 appcompat = "1.7.0"
 material = "1.12.0"
 lottieCompose = "4.0.0"
+mockitoCore = "4.10.0"
 progressIndicator = "0.2.0"
 composeLivedata = "1.7.8"
 composeNavigation = "2.8.7"
 roomAndroid = "2.6.1"
+runner = "1.6.2"
 shimmerEffect = "1.3.0"
 hiltNavigaion = "1.2.0"
 junitJupiter = "5.8.2"
 timber = "5.0.1"
+jetbrainsKotlinJvm = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "graphicsShapes" }
+androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 jalali-datepicker-compose = { module = "com.github.hamooo90:jalali-datepicker-compose", version.ref = "jalaliDatepickerCompose" }
 jalalicalendar = { module = "ir.huri:JalaliCalendar", version.ref = "jalalicalendar" }
@@ -53,6 +57,7 @@ hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose" , 
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 lottieCompose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 progressIndicator = { group = "com.ehsanmsz", name = "msz-progress-indicator", version.ref = "progressIndicator" }
 composeLivedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "composeLivedata" }
 composeNavigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "composeNavigation" }
@@ -71,3 +76,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 ksp = {id = "com.google.devtools.ksp" ,version.ref = "ksp"}
 hilt = {id = "com.google.dagger.hilt.android" ,version.ref = "hiltVersion" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }

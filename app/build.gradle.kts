@@ -60,15 +60,21 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":ui_utils"))
+    implementation(project(":kt_pure_utils"))
+
+    debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+    implementation (libs.androidx.graphics.shapes)
+
+    //Test
+    testImplementation(libs.mockito.core)  // For Mocks with Mockito
     testImplementation(libs.junit)
     testImplementation(libs.junit.jupiter)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation (libs.androidx.graphics.shapes)
+    androidTestImplementation(libs.androidx.runner) // Android Test Runner
 
     //Hilt
     implementation(libs.hilt.android)

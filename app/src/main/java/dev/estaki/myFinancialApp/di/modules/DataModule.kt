@@ -18,9 +18,11 @@ import dev.estaki.domain.repo.reposities.CategoryRepository
 import dev.estaki.domain.repo.reposities.SmsRepository
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
+import dev.estaki.domain.usecases.GetAllBankAccountNumber
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetAllSms
+import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
 import dev.estaki.domain.usecases.GetSingleSms
 import dev.estaki.domain.usecases.UpsertSms
 import javax.inject.Singleton
@@ -37,6 +39,15 @@ class DataModule {
     @Provides
     fun provideGetAllSmsUseCase(smsRepository: SmsRepository): GetAllSms {
         return GetAllSms(smsRepository)
+    }
+
+    @Provides
+    fun provideGetAllSmsByBankAccountNumberUseCase(smsRepository: SmsRepository): GetAllSmsByBankAccountNumber{
+        return GetAllSmsByBankAccountNumber(smsRepository)
+    }
+    @Provides
+    fun provideGetAllBankAccountNumberUseCase(smsRepository: SmsRepository): GetAllBankAccountNumber{
+        return GetAllBankAccountNumber(smsRepository)
     }
 
     @Provides

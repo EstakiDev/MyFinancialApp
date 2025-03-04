@@ -71,14 +71,14 @@ fun ShimmerListItemPre() {
 fun ShimmerListItem() {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
-            shape = RoundedCornerShape(8.dp),
+            shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(8.dp),
             border = BorderStroke(
                 2.dp,
                 ColorBorderWhite
             ),
             modifier = Modifier
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = 4.dp)
                 .fillMaxWidth()
                 .height(90.dp)) {
             Column(

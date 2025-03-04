@@ -2,11 +2,9 @@ package dev.estaki.ui_utils.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,13 +16,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,13 +27,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.graphics.shapes.CornerRounding
-import androidx.graphics.shapes.RoundedPolygon
+import dev.estaki.domain.models.BankCardModel
 import dev.estaki.ui_utils.CreditColors
 import dev.estaki.ui_utils.R
 
 @Composable
-fun CreditCard(modifier: Modifier = Modifier) {
+fun CreditCard(modifier: Modifier = Modifier,item:BankCardModel?) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
             modifier = modifier,
@@ -61,8 +54,8 @@ fun CreditCard(modifier: Modifier = Modifier) {
                         .padding(horizontal = 8.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "کارت اعتباری", color = Color(0xFFB7B39F),fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                    Text(text = "نام بانک", color = Color(0xFFB7B39F), fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                    Text(text = "کارت اعتباری", color = Color(0xFFB7B39F),fontSize = 15.sp, fontWeight = FontWeight.Bold)
+                    Text(text = item?.bankName ?: "نام بانک", color = Color(0xFFB7B39F), fontSize = 17.sp, fontWeight = FontWeight.Black)
                 }
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -76,13 +69,13 @@ fun CreditCard(modifier: Modifier = Modifier) {
                         painter = painterResource(id = R.drawable.chip),
                         contentDescription = "",
                         modifier = modifier
-                            .size(32.dp)
+                            .size(42.dp)
 
                     )
                     Text(
                         modifier = modifier.wrapContentSize(),
                         textAlign = TextAlign.Center,
-                        text = "1254226.6455.6",
+                        text = item?.bankAccountNumber ?: "---",
                         fontSize = 13.sp,
                         color = Color(0xFFB7B39F)
 
@@ -93,6 +86,7 @@ fun CreditCard(modifier: Modifier = Modifier) {
                         modifier = modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                         text = "**** **** **** ****",
+                        fontWeight = FontWeight.Bold,
                         fontSize = 14.sp,
                         color = Color(0xFFB7B39F), letterSpacing = 5.sp
 
@@ -112,11 +106,19 @@ fun CreditCard(modifier: Modifier = Modifier) {
                         )
                         Text(
                             textAlign = TextAlign.Center,
+                            text = " موجودی: ${item?.bankCardBalance}",
+                            fontSize = 13.sp,
+                            color = Color(0xFFB7B39F)
+
+                        )
+                        Text(
+                            textAlign = TextAlign.Center,
                             text = "**/**",
                             fontSize = 13.sp,
                             color = Color(0xFFB7B39F)
 
                         )
+
                     }
 
                 }
@@ -130,5 +132,5 @@ fun CreditCard(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun CreditCardPreview() {
-    CreditCard(modifier = Modifier)
+    CreditCard(modifier = Modifier,null)
 }

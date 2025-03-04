@@ -1,5 +1,6 @@
 package dev.estaki.data.db.repositoryImpl
 
+import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.repo.datasource.SmsDataSource
 import dev.estaki.domain.repo.reposities.SmsRepository
@@ -7,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 class SmsRepositoryImpl(
     private val localDS: SmsDataSource.Local,
-    private val remoteDS:  SmsDataSource.Remote
+    private val remoteDS: SmsDataSource.Remote
 ) : SmsRepository {
     override suspend fun readAll(): Flow<List<SmsModel>> =
         localDS.readAll()
@@ -38,5 +39,12 @@ class SmsRepositoryImpl(
     override suspend fun getAllCount(): Flow<Long> {
         TODO("Not yet implemented")
     }
+
+    override suspend fun getSmsByBankAccountNumber(accountNumber: String): Flow<List<SmsModel>> =
+        localDS.getSmsByBankAccountNumber(accountNumber)
+
+    override suspend fun getAllBankAccountNumber(): Flow<List<BankCardModel>> =
+        localDS.getAllBankAccountNumber()
+
 
 }

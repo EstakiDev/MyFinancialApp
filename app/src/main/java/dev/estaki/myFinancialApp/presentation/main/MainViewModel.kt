@@ -1,147 +1,128 @@
 package dev.estaki.myFinancialApp.presentation.main
 
+import android.content.ContentResolver
+import android.provider.Telephony
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.estaki.data.entities.SmsRawModel
+import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.models.SmsModel
-import dev.estaki.domain.models.TransactionType
+import dev.estaki.domain.models.SmsRawModel
+import dev.estaki.domain.processor.SmsProcessor
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
+import dev.estaki.domain.usecases.GetAllBankAccountNumber
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllSms
+import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
 import dev.estaki.myFinancialApp.convertToTime
-import dev.estaki.myFinancialApp.isProbablyArabicOrPersian
 import dev.estaki.myFinancialApp.presentation.ViewState
 import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
-import dev.estaki.myFinancialApp.removeFarsiChar
-import dev.estaki.myFinancialApp.removeSpecialChar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.sql.SQLSyntaxErrorException
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val cashSmsToDb: CacheSmsToDb,
     private val getAllSms: GetAllSms,
+    private val getAllSmsByBankAccountNumberUseCase: GetAllSmsByBankAccountNumber,
     private val getAllCategoryCount: GetAllCategoryCount,
-    private val cacheCategoryToDb: CacheCategoryToDb
+    private val cacheCategoryToDb: CacheCategoryToDb,
+    private val getAllBankAccountNumber: GetAllBankAccountNumber,
 ) : ViewModel() {
     val viewState = MutableStateFlow(ViewState.LOADING)
 
     private val _smsList = MutableStateFlow<MainScreenState>(MainScreenState())
     val smsList = _smsList.asStateFlow()
 
+    private lateinit var listOfBankAccountNumber: List<BankCardModel>
 
-    fun onAction(action: MainScreenActions){
-        when(action){
-            is MainScreenActions.LoadSms -> getAllSms()
+
+    fun onAction(action: MainScreenActions) {
+        when (action) {
+            is MainScreenActions.LoadSms -> {
+                viewModelScope.launch {
+                    getAllBankAccountNumber.invoke().catch { it.printStackTrace() }.collect {
+                        listOfBankAccountNumber = it
+                        getAllSmsByBankAccountNumber(listOfBankAccountNumber.first().bankAccountNumber)
+                    }
+                }
+            }
+
             MainScreenActions.OpenSms -> Unit
+            is MainScreenActions.ReloadSmsByScrollCards -> {
+                getAllSmsByBankAccountNumber(action.bankAccountNumber)
+            }
         }
     }
 
+    suspend fun readSms(contentResolver: ContentResolver) {
+        withContext(Dispatchers.IO) {
+            val smsList = ArrayList<SmsRawModel>()
+            val cursor = contentResolver.query(
+                Telephony.Sms.CONTENT_URI,
+                null,
+                null,
+                null,
+                Telephony.Sms.DEFAULT_SORT_ORDER
+            )
+            cursor?.let {
+                if (it.moveToFirst()) {
+                    do {
+                        val address =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.ADDRESS))
+                        val body =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.BODY))
+                        val date =
+                            cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms.DATE))
+                        val id = cursor.getString(cursor.getColumnIndexOrThrow(Telephony.Sms._ID))
 
-    suspend fun filterSmsData(smsL: ArrayList<SmsRawModel>) {
+                        smsList.add(SmsRawModel(id, address, body, date, date))
+                    } while (cursor.moveToNext())
+                    correctDate(smsList)
+                    val list = SmsProcessor(smsList).execute()?.toMutableList() ?: emptyList()
+                    cacheSmsToDb(list.toMutableList())
+                }
+                it.close()
+            }
+
+        }
+
+    }
+
+
+    fun correctDate(smsL: ArrayList<SmsRawModel>) {
         smsL.forEach {
             it.receiveDate = it.receiveDate.convertToTime()
         }
-        parseSmsToModel(smsL)
-
     }
 
-    private suspend fun parseSmsToModel(smsList: List<SmsRawModel>) {
+    private suspend fun cacheSmsToDb(smsList: MutableList<SmsModel>) {
+        Timber.tag("TAG").i("parseSmsToModel --;;;")
+        val smsListInDb = getSavedSmsInDb()
+        smsList.removeAll(smsListInDb)
 
-        val listOfModel = mutableListOf<SmsModel>()
-        try {
-            var i = 1L
-            smsList.forEach { sms ->
-                val dateRegex = Regex("\\d{2,4}+\\/\\d{1,2}\\/\\d{2,4}|([0-1]?[0-9]|2[0-3])\\/[0-5][0-9]")
-                val dateRegexMatch = dateRegex.find(sms.description)
-                val date = dateRegexMatch?.groups?.first()?.value
-
-                val timeRegex = Regex("([0-9]{2}+)(:[0-9]{2}+)(:[0-9]{2})*")
-                val timeRegexMatch = timeRegex.find(sms.description)
-                val time = timeRegexMatch?.groups?.first()?.value
-
-                val split = sms.description.split("\n")
-                var finalBankAccountNumber: String = ""
-                var splitBankAccountNumber: List<Any>? = null
-                (split.find {
-                    it.contains("برداشت از:") || it.contains("حساب:") || it.contains("واريز به")
-                }.let {
-                    if (!it.isNullOrBlank()) {
-                        splitBankAccountNumber = it.split(":")
-                        if ((splitBankAccountNumber as List<*>).isNotEmpty()) {
-                            finalBankAccountNumber =
-                                (splitBankAccountNumber as List<*>).last().toString()
-                        }
-                    }
-                })
-
-
-                var amount = "" //amountRegex.options.first().value.toString()
-                val amountRegex = Regex("""(?:مبلغ:|برداشت:|واریز:)\s?(\d{1,3}(?:,\d{3})+)|(\d{1,3}(?:,\d{3})+)(?:\+|-)""")
-                    .findAll(sms.description).forEach {
-                        Log.d("amountRegex", "amountRegex: amount -> ${it.groups.first()?.value}")
-                        amount = it.groups.first()?.value.toString()
-                    }
-                Log.d("amount", "parseSmsToModel: amount -> $amount")
-                listOfModel.add(
-
-                    SmsModel(
-                        id = sms._id.toLong(),
-                        bankName = if (split.first()
-                                .isProbablyArabicOrPersian()
-                        ) split.first().removeSpecialChar() else sms.senderName,
-                        bankAccountNumber = finalBankAccountNumber,
-
-                        transactionType = if (!split.find {
-                                it.contains("برداشت") || it.contains(
-                                    "-"
-                                )
-                            }
-                                .isNullOrBlank()) TransactionType.WITHDRAW else TransactionType.DEPOSIT,
-                        transactionAmount = amount.removeFarsiChar(),
-                        transactionDate = sms.receiveDate ?: "-",
-                        transactionTime = time ?: "-",
-                        bankCardBalance = (split.find {
-                            (it.contains("موجودی") ||
-                                    it.contains("مانده") ||
-                                    it.contains("موجودي"))
-                        } ?: "-").removeFarsiChar(),
-                        categoryIds = listOf(0L),
-                        description = sms.description
-                    )
-                )
-            }
-
-            Timber.tag("TAG").i("parseSmsToModel --;;;")
-            val smsListInDb = getSavedSmsInDb()
-            listOfModel.removeAll(smsListInDb)
-
-            Timber.tag("TAG").d("parseSmsToModel: ${listOfModel.size}")
-             cashSmsToDb.invoke(listOfModel).catch {
-                it.printStackTrace()
-            }.collect{
-                 Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
-                 viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
+        cashSmsToDb.invoke(smsList).catch {
+            it.printStackTrace()
+        }.collect {
+            Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
+            viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
         }
-
     }
 
-    private suspend fun getSavedSmsInDb():List<SmsModel>{
+    private suspend fun getSavedSmsInDb(): List<SmsModel> {
         var result = listOf<SmsModel>()
         getAllSms.invoke().catch {
             it.printStackTrace()
@@ -151,15 +132,14 @@ class MainViewModel @Inject constructor(
         return result
     }
 
-    fun getAllSms() {
+    fun getAllSmsByBankAccountNumber(bankAccountNumber: String) {
         viewModelScope.launch {
             _smsList.update { state ->
                 state.copy(
                     isLoading = true,
                 )
             }
-            getAllSms.invoke().catch {
-
+            getAllSmsByBankAccountNumberUseCase.invoke(bankAccountNumber).catch {
                 _smsList.update { state ->
                     state.copy(
                         smsList = emptyList(),
@@ -170,12 +150,25 @@ class MainViewModel @Inject constructor(
                 }
                 it.printStackTrace()
             }.collect { smsList ->
-                _smsList.update {state ->
+                delay(1_000)
+                _smsList.update { state ->
                     state.copy(
                         smsList = smsList,
+                        listBankAccountNumber = listOfBankAccountNumber,
                         isLoading = false,
                     )
                 }
+            }
+        }
+    }
+
+    fun getBankAccountNumber() {
+        viewModelScope.launch {
+            getAllCategoryCount.invoke().catch {
+                it.printStackTrace()
+            }.collect { count ->
+                if (count < 1)
+                    addCategoryToDb()
             }
         }
     }
@@ -219,7 +212,7 @@ class MainViewModel @Inject constructor(
 
         cacheCategoryToDb.invoke(categoryList).catch {
             it.printStackTrace()
-        }.collect{
+        }.collect {
             Log.d("TAG", "addCategoryToDb: Success $it")
         }
     }
