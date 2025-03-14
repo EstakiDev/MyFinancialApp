@@ -1,11 +1,11 @@
-# My Financial App - Automatic Expense Tracker
+# Monify - Automatic Expense Tracker
 
 [![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-blue.svg?style=flat-square&logo=kotlin)](https://kotlinlang.org/)
 [![Android](https://img.shields.io/badge/Android-14-green.svg?style=flat-square&logo=android)](https://www.android.com/)
 [![Compose](https://img.shields.io/badge/Compose-2.0.0-purple.svg?style=flat-square&logo=android)](https://developer.android.com/jetpack/compose)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-**My Financial App** is an Android application designed to help you automatically track your income and expenses by analyzing your bank SMS messages. It provides a simple and intuitive way to manage your finances without the hassle of manual entry.
+**Monify** is an Android application designed to help you automatically track your income and expenses by analyzing your bank SMS messages. It provides a simple and intuitive way to manage your finances without the hassle of manual entry.
 
 ## Features
 
