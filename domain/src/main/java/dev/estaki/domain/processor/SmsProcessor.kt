@@ -1,15 +1,20 @@
 package dev.estaki.domain.processor
 
+import android.util.Log
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.SmsRawModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.kt_pure_utils.isProbablyArabicOrPersian
 import dev.estaki.kt_pure_utils.removeFarsiChar
 import dev.estaki.kt_pure_utils.removeSpecialChar
+import kotlin.math.log
 import kotlin.text.split
 
 
 class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
+
+    private lateinit var transactionType: TransactionType
+
     fun execute(): List<SmsModel>? {
         return assertAndQualify()
     }
@@ -93,18 +98,14 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                     parsBankAccountNumber(sms.senderName, sms.description)
 
 
-                var amount = ""
                 var transactionType: TransactionType = if (!split.find {
                         it.contains("برداشت") || it.contains("-")
                     }.isNullOrBlank()) TransactionType.WITHDRAW else TransactionType.DEPOSIT
 
-                Regex("""(?:مبلغ:|برداشت:|واریز:|واریز حقوق:)\s?(\d{1,3}(?:,\d{3})+)|(\d{1,3}(?:,\d{3})+)(?:\+|-)""")
-                    .findAll(sms.description).forEach {
-                        amount = it.groups.first()?.value.toString()
-                        transactionType = if (it.groups.any { case ->
-                                case?.value?.contains("برداشت") == true || case?.value?.contains("-") == true
-                            }) TransactionType.WITHDRAW else TransactionType.DEPOSIT
-                    }
+
+                var amount = parsTransactionAmount(sms.description)
+
+
                 listOfModel.add(
 
                     SmsModel(
@@ -123,8 +124,10 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                                     it.contains("موجودي"))
                         } ?: "-").removeFarsiChar(),
                         categoryIds = listOf(0L),
-                        description = sms.description,
-                        transactionDateTime = sms.receiveDateTime.toLong()
+                        description = "",
+                        transactionDateTime = sms.receiveDateTime.toLong(),
+                        smsSender = sms.senderName,
+                        smsBody = sms.description,
                     )
                 )
             }
@@ -134,6 +137,28 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
             e.printStackTrace()
             return null
         }
+    }
+
+    private fun parsTransactionAmount(smsDescription: String): String {
+        var amount = ""
+        Regex("""(?:مبلغ:|برداشت:|واریز:|واریز حقوق:)\s?(\d{1,3}(?:,\d{3})+)|(\d{1,3}(?:,\d{3})+)(?:\+|-)""")
+            .findAll(smsDescription).forEach {
+                amount = it.groups.first()?.value.toString()
+                transactionType = if (it.groups.any { case ->
+                        case?.value?.contains("برداشت") == true || case?.value?.contains("-") == true
+                    }) TransactionType.WITHDRAW else TransactionType.DEPOSIT
+            }
+
+        if (amount.isBlank()){
+            Regex("""[-+]+\d{1,3}(?:,\d{3})+""")
+                .findAll(smsDescription).forEach {
+                    amount = it.groups.first()?.value.toString()
+                    transactionType = if (it.groups.any { case ->
+                            case?.value?.contains("برداشت") == true || case?.value?.contains("-") == true
+                        }) TransactionType.WITHDRAW else TransactionType.DEPOSIT
+                }
+        }
+        return amount
     }
 
     private fun parsBankAccountNumber(smsSender: String, smsDescription: String): String {

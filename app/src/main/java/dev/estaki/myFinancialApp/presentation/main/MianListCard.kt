@@ -30,16 +30,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.myFinancialApp.R
-import dev.estaki.myFinancialApp.ui.theme.ColorCardExpenses
-import dev.estaki.myFinancialApp.ui.theme.ColorCardIncome
-import dev.estaki.myFinancialApp.ui.theme.ColorGrayLite
-import dev.estaki.myFinancialApp.ui.theme.GreenDark
-import dev.estaki.myFinancialApp.ui.theme.RedDark
-
+import dev.estaki.ui_utils.ui.theme.ColorCardExpenses
+import dev.estaki.ui_utils.ui.theme.ColorCardIncome
+import dev.estaki.ui_utils.ui.theme.ColorGrayLite
+import dev.estaki.ui_utils.ui.theme.GreenDark
+import dev.estaki.ui_utils.ui.theme.RedDark
 
 
 @Composable
@@ -173,7 +171,9 @@ fun MyCardItemPreview() {
                 "22:10",
                 "123,153,155",
                 listOf(0L),
-                description = null
+                description = null,
+                smsBody = "",
+                smsSender = ""
             ),
             onCardClick = {}
         )

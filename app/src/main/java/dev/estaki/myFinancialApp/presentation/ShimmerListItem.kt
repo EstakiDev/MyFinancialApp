@@ -34,6 +34,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,10 +42,9 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
-import dev.estaki.myFinancialApp.ui.theme.ColorBorderWhite
-import dev.estaki.myFinancialApp.ui.theme.ColorOfCenterShimmer
-import dev.estaki.myFinancialApp.ui.theme.ColorOfShimmer
-import dev.estaki.myFinancialApp.ui.theme.ColorShimmerGrayMedium
+import dev.estaki.ui_utils.ui.theme.ColorBorderWhite
+import dev.estaki.ui_utils.ui.theme.ColorOfShimmer
+import dev.estaki.ui_utils.ui.theme.ColorShimmerGrayMedium
 
 
 @Composable
@@ -72,7 +72,6 @@ fun ShimmerListItem() {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
             shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp),
             border = BorderStroke(
                 2.dp,
                 ColorBorderWhite
@@ -199,8 +198,6 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     background(
         brush = Brush.linearGradient(
             colors = listOf(
-                ColorOfShimmer,
-                ColorOfCenterShimmer,
                 ColorOfShimmer,
             ),
             start = Offset(startOffsetX, 0f),

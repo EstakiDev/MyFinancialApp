@@ -7,10 +7,10 @@ import java.util.Date
 import java.util.Locale
 
 fun isPermissionsGranted(context: Context): Boolean {
-    return ContextCompat.checkSelfPermission(
-        context,
-        android.Manifest.permission.READ_SMS
-    ) == PackageManager.PERMISSION_GRANTED
+    return(
+        ContextCompat.checkSelfPermission(context, android.Manifest.permission.READ_SMS) == PackageManager.PERMISSION_GRANTED &&
+        ContextCompat.checkSelfPermission(context, android.Manifest.permission.RECEIVE_SMS) == PackageManager.PERMISSION_GRANTED &&
+        ContextCompat.checkSelfPermission(context, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
 }
 
 

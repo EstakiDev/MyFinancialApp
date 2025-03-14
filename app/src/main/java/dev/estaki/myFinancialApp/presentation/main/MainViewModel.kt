@@ -17,6 +17,8 @@ import dev.estaki.domain.usecases.GetAllBankAccountNumber
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
+import dev.estaki.domain.usecases.GetFirstOpenApp
+import dev.estaki.domain.usecases.SaveFirstAppOpen
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.presentation.ViewState
 import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,14 +44,22 @@ class MainViewModel @Inject constructor(
     private val getAllCategoryCount: GetAllCategoryCount,
     private val cacheCategoryToDb: CacheCategoryToDb,
     private val getAllBankAccountNumber: GetAllBankAccountNumber,
+    private val getFirstOpenApp: GetFirstOpenApp,
+    private val saveFirstAppOpen: SaveFirstAppOpen,
 ) : ViewModel() {
     val viewState = MutableStateFlow(ViewState.LOADING)
 
     private val _smsList = MutableStateFlow<MainScreenState>(MainScreenState())
     val smsList = _smsList.asStateFlow()
 
+
     private lateinit var listOfBankAccountNumber: List<BankCardModel>
 
+    init {
+        if (getFirstOpenApp()<=0){
+            saveFirstOpenApp(Date())
+        }
+    }
 
     fun onAction(action: MainScreenActions) {
         when (action) {
@@ -215,6 +226,14 @@ class MainViewModel @Inject constructor(
         }.collect {
             Log.d("TAG", "addCategoryToDb: Success $it")
         }
+    }
+
+    private fun getFirstOpenApp(): Long{
+        return getFirstOpenApp.invoke()
+    }
+
+    private fun saveFirstOpenApp(data: Date){
+        saveFirstAppOpen.invoke(data)
     }
 
 }

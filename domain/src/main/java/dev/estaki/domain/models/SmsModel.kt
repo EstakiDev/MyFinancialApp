@@ -12,4 +12,8 @@ data class SmsModel(
     val bankCardBalance:String,
     var categoryIds:List<Long>,
     val description:String?,
+    val smsSender:String,
+    val smsBody:String,
+    val isModified: Boolean = false,
+    val isSeen: Boolean = false,
     )

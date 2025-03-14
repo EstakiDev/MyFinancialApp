@@ -1,9 +1,6 @@
 package dev.estaki.myFinancialApp.presentation.timepicker
 
-import android.app.TimePickerDialog
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -25,10 +20,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import dev.estaki.myFinancialApp.R
-import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
-import dev.estaki.myFinancialApp.ui.theme.TypographyDark
-import dev.estaki.myFinancialApp.ui.theme.TypographyLite
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,11 +59,11 @@ fun MyTimePicker(
                     TextButton(onClick = onDismiss) {
                         Text(
                             text = "انصراف",
-                            fontFamily = FontFamily(Font(R.font.aria_bold))
+                            fontFamily = FontFamily(Font(dev.estaki.ui_utils.R.font.aria_bold))
                         )
                     }
                     TextButton(onClick = { onConfirm.invoke(timePickerState) }) {
-                        Text(text = "تایید", fontFamily = FontFamily(Font(R.font.aria_bold)))
+                        Text(text = "تایید", fontFamily = FontFamily(Font(dev.estaki.ui_utils.R.font.aria_bold)))
                     }
                 }
 

@@ -14,6 +14,14 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import dev.estaki.ui_utils.ui.theme.Pink40
+import dev.estaki.ui_utils.ui.theme.Pink80
+import dev.estaki.ui_utils.ui.theme.Purple40
+import dev.estaki.ui_utils.ui.theme.Purple80
+import dev.estaki.ui_utils.ui.theme.PurpleGrey40
+import dev.estaki.ui_utils.ui.theme.PurpleGrey80
+import dev.estaki.ui_utils.ui.theme.TypographyDark
+import dev.estaki.ui_utils.ui.theme.TypographyLite
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,

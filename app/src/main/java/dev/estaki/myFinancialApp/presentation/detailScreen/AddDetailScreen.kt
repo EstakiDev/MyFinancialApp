@@ -24,13 +24,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -69,13 +67,12 @@ import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
 import dev.estaki.domain.models.SmsModel
-import dev.estaki.myFinancialApp.R
 import dev.estaki.myFinancialApp.presentation.component.AmountTextField
 import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
-import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnDarkTheme
-import dev.estaki.myFinancialApp.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
-import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
+import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
+import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
+import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 import ir.huri.jcal.JalaliCalendar
 
 
@@ -469,7 +466,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier, sms: SmsModel?) {
                         date = "${it.year}/${it.month}/${it.day}"
                     },
                     fontFamily = FontFamily(
-                        Font(R.font.aria_bold)
+                        Font(dev.estaki.ui_utils.R.font.aria_bold)
                     ),
                     fontSize = 17.sp,
                 )
@@ -484,7 +481,7 @@ fun CreateNewDetail(modifier: Modifier = Modifier, sms: SmsModel?) {
                         date = "${it.year}/${it.month}/${it.day}"
                     },
                     fontFamily = FontFamily(
-                        Font(R.font.aria_bold)
+                        Font(dev.estaki.ui_utils.R.font.aria_bold)
                     ),
                     fontSize = 17.sp,
                 )

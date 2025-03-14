@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
+import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 
 @Composable
 fun AmountTextField(

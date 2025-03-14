@@ -29,12 +29,14 @@ hiltNavigaion = "1.2.0"
 junitJupiter = "5.8.2"
 timber = "5.0.1"
 jetbrainsKotlinJvm = "2.1.0"
+workRuntime = "2.10.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
 androidx-graphics-shapes = { module = "androidx.graphics:graphics-shapes", version.ref = "graphicsShapes" }
 androidx-runner = { module = "androidx.test:runner", version.ref = "runner" }
+androidx-work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 jalali-datepicker-compose = { module = "com.github.hamooo90:jalali-datepicker-compose", version.ref = "jalaliDatepickerCompose" }
 jalalicalendar = { module = "ir.huri:JalaliCalendar", version.ref = "jalalicalendar" }

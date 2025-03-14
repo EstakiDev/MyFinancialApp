@@ -25,58 +25,12 @@ import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
 import dev.estaki.domain.usecases.GetSingleSms
 import dev.estaki.domain.usecases.UpsertSms
+import dev.estaki.myFinancialApp.SmsReceiver
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
-
-    @Provides
-    fun provideCacheSmsUseCase(smsRepository: SmsRepository): CacheSmsToDb {
-        return CacheSmsToDb(smsRepository)
-    }
-
-    @Provides
-    fun provideGetAllSmsUseCase(smsRepository: SmsRepository): GetAllSms {
-        return GetAllSms(smsRepository)
-    }
-
-    @Provides
-    fun provideGetAllSmsByBankAccountNumberUseCase(smsRepository: SmsRepository): GetAllSmsByBankAccountNumber{
-        return GetAllSmsByBankAccountNumber(smsRepository)
-    }
-    @Provides
-    fun provideGetAllBankAccountNumberUseCase(smsRepository: SmsRepository): GetAllBankAccountNumber{
-        return GetAllBankAccountNumber(smsRepository)
-    }
-
-    @Provides
-    fun provideGetSingleSmsUseCase(smsRepository: SmsRepository): GetSingleSms {
-        return GetSingleSms(smsRepository)
-    }
-
-    @Provides
-    fun provideGetAllCategoryUseCase(categoryRepository: CategoryRepository): GetAllCategoryCount {
-        return GetAllCategoryCount(categoryRepository)
-    }
-
-    @Provides
-    fun provideCacheCategoryToDbUseCase(categoryRepository: CategoryRepository): CacheCategoryToDb {
-        return CacheCategoryToDb(categoryRepository)
-    }
-
-    @Provides
-    fun provideGetAllCategoryListUseCase(categoryRepository: CategoryRepository): GetAllCategoryList {
-        return GetAllCategoryList(categoryRepository)
-    }
-
-    @Provides
-    fun provideUpsertSmsUseCase(smsRepository: SmsRepository): UpsertSms {
-        return UpsertSms(smsRepository)
-    }
-
-
-    //-----------------------------
 
     @Provides
     @Singleton

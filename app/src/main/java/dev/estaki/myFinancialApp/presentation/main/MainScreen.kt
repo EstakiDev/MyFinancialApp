@@ -1,5 +1,6 @@
 package dev.estaki.myFinancialApp.presentation.main
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +41,7 @@ import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import dev.estaki.myFinancialApp.presentation.ShimmerListItems
-import dev.estaki.myFinancialApp.ui.theme.ariaFaNumFontFamily
+import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 import dev.estaki.ui_utils.components.CreditCard
 import kotlin.math.absoluteValue
 import androidx.compose.runtime.getValue
@@ -49,6 +50,7 @@ import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.usecases.GetAllBankAccountNumber
 import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
+import dev.estaki.ui_utils.components.AddCreditCard
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,7 +120,7 @@ fun MainScreenUi(
 
         Column(modifier = Modifier.padding(innerPadding)) {
             if (state.listBankAccountNumber.isNotEmpty()) {
-                BankCardView(listOfBackAccountNumber = state.listBankAccountNumber){ bankAccountNumber ->
+                BankCardView(listOfBackAccountNumber = state.listBankAccountNumber) { bankAccountNumber ->
                     onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
                 }
             }
@@ -154,15 +156,19 @@ fun MainScreenUi(
 
 
 @Composable
-fun BankCardView(modifier: Modifier = Modifier, listOfBackAccountNumber: List<BankCardModel>,onScroll:(bankAccountNumber: String)  -> Unit) {
+fun BankCardView(
+    modifier: Modifier = Modifier,
+    listOfBackAccountNumber: List<BankCardModel>,
+    onScroll: (bankAccountNumber: String) -> Unit
+) {
     val pagerState = rememberPagerState(
         initialPage = 0,
         initialPageOffsetFraction = 0.1F,
-        pageCount = { listOfBackAccountNumber.size })
+        pageCount = { listOfBackAccountNumber.size + 1 })
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
-            onScroll.invoke(listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber)
+            onScroll.invoke(if (pagerState.currentPage < listOfBackAccountNumber.size) listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber else "")
         }
     }
     LaunchedEffect(Unit) {
@@ -183,27 +189,37 @@ fun BankCardView(modifier: Modifier = Modifier, listOfBackAccountNumber: List<Ba
             pageSpacing = 8.dp,
         ) { page ->
 
-            Surface(modifier = Modifier
-                .height(225.dp)
-                .graphicsLayer {
-                    // Calculate the absolute offset for the current page from the
-                    // scroll position. We use the absolute value which allows us to mirror
-                    // any effects for both directions
-                    val pageOffset = (
-                            (pagerState.currentPage - page) + pagerState
-                                .currentPageOffsetFraction
-                            ).absoluteValue
+            Surface(
+                modifier = Modifier
+                    .height(225.dp)
+                    .graphicsLayer {
+                        // Calculate the absolute offset for the current page from the
+                        // scroll position. We use the absolute value which allows us to mirror
+                        // any effects for both directions
+                        val pageOffset = (
+                                (pagerState.currentPage - page) + pagerState
+                                    .currentPageOffsetFraction
+                                ).absoluteValue
 
-                    // We animate the alpha, between 50% and 100%
-                    alpha = lerp(
-                        start = 0.5f,
-                        stop = 1f,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        // We animate the alpha, between 50% and 100%
+                        alpha = lerp(
+                            start = 0.5f,
+                            stop = 1f,
+                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                        )
+                    }) {
+                Log.d("TAG", "BankCardView: $page")
+                Log.d("TAG", "BankCardView: ${pagerState.lastScrolledForward}")
+
+
+                if (pagerState.currentPage == pagerState.pageCount - 1)
+                    AddCreditCard()
+                else
+                    CreditCard(
+                        item = listOfBackAccountNumber[pagerState.currentPage],
+                        position = page
                     )
-                }) {
-                CreditCard(
-                    item = listOfBackAccountNumber[pagerState.currentPage],
-                )
+
             }
         }
     }
@@ -216,13 +232,16 @@ fun BankCardView(modifier: Modifier = Modifier, listOfBackAccountNumber: List<Ba
     ) {
         repeat(pagerState.pageCount) { iteration ->
             val color =
-                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                if (pagerState.currentPage == iteration) Color.LightGray else Color.DarkGray
             Box(
                 modifier = Modifier
                     .padding(2.dp)
                     .clip(CircleShape)
                     .background(color)
-                    .size(6.dp)
+                    .size(
+                        height = 6.dp,
+                        width = if (pagerState.currentPage == iteration) 18.dp else 6.dp
+                    )
             )
         }
     }

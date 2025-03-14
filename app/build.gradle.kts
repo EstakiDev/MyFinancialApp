@@ -107,6 +107,9 @@ dependencies {
     //Persian Date Picker
     implementation(libs.timber)
 
+    //WorkManneger
+    implementation(libs.androidx.work.runtime)
+
 
 
 

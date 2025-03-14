@@ -18,4 +18,8 @@ data class SmsEntity(
     val bankCardBalance:String,
     val categoryIds:String?,
     val description:String?,
+    val smsSender: String,
+    val smsBody: String,
+    val isModified: Boolean = false,
+    val isSeen: Boolean = false
 )

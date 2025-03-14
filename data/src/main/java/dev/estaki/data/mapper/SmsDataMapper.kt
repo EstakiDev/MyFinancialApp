@@ -16,7 +16,11 @@ fun SmsModel.toDbEntity() = SmsEntity(
     transactionDateTime = transactionDateTime,
     bankCardBalance = bankCardBalance,
     categoryIds = categoryIds.joinToString(","),
-    description = description
+    description = description,
+    smsSender = smsSender,
+    smsBody = smsBody,
+    isSeen = isSeen,
+    isModified = isModified
 
     )
 
@@ -31,7 +35,11 @@ fun SmsEntity.toDomainModel() = SmsModel(
     transactionDateTime = transactionDateTime,
     bankCardBalance = bankCardBalance,
     categoryIds = (categoryIds?.split(",")?: emptyList()).map { it.toLong() },
-    description = description
+    description = description,
+    smsSender = smsSender,
+    smsBody = smsBody,
+    isSeen = isSeen,
+    isModified = isModified
 
 )
 
