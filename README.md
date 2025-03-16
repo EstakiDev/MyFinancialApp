@@ -5,7 +5,7 @@
 [![Compose](https://img.shields.io/badge/Compose-2.0.0-purple.svg?style=flat-square&logo=android)](https://developer.android.com/jetpack/compose)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-** Preview of this Application: PLEASE WAit...
+** Preview of this Application: PLEASE WAIT...
 ![](https://github.com/EstakiDev/Monify/blob/develop/app-preview.gif)
 
 **Monify** is an Android application designed to help you automatically track your income and expenses by analyzing your bank SMS messages. It provides a simple and intuitive way to manage your finances without the hassle of manual entry.
