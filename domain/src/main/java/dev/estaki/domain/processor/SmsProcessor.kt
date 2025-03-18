@@ -123,7 +123,7 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                                     it.contains("مانده") ||
                                     it.contains("موجودي"))
                         } ?: "-").removeFarsiChar(),
-                        categoryIds = listOf(0L),
+                        categoryIds = emptyList(),
                         description = "",
                         transactionDateTime = sms.receiveDateTime.toLong(),
                         smsSender = sms.senderName,

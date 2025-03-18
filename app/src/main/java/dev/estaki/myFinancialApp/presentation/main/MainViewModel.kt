@@ -65,14 +65,15 @@ class MainViewModel @Inject constructor(
         when (action) {
             is MainScreenActions.LoadSms -> {
                 viewModelScope.launch {
-                    getAllBankAccountNumber.invoke().catch { it.printStackTrace() }.collect {
+                    getAllBankAccountNumber.invoke().catch {
+                        it.printStackTrace()
+                    }.collect {
                         listOfBankAccountNumber = it
                         getAllSmsByBankAccountNumber(listOfBankAccountNumber.first().bankAccountNumber)
                     }
                 }
             }
-
-            MainScreenActions.OpenSms -> Unit
+            is MainScreenActions.OpenSms -> Unit
             is MainScreenActions.ReloadSmsByScrollCards -> {
                 getAllSmsByBankAccountNumber(action.bankAccountNumber)
             }
