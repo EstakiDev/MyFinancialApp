@@ -70,6 +70,7 @@ import dev.estaki.domain.models.SmsModel
 import dev.estaki.myFinancialApp.presentation.component.AmountTextField
 import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
 import dev.estaki.myFinancialApp.ui.theme.FinancialTheme
+import dev.estaki.ui_utils.components.MyOutlinedButton
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
@@ -272,34 +273,28 @@ fun AddDetailScreen(
 
 
                     }
-                    Button(
-                        onClick = {
-                            smsModel?.let { sms ->
-                                detailScreenViewModel.saveSms(
-                                    sms.copy(
-                                        description = text,
-                                        categoryIds = categoryList.filter { it.isChecked }
-                                            .map { it.id }
-                                    )
-                                )
-                                navController?.navigate("MainScreen")
-                            }
-                        },
-                        Modifier
+
+
+                    MyOutlinedButton(
+                        modifier = Modifier
                             .fillMaxWidth()
                             .padding(12.dp)
                             .align(Alignment.BottomCenter)
-                            .alpha(if (loadingState) 0f else 1f)
-
+                            .alpha(if (loadingState) 0f else 1f),
+                        text = "ذخیره"
                     ) {
-                        Text(
-                            text = "ذخیره",
-                            fontFamily = ariaFaNumFontFamily,
-                            fontWeight = FontWeight.Black,
-                            fontSize = 16.sp
-
-                        )
+                        smsModel?.let { sms ->
+                            detailScreenViewModel.saveSms(
+                                sms.copy(
+                                    description = text,
+                                    categoryIds = categoryList.filter { it.isChecked }
+                                        .map { it.id }
+                                )
+                            )
+                            navController?.navigate("MainScreen")
+                        }
                     }
+
                     BallPulseProgressIndicator(
                         modifier = Modifier
                             .align(Alignment.Center)

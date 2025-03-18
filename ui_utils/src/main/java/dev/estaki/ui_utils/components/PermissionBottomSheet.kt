@@ -50,27 +50,10 @@ fun PermissionBottomSheet(modifier: Modifier = Modifier, modalBottomSheetState: 
                 fontWeight = FontWeight.Bold,
             )
 
-            OutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp),
-                onClick = { onBtnGetPermissionClicked.invoke() },
-                border = BorderStroke(1.dp, DarkYellow),
-                shape = RoundedCornerShape(20), // = 20% percent
-                // or shape = CircleShape
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = DarkYellow
-                )
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 6.dp),
-                    text = "تایید دسترسی",
-                    fontFamily = ariaFaNumFontFamily,
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Black,
-                    color = DarkYellow
-                )
+            MyOutlinedButton(text = "تایید دسترسی") {
+                onBtnGetPermissionClicked.invoke()
             }
+
         }
     }
 }
