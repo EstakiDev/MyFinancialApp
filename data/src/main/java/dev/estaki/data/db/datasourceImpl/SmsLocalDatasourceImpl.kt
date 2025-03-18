@@ -19,7 +19,9 @@ class SmsLocalDatasourceImpl(
         flow { emit(smsDao.readAll().map { it.toDomainModel() }) }.flowOn(Dispatchers.IO)
 
     override suspend fun read(id: Long): Flow<SmsModel> =
-        flow { emit(smsDao.read(id).toDomainModel()) }.flowOn(Dispatchers.IO)
+        flow { emit(
+            smsDao.read(id).toDomainModel()
+        ) }.flowOn(Dispatchers.IO)
 
     override suspend fun delete(id: Long): Flow<Int> {
         TODO("Not yet implemented")

@@ -50,7 +50,7 @@ fun PermissionBottomSheet(modifier: Modifier = Modifier, modalBottomSheetState: 
                 fontWeight = FontWeight.Bold,
             )
 
-            MyOutlinedButton(text = "تایید دسترسی") {
+            MyOutlinedButton(modifier = modifier.padding(vertical = 20.dp),text = "تایید دسترسی") {
                 onBtnGetPermissionClicked.invoke()
             }
 

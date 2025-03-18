@@ -1,6 +1,5 @@
 package dev.estaki.myFinancialApp.presentation.main
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,11 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -33,15 +32,16 @@ import androidx.compose.ui.unit.sp
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.myFinancialApp.R
+import dev.estaki.ui_utils.components.IconWithCircleBackground
 import dev.estaki.ui_utils.ui.theme.ColorCardExpenses
 import dev.estaki.ui_utils.ui.theme.ColorCardIncome
-import dev.estaki.ui_utils.ui.theme.ColorGrayLite
 import dev.estaki.ui_utils.ui.theme.GreenDark
 import dev.estaki.ui_utils.ui.theme.RedDark
+import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 
 
 @Composable
-fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
+fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Card(
@@ -55,7 +55,7 @@ fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
         ) {
             Box(
                 modifier = Modifier
-                    .background(brush = if (smsEntity.transactionType == TransactionType.DEPOSIT) ColorCardIncome else ColorCardExpenses),
+                    .background(brush = if (smsModel.transactionType == TransactionType.DEPOSIT) ColorCardIncome else ColorCardExpenses),
                 contentAlignment = Alignment.BottomEnd
             ) {
                 Row(
@@ -68,50 +68,60 @@ fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
 
                 ) {
                     IconWithCircleBackground(
-                        resId = if (smsEntity.transactionType == TransactionType.DEPOSIT) R.drawable.ic_income_32 else R.drawable.ic_expenses_32,
+                        resId = if (smsModel.transactionType == TransactionType.DEPOSIT) R.drawable.ic_income_32 else R.drawable.ic_expenses_32,
                         visibilityState = true
                     )
 
-                    Column(modifier = Modifier.padding(horizontal = 12.dp),
-                        verticalArrangement = Arrangement.Center,) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp).fillMaxWidth(0.5F),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Text(
-                            text = smsEntity.bankName,
+                            modifier = Modifier.fillMaxWidth(),
+                            text = smsModel.bankName,
                             fontWeight = FontWeight.Black,
                             fontSize = 14.sp,
 
 
                             )
                         Row(
-                            modifier = Modifier.height(32.dp),
-                            verticalAlignment = Alignment.CenterVertically) {
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+
+                        ) {
                             Text(
-                                text = if (!smsEntity.transactionAmount.contains("ریال")) smsEntity.transactionAmount.plus(
+                                modifier = Modifier.fillMaxWidth(0.7F),
+                                text = if (!smsModel.transactionAmount.contains("ریال")) smsModel.transactionAmount.plus(
                                     " ریال "
-                                ) else smsEntity.transactionAmount,
+                                ) else smsModel.transactionAmount,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 13.sp,
-                                lineHeight = 26.sp
+                                lineHeight = 26.sp,
+                                overflow = TextOverflow.Visible,
+                                style = TextStyle(lineBreak = LineBreak.Paragraph, fontFamily = ariaFaNumFontFamily, lineHeight = 8.sp)
                             )
-                            Spacer(modifier = Modifier.size(8.dp))
+                            Spacer(modifier = Modifier.fillMaxWidth(0.05F))
                             Text(
-                                text = if (smsEntity.transactionType == TransactionType.WITHDRAW) "خرج" else "دخل",
+                                modifier = Modifier.wrapContentSize(),
+                                text = if (smsModel.transactionType == TransactionType.WITHDRAW) "خرج" else "دخل",
                                 fontWeight = FontWeight.Black,
                                 fontSize = 13.sp,
                                 lineHeight = 26.sp,
-                                color = if (smsEntity.transactionType == TransactionType.WITHDRAW) RedDark else GreenDark
+                                color = if (smsModel.transactionType == TransactionType.WITHDRAW) RedDark else GreenDark
                             )
                         }
 
 
-                        Row {
+                        Row(Modifier.fillMaxWidth()) {
                             Text(
-                                text = smsEntity.transactionTime,
+                                text = smsModel.transactionTime,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
                                 lineHeight = 26.sp,
                             )
                             Text(
-                                text = smsEntity.transactionDate,
+                                text = smsModel.transactionDate,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 13.sp,
                                 lineHeight = 26.sp,
@@ -122,7 +132,7 @@ fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
 
                     IconWithCircleBackground(
                         resId = R.drawable.baseline_directions_car_24,
-                        visibilityState = smsEntity.categoryIds.isNotEmpty()
+                        visibilityState = smsModel.categoryIds.isNotEmpty()
                     )
 
                 }
@@ -136,24 +146,6 @@ fun MyCardItem(smsEntity: SmsModel, onCardClick: () -> Unit) {
 
 }
 
-@Composable
-fun IconWithCircleBackground(resId: Int, visibilityState: Boolean = false) {
-    Box(
-        modifier = Modifier
-            .alpha(if (visibilityState) 1F else 0F)
-            .padding(16.dp)
-            .background(color = ColorGrayLite, shape = CircleShape)
-    ) {
-        Image(
-            painter = painterResource(id = resId),
-            modifier = Modifier
-                .size(42.dp)
-                .scale(0.55F),
-            contentDescription = "Income and Expenses icon",
-        )
-
-    }
-}
 
 @Preview
 @Composable

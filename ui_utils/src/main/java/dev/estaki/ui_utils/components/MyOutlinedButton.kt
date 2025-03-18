@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,21 +24,21 @@ fun MyOutlinedButton(
     text: String,
     shape: RoundedCornerShape = RoundedCornerShape(20),
     colors: ButtonColors = ButtonDefaults.outlinedButtonColors(
-        contentColor = DarkYellow
-
+        contentColor = DarkYellow,
+        containerColor = MaterialTheme.colorScheme.background
     ),
     border: BorderStroke = BorderStroke(2.dp, DarkYellow),
     onBtnClicked: () -> Unit
 ) {
     OutlinedButton(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 20.dp),
+            .fillMaxWidth(),
         onClick = { onBtnClicked.invoke() },
         border = border,
         shape = shape, // = 20% percent
         // or shape = CircleShape
         colors = colors,
+
     ) {
         Text(
             modifier = Modifier.padding(vertical = 6.dp),
