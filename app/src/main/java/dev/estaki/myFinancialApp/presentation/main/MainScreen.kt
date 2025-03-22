@@ -1,6 +1,5 @@
 package dev.estaki.myFinancialApp.presentation.main
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,20 +18,17 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,22 +36,25 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import dev.estaki.myFinancialApp.presentation.ShimmerListItems
-import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
-import dev.estaki.ui_utils.components.CreditCard
-import kotlin.math.absoluteValue
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import dev.estaki.domain.models.BankCardModel
+import dev.estaki.myFinancialApp.presentation.ShimmerListItems
 import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
+import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
 import dev.estaki.ui_utils.components.AddCreditCard
+import dev.estaki.ui_utils.components.CreditCard
+import kotlin.math.absoluteValue
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hiltViewModel()) {
+fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hiltViewModel(),onComposing :(MyTopAppBarState) -> Unit) {
 
+    LaunchedEffect(true) {
+        onComposing(MyTopAppBarState(
+            title = "مدیریت اتوماتیک دخل و خرج",
+        ))
+    }
     val state by viewModel.smsList.collectAsState()
 
     MainScreenUi(
@@ -78,83 +77,45 @@ fun MainScreenUi(
     LaunchedEffect(key1 = false) {
         onActions.invoke(MainScreenActions.LoadSms())
     }
-    val scrollBehavior =
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
-            MediumTopAppBar(
 
-                title = {
-                    Text(
-                        text = "سلام ممد جون👋    مدیریت اتوماتیک دخل و خرج",
-                        fontFamily = ariaFaNumFontFamily,
-                        fontWeight = FontWeight.Black,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(12.dp)
-                    )
-                },
-
-//                            navigationIcon = {
-//                                IconButton(onClick = { /*TODO*/ }) {
-//                                    Icon(
-//                                        imageVector = Icons.Rounded.ArrowBack,
-//                                        contentDescription = "back"
-//                                    )
-//                                }
-//                            },
-//                            actions = {
-//                                IconButton(onClick = { /* do something */ }) {
-//                                    Icon(
-//                                        imageVector = Icons.Filled.Menu,
-//                                        contentDescription = "Localized description"
-//                                    )
-//                                }
-//                            },
-                scrollBehavior = scrollBehavior
-            )
+    Column(modifier = Modifier) {
+        if (state.listBankAccountNumber.isNotEmpty()) {
+            BankCardView(
+                modifier = modifier,
+                listOfBackAccountNumber = state.listBankAccountNumber,
+                navController = navController
+            ) { bankAccountNumber ->
+                onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
+            }
         }
-    ) { innerPadding ->
+        Surface(shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentHeight(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                items(if (state.isLoading) 5 else state.smsList.size) { itemIndex ->
 
+                    ShimmerListItems(
+                        isLoading = state.isLoading,
+                        contentAfterLoading = {
+                            if (state.smsList.isNotEmpty()) {
+                                MyCardItem(
+                                    state.smsList[itemIndex],
+                                    onCardClick = { navController?.navigate("AddDetailScreen/${state.smsList[itemIndex].id}") })
+                            }
 
-        Column(modifier = Modifier.padding(innerPadding)) {
-            if (state.listBankAccountNumber.isNotEmpty()) {
-                BankCardView(
-                    modifier = modifier,
-                    listOfBackAccountNumber = state.listBankAccountNumber,
-                    navController = navController
-                ) { bankAccountNumber ->
-                    onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
+                        })
+
                 }
             }
-            Surface(shape = RoundedCornerShape(topStart = 26.dp, topEnd = 26.dp)) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .wrapContentHeight(),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    items(if (state.isLoading) 5 else state.smsList.size) { itemIndex ->
-
-                        ShimmerListItems(
-                            isLoading = state.isLoading,
-                            contentAfterLoading = {
-                                if (state.smsList.isNotEmpty()) {
-                                    MyCardItem(
-                                        state.smsList[itemIndex],
-                                        onCardClick = { navController?.navigate("AddDetailScreen/${state.smsList[itemIndex].id}") })
-                                }
-
-                            })
-
-                    }
-                }
-            }
-
         }
 
     }
+
+
 }
 
 
@@ -261,7 +222,7 @@ fun BankCardView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainScreenPreview() {
-    MainScreen(null)
+    MainScreen(null){}
 }
 
 
