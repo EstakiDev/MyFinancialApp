@@ -16,7 +16,11 @@ class SmsRepositoryImpl(
     override suspend fun read(id: Long): Flow<SmsModel> =
         localDS.read(id)
 
-    override suspend fun delete(id: Long): Int {
+    override suspend fun deleteById(id: Long): Flow<Int> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(entity: SmsModel): Flow<Int> {
         TODO("Not yet implemented")
     }
 

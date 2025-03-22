@@ -11,9 +11,11 @@ import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.SmsRawModel
 import dev.estaki.domain.processor.SmsProcessor
+import dev.estaki.domain.usecases.CacheAllBankAccountToDb
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
-import dev.estaki.domain.usecases.GetAllBankAccountNumber
+import dev.estaki.domain.usecases.GetAllBankAccountNumberFromTbSms
+import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
@@ -21,14 +23,13 @@ import dev.estaki.domain.usecases.GetFirstOpenApp
 import dev.estaki.domain.usecases.SaveFirstAppOpen
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.presentation.ViewState
-import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
+import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -43,9 +44,11 @@ class MainViewModel @Inject constructor(
     private val getAllSmsByBankAccountNumberUseCase: GetAllSmsByBankAccountNumber,
     private val getAllCategoryCount: GetAllCategoryCount,
     private val cacheCategoryToDb: CacheCategoryToDb,
-    private val getAllBankAccountNumber: GetAllBankAccountNumber,
+    private val getAllBankAccountNumberFromTbSms: GetAllBankAccountNumberFromTbSms,
     private val getFirstOpenApp: GetFirstOpenApp,
     private val saveFirstAppOpen: SaveFirstAppOpen,
+    private val cacheAllBankAccountToDb: CacheAllBankAccountToDb,
+    private val getAllBankCardFromTbBankCard: GetAllBankCardFromTbBankCard
 ) : ViewModel() {
     val viewState = MutableStateFlow(ViewState.LOADING)
 
@@ -65,7 +68,7 @@ class MainViewModel @Inject constructor(
         when (action) {
             is MainScreenActions.LoadSms -> {
                 viewModelScope.launch {
-                    getAllBankAccountNumber.invoke().catch {
+                    getAllBankCardFromTbBankCard.invoke().catch {
                         it.printStackTrace()
                     }.collect {
                         listOfBankAccountNumber = it
@@ -106,6 +109,7 @@ class MainViewModel @Inject constructor(
                     correctDate(smsList)
                     val list = SmsProcessor(smsList).execute()?.toMutableList() ?: emptyList()
                     cacheSmsToDb(list.toMutableList())
+                    cacheBankAccountToDb()
                 }
                 it.close()
             }
@@ -133,6 +137,20 @@ class MainViewModel @Inject constructor(
             viewState.emit(ViewState.FINISH_SPLASH_ACTIVITY)
         }
     }
+
+    private suspend fun cacheBankAccountToDb() {
+        getAllBankAccountNumberFromTbSms.invoke().catch {
+            it.printStackTrace()
+        }.collect {
+            Log.d("TAG", "cacheBankAccountToDb: ")
+            cacheAllBankAccountToDb.invoke(it).catch {
+                it.printStackTrace()
+            }.collect {
+                Log.d("TAG", "cacheBankAccountToDb: ")
+            }
+        }
+    }
+
 
     private suspend fun getSavedSmsInDb(): List<SmsModel> {
         var result = listOf<SmsModel>()

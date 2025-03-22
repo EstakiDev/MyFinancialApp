@@ -17,7 +17,11 @@ class CategoryLocalDataSourceImpl(private val categoryDao: CategoryDao):Category
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(id: Long): Flow<Int> {
+    override suspend fun deleteById(id: Long): Flow<Int> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(entity: CategoryModel): Flow<Int> {
         TODO("Not yet implemented")
     }
 

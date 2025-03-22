@@ -31,7 +31,10 @@ import dev.estaki.ui_utils.ui.theme.White
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 
 @Composable
-fun AddCreditCard(modifier: Modifier = Modifier) {
+fun AddCreditCard(
+    modifier: Modifier = Modifier,
+    onClicked: () -> Unit
+) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Card(
             modifier = Modifier.alpha(0.5F),
@@ -39,6 +42,7 @@ fun AddCreditCard(modifier: Modifier = Modifier) {
             colors = CardDefaults.cardColors(
                 containerColor = ColorGrayLite
             ),
+            onClick = {onClicked.invoke()}
         ) {
 
 
@@ -70,5 +74,7 @@ fun AddCreditCard(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 private fun AddCreditCardPreview() {
-    AddCreditCard()
+    AddCreditCard(){
+
+    }
 }

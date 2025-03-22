@@ -8,10 +8,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.estaki.data.db.dao.BankAccountDao
 import dev.estaki.data.db.dao.CategoryDao
 import dev.estaki.data.db.dao.SmsDao
 import dev.estaki.data.db.dbClass.AppDatabase
-import dev.estaki.data.db.dbClass.MIGRATION_1_2
 import javax.inject.Singleton
 
 
@@ -26,7 +26,6 @@ class DatabaseModule {
     ): AppDatabase {
         return Room
             .databaseBuilder(context, AppDatabase::class.java, "financial.db")
-//            .addMigrations(MIGRATION_1_2)
             .build()
     }
 
@@ -38,6 +37,11 @@ class DatabaseModule {
     @Provides
     fun provideCategoryDao(appDatabase: AppDatabase): CategoryDao {
         return appDatabase.categoryDao()
+    }
+
+    @Provides
+    fun provideBankAccountDao(appDatabase: AppDatabase): BankAccountDao{
+        return appDatabase.bankAccountDao()
     }
 
 }

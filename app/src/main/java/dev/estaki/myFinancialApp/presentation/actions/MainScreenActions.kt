@@ -1,6 +1,4 @@
-package dev.estaki.myFinancialApp.presentation.intent
-
-import dev.estaki.myFinancialApp.presentation.states.MainScreenState
+package dev.estaki.myFinancialApp.presentation.actions
 
 sealed interface MainScreenActions {
     data class LoadSms(val bankAccountNumber: String= ""): MainScreenActions

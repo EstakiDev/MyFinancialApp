@@ -5,4 +5,6 @@ data class BankCardModel(
     val bankName: String,
     val bankAccountNumber: String,
     val bankCardBalance: String,
-)
+    val bankCardNumber: String?,
+
+    )

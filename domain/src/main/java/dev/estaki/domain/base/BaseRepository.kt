@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 interface BaseRepository<Entity,AffectedRow,Id> {
     suspend fun readAll():Flow<List<Entity>>
     suspend fun read(id:Id):Flow<Entity>
-    suspend fun delete(id: Id):AffectedRow
+    suspend fun deleteById(id: Id):Flow<AffectedRow>
+    suspend fun delete(entity: Entity):Flow<AffectedRow>
     suspend fun deleteAll():AffectedRow
     suspend fun upsert(entity: Entity)
     suspend fun add(entity: Entity)

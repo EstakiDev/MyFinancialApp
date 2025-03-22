@@ -4,32 +4,26 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import dev.estaki.data.db.dao.CategoryDao
-import dev.estaki.data.db.dao.SmsDao
-import dev.estaki.data.db.datasourceImpl.CategoryLocalDataSourceImpl
-import dev.estaki.data.db.datasourceImpl.CategoryRemoteDataSourceImpl
-import dev.estaki.data.db.datasourceImpl.SmsLocalDatasourceImpl
-import dev.estaki.data.db.datasourceImpl.SmsRemoteDatasourceImpl
-import dev.estaki.data.db.repositoryImpl.CategoryRepositoryImpl
-import dev.estaki.data.db.repositoryImpl.SmsRepositoryImpl
-import dev.estaki.domain.repo.datasource.CategoryDataSource
-import dev.estaki.domain.repo.datasource.SmsDataSource
+import dev.estaki.domain.repo.reposities.BankAccountRepository
 import dev.estaki.domain.repo.reposities.CategoryRepository
 import dev.estaki.domain.repo.reposities.SmsRepository
 import dev.estaki.domain.sharedPrefrence.PreferenceHelper
+import dev.estaki.domain.usecases.CacheAllBankAccountToDb
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
-import dev.estaki.domain.usecases.GetAllBankAccountNumber
+import dev.estaki.domain.usecases.DeleteBankCard
+import dev.estaki.domain.usecases.GetAllBankAccountNumberFromTbSms
+import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
 import dev.estaki.domain.usecases.GetFirstOpenApp
+import dev.estaki.domain.usecases.GetSingleBankAccount
 import dev.estaki.domain.usecases.GetSingleSms
 import dev.estaki.domain.usecases.SaveFirstAppOpen
+import dev.estaki.domain.usecases.UpsertBankCard
 import dev.estaki.domain.usecases.UpsertSms
-import dev.estaki.myFinancialApp.SmsReceiver
-import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -50,8 +44,8 @@ class UseCasesModule {
         return GetAllSmsByBankAccountNumber(smsRepository)
     }
     @Provides
-    fun provideGetAllBankAccountNumberUseCase(smsRepository: SmsRepository): GetAllBankAccountNumber{
-        return GetAllBankAccountNumber(smsRepository)
+    fun provideGetAllBankAccountNumberFromTbSmsUseCase(smsRepository: SmsRepository): GetAllBankAccountNumberFromTbSms{
+        return GetAllBankAccountNumberFromTbSms(smsRepository)
     }
 
     @Provides
@@ -88,6 +82,28 @@ class UseCasesModule {
     fun provideGetFirstOpenUseCase(preferenceHelper: PreferenceHelper): GetFirstOpenApp{
         return GetFirstOpenApp(preferenceHelper)
     }
+    @Provides
+    fun provideGetSingleBankAccount(bankAccountRepository: BankAccountRepository): GetSingleBankAccount{
+        return GetSingleBankAccount(bankAccountRepository)
+    }
 
+    @Provides
+    fun provideCacheAllBankAccountToDb(bankAccountRepository: BankAccountRepository): CacheAllBankAccountToDb{
+        return CacheAllBankAccountToDb(bankAccountRepository)
+    }
 
+    @Provides
+    fun provideUpsertBankCardToDb(bankAccountRepository: BankAccountRepository): UpsertBankCard{
+        return UpsertBankCard(bankAccountRepository)
+    }
+
+    @Provides
+    fun provideGetAllBankAccountNumberUseCase(bankAccountRepository: BankAccountRepository): GetAllBankCardFromTbBankCard{
+        return GetAllBankCardFromTbBankCard(bankAccountRepository)
+    }
+
+    @Provides
+    fun provideDeleteBankCardUseCase(bankAccountRepository: BankAccountRepository):DeleteBankCard{
+        return DeleteBankCard(bankAccountRepository)
+    }
 }

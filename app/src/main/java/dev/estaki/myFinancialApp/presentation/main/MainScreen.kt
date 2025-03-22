@@ -47,8 +47,7 @@ import kotlin.math.absoluteValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import dev.estaki.domain.models.BankCardModel
-import dev.estaki.domain.usecases.GetAllBankAccountNumber
-import dev.estaki.myFinancialApp.presentation.intent.MainScreenActions
+import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 import dev.estaki.ui_utils.components.AddCreditCard
 
@@ -61,7 +60,7 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
 
     MainScreenUi(
         state = state,
-        navController = navController,
+        navController = navController!!,
         onActions = viewModel::onAction
     )
 
@@ -72,7 +71,7 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
 @Composable
 fun MainScreenUi(
     modifier: Modifier = Modifier,
-    navController: NavHostController?,
+    navController: NavHostController,
     state: MainScreenState,
     onActions: (MainScreenActions) -> Unit
 ) {
@@ -120,7 +119,11 @@ fun MainScreenUi(
 
         Column(modifier = Modifier.padding(innerPadding)) {
             if (state.listBankAccountNumber.isNotEmpty()) {
-                BankCardView(listOfBackAccountNumber = state.listBankAccountNumber) { bankAccountNumber ->
+                BankCardView(
+                    modifier = modifier,
+                    listOfBackAccountNumber = state.listBankAccountNumber,
+                    navController = navController
+                ) { bankAccountNumber ->
                     onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
                 }
             }
@@ -159,7 +162,8 @@ fun MainScreenUi(
 fun BankCardView(
     modifier: Modifier = Modifier,
     listOfBackAccountNumber: List<BankCardModel>,
-    onScroll: (bankAccountNumber: String) -> Unit
+    navController: NavHostController,
+    onScroll: (bankAccountNumber: String) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -177,8 +181,7 @@ fun BankCardView(
     Text(
         "حساب های موجود در پیامک ها",
         modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .padding(top = 22.dp, bottom = 8.dp),
+            .padding(start = 22.dp, top = 22.dp, bottom = 12.dp),
         fontSize = 14.sp,
         fontWeight = FontWeight.Black
     )
@@ -208,17 +211,24 @@ fun BankCardView(
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
                     }) {
-                Log.d("TAG", "BankCardView: $page")
-                Log.d("TAG", "BankCardView: ${pagerState.lastScrolledForward}")
-
-
                 if (pagerState.currentPage == pagerState.pageCount - 1)
-                    AddCreditCard()
+                    AddCreditCard {
+                        val bankAccountNumber = ""
+                        navController.navigate(
+                            "AddOrEditCreditCard/$bankAccountNumber/0"
+                        )
+                    }
                 else
                     CreditCard(
                         item = listOfBackAccountNumber[pagerState.currentPage],
                         position = page
-                    )
+                    ) {
+                        val bankAccountNumber =
+                            listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber
+                        navController.navigate(
+                            "AddOrEditCreditCard/$bankAccountNumber/$page"
+                        )
+                    }
 
             }
         }

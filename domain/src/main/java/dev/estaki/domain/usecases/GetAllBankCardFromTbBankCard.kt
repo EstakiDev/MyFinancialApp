@@ -1,16 +1,16 @@
 package dev.estaki.domain.usecases
 
 import dev.estaki.domain.models.BankCardModel
-import dev.estaki.domain.models.SmsModel
+import dev.estaki.domain.repo.reposities.BankAccountRepository
 import dev.estaki.domain.repo.reposities.SmsRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetAllBankAccountNumber(
-    private val smsRepository: SmsRepository
+class GetAllBankCardFromTbBankCard(
+    private val bankAccountRepository: BankAccountRepository
 ) {
 
     suspend operator fun invoke(): Flow<List<BankCardModel>> {
-        return smsRepository.getAllBankAccountNumber()
+        return bankAccountRepository.readAll()
     }
 
 }

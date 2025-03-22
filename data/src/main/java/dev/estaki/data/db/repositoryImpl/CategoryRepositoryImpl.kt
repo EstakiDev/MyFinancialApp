@@ -16,7 +16,11 @@ class CategoryRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(id: Long): Int {
+    override suspend fun deleteById(id: Long): Flow<Int> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun delete(entity: CategoryModel): Flow<Int> {
         TODO("Not yet implemented")
     }
 

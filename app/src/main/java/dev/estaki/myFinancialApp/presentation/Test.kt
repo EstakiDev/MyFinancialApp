@@ -1,5 +1,6 @@
 package dev.estaki.myFinancialApp.presentation
 
+import dev.estaki.kt_pure_utils.formatCardNumber
 import dev.estaki.myFinancialApp.Utilities
 import java.util.Date
 import kotlin.text.split
@@ -21,19 +22,21 @@ fun main() {
 //    println(day)
 //    println(Utilities.currentShamsidate)
 
-    val body = "\"*بانک قرض الحسنه رسالت* \n" +
-            "بانکداري اجتماعي متمرکز (بام) \n" +
-            "واريز به: 10.5767872.1 \n" +
-            "مبلغ: 200,000,000 ريال \n" +
-            "02/07/01_09:26 \n" +
-            "موجودي: 219,087,790 ريال\""
+//    val body = "\"*بانک قرض الحسنه رسالت* \n" +
+//            "بانکداري اجتماعي متمرکز (بام) \n" +
+//            "واريز به: 10.5767872.1 \n" +
+//            "مبلغ: 200,000,000 ريال \n" +
+//            "02/07/01_09:26 \n" +
+//            "موجودي: 219,087,790 ريال\""
+//
+//    val split = body.split("\n")
+//
+//    print((split.find {
+//        it.contains("برداشت از:") || it.contains("حساب:") || it.contains(
+//            "واريز به"
+//        )
+//    }))
 
-    val split = body.split("\n")
 
-    print((split.find {
-        it.contains("برداشت از:") || it.contains("حساب:") || it.contains(
-            "واريز به"
-        )
-    }))
 }
 

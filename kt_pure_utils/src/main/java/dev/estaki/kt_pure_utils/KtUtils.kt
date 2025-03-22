@@ -1,6 +1,8 @@
 package dev.estaki.kt_pure_utils
 
 import java.text.DecimalFormat
+import kotlin.io.path.Path
+import kotlin.jvm.Throws
 
 fun String.removeSpecialChar(): String =
     if (this.contains("*"))
@@ -54,4 +56,24 @@ fun String.formatAmount(): String {
         e.printStackTrace()
         "" // در صورت خطا
     }
+}
+
+@Throws(NumberFormatException::class)
+fun String.formatCardNumber(): String  {
+    var input = this.replace(" ","")
+    if (input.any { char -> char.isDigit().not() })
+        throw NumberFormatException("شما نمیتوانید بجز اعداد وارد کنید")
+    if (input.length> 16){
+        throw NumberFormatException("شماره کارت نمیتواند بیشتر از 16 رقم باشد.")
+    }
+    else{
+        if (input.length>= 4)
+            input = input.chunked(4).joinToString(separator = " ")
+    }
+
+    return input
+}
+
+fun resetErr(): Pair<Boolean, String>{
+    return Pair(false,"")
 }

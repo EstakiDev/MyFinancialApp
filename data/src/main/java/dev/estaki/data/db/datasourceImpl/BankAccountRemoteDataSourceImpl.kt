@@ -1,15 +1,17 @@
 package dev.estaki.data.db.datasourceImpl
 
+import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.CategoryModel
+import dev.estaki.domain.repo.datasource.BankAccountDataSource
 import dev.estaki.domain.repo.datasource.CategoryDataSource
 import kotlinx.coroutines.flow.Flow
 
-class CategoryRemoteDataSourceImpl:CategoryDataSource.Remote {
-    override suspend fun readAll(): Flow<List<CategoryModel>> {
+class BankAccountRemoteDataSourceImpl: BankAccountDataSource.Remote {
+    override suspend fun readAll(): Flow<List<BankCardModel>> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun read(id: Long): Flow<CategoryModel> {
+    override suspend fun read(id: Long): Flow<BankCardModel> {
         TODO("Not yet implemented")
     }
 
@@ -17,7 +19,7 @@ class CategoryRemoteDataSourceImpl:CategoryDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(entity: CategoryModel): Flow<Int> {
+    override suspend fun delete(entity: BankCardModel): Flow<Int> {
         TODO("Not yet implemented")
     }
 
@@ -25,16 +27,15 @@ class CategoryRemoteDataSourceImpl:CategoryDataSource.Remote {
         TODO("Not yet implemented")
     }
 
-    override suspend fun upsert(entity: CategoryModel) {
+    override suspend fun upsert(entity: BankCardModel) {
         TODO("Not yet implemented")
     }
 
-
-    override suspend fun add(id: CategoryModel) {
+    override suspend fun add(entity: BankCardModel) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addAll(item: List<CategoryModel>): Flow<List<Long>> {
+    override suspend fun addAll(item: List<BankCardModel>): Flow<List<Long>> {
         TODO("Not yet implemented")
     }
 
