@@ -8,7 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import dev.estaki.myFinancialApp.presentation.splash.SplashActivity
+import dev.estaki.myFinancialApp.presentation.main.MainActivity
 import java.security.Permission
 
 object NotificationHandler {
@@ -27,7 +27,7 @@ object NotificationHandler {
                 android.Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ){
-            val intent = Intent(context, SplashActivity::class.java)
+            val intent = Intent(context, MainActivity::class.java)
             val pendingIntent = PendingIntent.getActivity(
                 context,
                 0,

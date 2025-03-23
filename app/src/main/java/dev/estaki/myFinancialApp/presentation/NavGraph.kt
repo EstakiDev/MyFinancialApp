@@ -17,6 +17,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -25,12 +26,13 @@ import androidx.navigation.navArgument
 import dev.estaki.myFinancialApp.presentation.addAndEditBankCard.AddOrEditCreditCardScreen
 import dev.estaki.myFinancialApp.presentation.detailScreen.AddDetailScreen
 import dev.estaki.myFinancialApp.presentation.main.MainScreen
+import dev.estaki.myFinancialApp.presentation.splash.MySplashScreen
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Nav(modifier: Modifier = Modifier) {
+fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
     val scrollBehavior =TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     var topAppbarState by remember {
@@ -60,12 +62,18 @@ fun Nav(modifier: Modifier = Modifier) {
             )
         }
     ) { innerPadding ->
-        val navController = rememberNavController()
         NavHost(
             modifier = modifier.padding(innerPadding),
             navController = navController,
-            startDestination = "MainScreen"
+            startDestination = "SplashScreen"
         ) {
+            composable(
+                route = "SplashScreen",
+            ) {
+                MySplashScreen(navController = navController){
+                    topAppbarState = it
+                }
+            }
             composable(
                 route = "MainScreen",
             ) {

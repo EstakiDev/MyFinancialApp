@@ -1,10 +1,7 @@
 package dev.estaki.myFinancialApp.presentation
 
-enum class ViewState {
-    LOADING,
-    FAULT,
+enum class BottomSheetState {
     FAULT_IN_PERMISSION,
-    FINISH_SPLASH_ACTIVITY,
-    Success,
-    SUCCESS_IN_PERMISSION
+    SUCCESS_IN_PERMISSION,
+    DISMISS
 }

@@ -55,7 +55,7 @@ fun MainScreen(navController: NavHostController?, viewModel: MainViewModel = hil
             title = "مدیریت اتوماتیک دخل و خرج",
         ))
     }
-    val state by viewModel.smsList.collectAsState()
+    val state by viewModel.mainScreenState.collectAsState()
 
     MainScreenUi(
         state = state,
@@ -75,7 +75,7 @@ fun MainScreenUi(
     onActions: (MainScreenActions) -> Unit
 ) {
     LaunchedEffect(key1 = false) {
-        onActions.invoke(MainScreenActions.LoadSms())
+        onActions.invoke(MainScreenActions.LoadSmsFromDb())
     }
 
     Column(modifier = Modifier) {
