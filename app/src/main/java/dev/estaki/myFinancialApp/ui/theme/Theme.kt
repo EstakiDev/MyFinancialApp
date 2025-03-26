@@ -17,19 +17,15 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import dev.estaki.ui_utils.ui.theme.DarkYellow
 import dev.estaki.ui_utils.ui.theme.Pink40
-import dev.estaki.ui_utils.ui.theme.Pink80
-import dev.estaki.ui_utils.ui.theme.Purple40
-import dev.estaki.ui_utils.ui.theme.Purple80
 import dev.estaki.ui_utils.ui.theme.PurpleGrey40
-import dev.estaki.ui_utils.ui.theme.PurpleGrey80
 import dev.estaki.ui_utils.ui.theme.TypographyDark
 import dev.estaki.ui_utils.ui.theme.TypographyLite
 
 private val DarkColorScheme = darkColorScheme(
     primary = DarkYellow,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    primaryContainer = Pink80,
+    secondary = PurpleGrey40,
+    tertiary = Pink40,
+    primaryContainer = Pink40,
 //     Other default colors to override
 //    surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,
@@ -44,8 +40,7 @@ private val LightColorScheme = lightColorScheme(
     primary = DarkYellow,
     secondary = PurpleGrey40,
     tertiary = Pink40,
-    primaryContainer = Pink80,
-
+    primaryContainer = Pink40,
 //     Other default colors to override
 //    surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,

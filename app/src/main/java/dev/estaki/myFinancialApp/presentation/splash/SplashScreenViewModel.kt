@@ -97,11 +97,11 @@ class SplashScreenViewModel @Inject constructor(
         getAllBankAccountNumberFromTbSms.invoke().catch {
             it.printStackTrace()
         }.collect {
-            Log.d("TAG", "getAllBankAccountNumberFromTbSms: done ")
+            Timber.tag("TAG").d("getAllBankAccountNumberFromTbSms: done ")
             cacheAllBankAccountToDb.invoke(it).catch {
                 it.printStackTrace()
             }.collect {
-                Log.d("TAG", "cacheBankAccountToDb: done")
+                Timber.tag("TAG").d("cacheBankAccountToDb: done")
             }
         }
     }
@@ -113,20 +113,20 @@ class SplashScreenViewModel @Inject constructor(
             it.printStackTrace()
         }.collect { smsList ->
             result = smsList
-            Log.d("TAG", "getSavedSmsInDb: done")
+            Timber.tag("TAG").d("getSavedSmsInDb: done")
         }
         return result
     }
 
     private suspend fun cacheSmsToDb(smsList: MutableList<SmsModel>) {
-        Log.d("TAG","parseSmsToModel --;;;")
+        Timber.tag("TAG").d("parseSmsToModel --;;;")
         val smsListInDb = getSavedSmsInDb()
         smsList.removeAll(smsListInDb)
 
         cashSmsToDb.invoke(smsList).catch {
             it.printStackTrace()
         }.collect {
-            Log.d("TAG","parseSmsToModel: cashSmsToDb done $it")
+            Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
         }
     }
 

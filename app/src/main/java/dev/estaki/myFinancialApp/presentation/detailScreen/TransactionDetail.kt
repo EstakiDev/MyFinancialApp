@@ -1,6 +1,7 @@
 package dev.estaki.myFinancialApp.presentation.detailScreen
 
-import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -25,10 +26,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -45,8 +52,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -62,31 +73,41 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
+import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
+import dev.estaki.domain.models.TransactionType
+import dev.estaki.myFinancialApp.presentation.actions.TransactionDetailScreenActions
 import dev.estaki.myFinancialApp.presentation.main.MyCardItem
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
+import dev.estaki.myFinancialApp.presentation.states.TransactionDetailScreenState
 import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
+import dev.estaki.ui_utils.R
 import dev.estaki.ui_utils.components.AmountTextField
 import dev.estaki.ui_utils.components.MyOutlinedButton
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.ui_utils.ui.theme.DarkYellow
+import dev.estaki.ui_utils.ui.theme.LiteWhite
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 import ir.huri.jcal.JalaliCalendar
+import timber.log.Timber
+import java.util.Date
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDetailScreen(
-    detailScreenViewModel: DetailScreenViewModel = hiltViewModel(),
+fun TransactionDetail(
+    detailScreenViewModel: TransactionDetailScreenViewModel = hiltViewModel(),
     navController: NavHostController? = null,
-    smsId: Long? = null,
+    smsId: Long,
     onComposing: (MyTopAppBarState) -> Unit
 ) {
+    val state by detailScreenViewModel.state.collectAsState()
+
     LaunchedEffect(true) {
         onComposing(
             MyTopAppBarState(
-                title = "ویرایش اطلاعات تراکنش",
+                title = if (smsId != 0L) "ویرایش اطلاعات تراکنش" else "افزودن تراکنش جدید",
                 navigationIcon = {
                     IconButton(onClick = {
                         navController?.navigateUp()
@@ -100,29 +121,56 @@ fun AddDetailScreen(
             )
         )
     }
-    smsId?.let {
-        detailScreenViewModel.loadSmsById(it)
+
+    LaunchedEffect(false) {
+        detailScreenViewModel.onAction(
+            TransactionDetailScreenActions.LoadTransaction(
+                smsId = smsId ?: 0L
+            )
+        )
     }
+    TransactionDetailUi(
+        onAction = detailScreenViewModel::onAction,
+        navController = navController,
+        state = state
+    )
+
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TransactionDetailUi(
+    modifier: Modifier = Modifier,
+    state: TransactionDetailScreenState,
+    onAction: (TransactionDetailScreenActions) -> Unit,
+    navController: NavHostController? = null
+) {
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
         val scrollState = rememberScrollState()
+        var selectedTransactionType by remember { mutableStateOf(TransactionType.DEPOSIT) }
+        var bankCardDropDownExpanded by remember { mutableStateOf(false) }
+        var menuItemData = listOf<BankCardModel>()
+        var bankAccountNumber by remember {
+            mutableStateOf(
+                state.smsModel?.bankAccountNumber ?: ""
+            )
+        }
 
-
-        Log.d("TAG", "categoryList remember start ")
-
-        Log.d("TAG", "categoryList remember finish ")
-
-        val loadingState by detailScreenViewModel.isLoading.collectAsState()
-        val smsModel by detailScreenViewModel.sms.collectAsState()
-        val cat by detailScreenViewModel.categoryList.collectAsState()
-        var categoryList by rememberSaveable(cat) { mutableStateOf(cat) }
         var text by rememberSaveable {
             mutableStateOf("")
         }
-        LaunchedEffect(key1 = cat) {
-            smsModel?.let { smsM ->
+        var localCategoryList by remember { mutableStateOf(state.categoryList) }
+
+        LaunchedEffect(key1 = state) {
+            if (state.categoryList.isEmpty().not()) {
+                localCategoryList = state.categoryList
+            }
+            state.smsModel?.let { smsM ->
                 if (smsM.categoryIds.isNotEmpty())
-                    categoryList = categoryList.map {
+                    localCategoryList = state.categoryList.map {
                         if (smsM.categoryIds.contains(it.id))
                             it.copy(isChecked = true)
                         else
@@ -130,18 +178,22 @@ fun AddDetailScreen(
                     }
             }
         }
+        LaunchedEffect(key1 = state.bankCardList) {
+            menuItemData = state.bankCardList
+            bankAccountNumber = state.smsModel?.bankAccountNumber ?: ""
+        }
         val context = LocalContext.current
         var amount by remember {
             mutableStateOf(
                 TextFieldValue(
-                    smsModel?.transactionAmount ?: "",
-                    selection = TextRange(smsModel?.transactionAmount?.length ?: 0)
+                    state.smsModel?.transactionAmount ?: "",
+                    selection = TextRange(state.smsModel?.transactionAmount?.length ?: 0)
                 )
             )
         }
-        var bankName by remember { mutableStateOf(smsModel?.bankName ?: "") }
-        var time by remember { mutableStateOf(smsModel?.transactionTime ?: "") }
-        var date by remember { mutableStateOf(smsModel?.transactionDate ?: "") }
+        var bankName by remember { mutableStateOf(state.smsModel?.bankName ?: "") }
+        var time by remember { mutableStateOf(state.smsModel?.transactionTime ?: "") }
+        var date by remember { mutableStateOf(state.smsModel?.transactionDate ?: "") }
         val coroutine = rememberCoroutineScope()
         val datePickerState = remember { mutableStateOf(false) }
         val timePickerState = remember { mutableStateOf(false) }
@@ -154,35 +206,43 @@ fun AddDetailScreen(
         val timeInteractionSource = remember {
             MutableInteractionSource()
         }
-        val newSmsModel = smsModel?.copy(
+        val segmentedButtonList = mapOf<TransactionType, String>(
+            TransactionType.DEPOSIT to "دخل",
+            TransactionType.WITHDRAW to "خرج"
+        )
+
+
+        val newSmsModel = state.smsModel?.copy(
             transactionAmount = amount.text,
             bankName = bankName,
             transactionTime = time,
             transactionDate = date,
-
-            ) ?: SmsModel(
-            null,
-            "",
-            "",
-            dev.estaki.domain.models.TransactionType.DEPOSIT,
-            "",
-            "",
-            0L,
-            "",
-            "",
+            transactionType = selectedTransactionType
+        ) ?: SmsModel(
+            id = null,
+            bankName = bankName,
+            bankAccountNumber = "",
+            transactionType = selectedTransactionType,
+            transactionAmount = amount.text,
+            transactionDate = date,
+            transactionDateTime = Date(System.currentTimeMillis()).time,
+            transactionTime = time,
+            bankCardBalance = "",
             listOf(),
             null,
             "",
             ""
         )
 
-        LaunchedEffect(key1 = smsModel) {
-            smsModel?.let {
+
+        LaunchedEffect(key1 = state.smsModel) {
+            state.smsModel?.let {
                 amount = TextFieldValue(it.transactionAmount)
                 bankName = it.bankName
                 time = it.transactionTime
                 date = it.transactionDate
                 text = it.description ?: ""
+                selectedTransactionType = it.transactionType
             }
 
         }
@@ -194,7 +254,7 @@ fun AddDetailScreen(
                 Modifier
                     .fillMaxSize()
                     .verticalScroll(scrollState)
-                    .alpha(if (loadingState) 0f else 1f)
+                    .alpha(if (state.isLoading) 0f else 1f)
             ) {
                 Spacer(Modifier.size(8.dp))
 
@@ -203,9 +263,8 @@ fun AddDetailScreen(
                         .fillMaxWidth()
                         .padding(12.dp)
                 ) {
-                    smsModel?.let {
-                        MyCardItem(smsModel = newSmsModel) { }
-                    }
+                    MyCardItem(smsModel = newSmsModel) { }
+
                     Spacer(modifier = Modifier.size(12.dp))
                     Row(modifier = Modifier.fillMaxWidth()) {
                         AmountTextField(
@@ -213,8 +272,8 @@ fun AddDetailScreen(
                             modifier = Modifier.fillMaxWidth(0.5F),
                             unit = "ريال"
                         ) {
-                            Log.d("TAG", "length: ${it.selection.length}")
-                            Log.d("TAG", "length+1: ${it.selection.length + 1}")
+                            Timber.tag("TAG").d("length: ${it.selection.length}")
+                            Timber.tag("TAG").d("length+1: ${it.selection.length + 1}")
                             amount = it
                         }
                         Spacer(modifier = Modifier.size(12.dp))
@@ -311,7 +370,7 @@ fun AddDetailScreen(
 
                     }
                     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                        if (initialDateForDatePicker.isNotEmpty())
+                        if (initialDateForDatePicker.isNotEmpty() && initialDateForDatePicker.size == 3)
                             JalaliDatePickerDialog(
                                 openDialog = datePickerState,
                                 initialDate = JalaliCalendar(
@@ -320,20 +379,16 @@ fun AddDetailScreen(
                                     initialDateForDatePicker[2].toInt()
                                 ),
                                 onSelectDay = { //it:JalaliCalendar
-                                    Log.d(
-                                        "Date",
-                                        "onSelect: ${it.day} ${it.monthString} ${it.year}"
-                                    )
+                                    Timber.tag("Date")
+                                        .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
                                 },
                                 onConfirm = {
-                                    Log.d(
-                                        "Date",
-                                        "onConfirm: ${it.day} ${it.monthString} ${it.year}"
-                                    )
+                                    Timber.tag("Date")
+                                        .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
                                     date = "${it.year}/${it.month}/${it.day}"
                                 },
                                 fontFamily = FontFamily(
-                                    Font(dev.estaki.ui_utils.R.font.aria_bold)
+                                    Font(R.font.aria_bold)
                                 ),
                                 fontSize = 17.sp,
                             )
@@ -341,20 +396,16 @@ fun AddDetailScreen(
                             JalaliDatePickerDialog(
                                 openDialog = datePickerState,
                                 onSelectDay = { //it:JalaliCalendar
-                                    Log.d(
-                                        "Date",
-                                        "onSelect: ${it.day} ${it.monthString} ${it.year}"
-                                    )
+                                    Timber.tag("Date")
+                                        .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
                                 },
                                 onConfirm = {
-                                    Log.d(
-                                        "Date",
-                                        "onConfirm: ${it.day} ${it.monthString} ${it.year}"
-                                    )
+                                    Timber.tag("Date")
+                                        .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
                                     date = "${it.year}/${it.month}/${it.day}"
                                 },
                                 fontFamily = FontFamily(
-                                    Font(dev.estaki.ui_utils.R.font.aria_bold)
+                                    Font(R.font.aria_bold)
                                 ),
                                 fontSize = 17.sp,
                             )
@@ -363,15 +414,95 @@ fun AddDetailScreen(
                     if (timePickerState.value)
                         MyTimePicker(onConfirm = {
                             timePickerState.value = false
-                            Log.d(
-                                "TAG",
-                                "CreateNewDetail: hour: ${it.hour} minute ${it.minute} "
-                            )
-
+                            Timber.tag("TAG")
+                                .d("CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
+                            time = "${if (it.hour.toString().length == 1) "0${it.hour}" else it.hour}:${it.minute}"
                         }) {
                             timePickerState.value = false
                         }
 
+                }
+                SingleChoiceSegmentedButtonRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp)
+                ) {
+                    segmentedButtonList.forEach { item ->
+                        SegmentedButton(
+                            selected = selectedTransactionType == item.key,
+                            onClick = {
+                                selectedTransactionType = item.key
+                            },
+                            enabled = true,
+                            shape = RoundedCornerShape(10.dp),
+                            icon = {
+                                Icon(
+                                    painter = painterResource(if (item.key == TransactionType.DEPOSIT) R.drawable.ic_income_32 else R.drawable.ic_expenses_32),
+                                    contentDescription = "income",
+                                    tint = if (item.key == TransactionType.DEPOSIT) Color.Green else Color.Red
+                                )
+                            }
+                        ) {
+                            Text(
+                                text = item.value, style = TextStyle(
+                                    fontSize = 15.sp,
+                                    fontFamily = ariaFaNumFontFamily,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                        }
+                    }
+                }
+                Text(
+                    text = "انتخاب حساب:", Modifier.padding(start = 12.dp),
+                    fontFamily = ariaFaNumFontFamily,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                )
+                Surface(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(LiteWhite)
+                        .clickable(onClick = {
+                            bankCardDropDownExpanded = true
+                        })
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Rounded.ArrowDropDown, contentDescription = "")
+                        Text(
+                            text = bankAccountNumber.ifBlank { "انتخاب کنید" },
+                            Modifier.padding(start = 12.dp),
+                            fontFamily = ariaFaNumFontFamily,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                        )
+                        DropdownMenu(
+                            expanded = bankCardDropDownExpanded,
+                            scrollState = rememberScrollState(),
+                            onDismissRequest = { bankCardDropDownExpanded = false }
+                        ) {
+                            menuItemData.forEach { bankCard ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text("${bankCard.bankName} / ${bankCard.bankAccountNumber}",
+                                            fontFamily = ariaFaNumFontFamily,
+                                            fontWeight = FontWeight.Medium,
+                                            fontSize = 15.sp,
+                                        )
+                                    },
+                                    onClick = {
+                                        bankAccountNumber = bankCard.bankAccountNumber
+                                        bankCardDropDownExpanded = false
+                                    }
+                                )
+                            }
+                        }
+
+                    }
                 }
 
                 TextField(
@@ -406,8 +537,6 @@ fun AddDetailScreen(
                         text = it
 
                     })
-                Log.d("TAG", "check categoryList size")
-                Log.d("TAG", "check $categoryList")
 
                 Spacer(Modifier.size(8.dp))
 
@@ -426,19 +555,17 @@ fun AddDetailScreen(
                     contentPadding = PaddingValues(horizontal = 12.dp),
                 ) {
 
-                    items(categoryList, key = {
+                    items(localCategoryList, key = {
                         it.id
                     }) { item ->
                         Surface(
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
-                                Log.d("TAG", "check before clickable $categoryList.value ")
-                                categoryList = categoryList.map {
+                                localCategoryList = localCategoryList.map {
                                     if (it.id == item.id)
                                         it.copy(isChecked = !it.isChecked)
                                     else it
                                 }
-                                Log.d("TAG", "check after clickable $categoryList")
                             }) {
                             Card(
                                 modifier = Modifier
@@ -453,9 +580,9 @@ fun AddDetailScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Log.d("TAG", "item isChecked -> ${item.isChecked}")
+                                    Timber.tag("TAG").d("item isChecked -> ${item.isChecked}")
                                     if (item.isChecked) {
-                                        Log.d("TAG", "item isChecked -> ${item.isChecked}")
+                                        Timber.tag("TAG").d("item isChecked -> ${item.isChecked}")
 
                                         Icon(
                                             modifier = Modifier.size(18.dp),
@@ -492,21 +619,27 @@ fun AddDetailScreen(
                     .fillMaxWidth()
                     .padding(12.dp)
                     .align(Alignment.BottomCenter)
-                    .alpha(if (loadingState) 0f else 1f),
+                    .alpha(if (state.isLoading) 0f else 1f),
                 text = "ذخیره"
             ) {
-                smsModel?.let { sms ->
-                    detailScreenViewModel.saveSms(
-                        sms.copy(
-                            transactionAmount = amount.text,
-                            transactionDate = date,
-                            transactionTime = time,
-                            bankName = bankName,
-                            description = text,
-                            categoryIds = categoryList.filter { it.isChecked }
-                                .map { it.id }
+                state.smsModel?.let { sms ->
+
+                    onAction.invoke(
+                        TransactionDetailScreenActions.SaveTransaction(
+                            sms.copy(
+                                transactionAmount = amount.text,
+                                bankAccountNumber = bankAccountNumber,
+                                transactionDate = date,
+                                transactionTime = time,
+                                bankName = bankName,
+                                description = text,
+                                categoryIds = state.categoryList.filter { it.isChecked }
+                                    .map { it.id },
+                                transactionType = selectedTransactionType
+                            )
                         )
                     )
+
                     navController?.navigateUp()
                 }
             }
@@ -515,7 +648,7 @@ fun AddDetailScreen(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(0.dp, 32.dp)
-                    .alpha(if (loadingState) 1f else 0f),
+                    .alpha(if (state.isLoading) 1f else 0f),
                 color = if (isSystemInDarkTheme()) ColorTextGrayOnDarkTheme else ColorTextGrayOnLiteTheme,
                 animationDuration = 800,
                 animationDelay = 200,
@@ -529,17 +662,10 @@ fun AddDetailScreen(
 
     }
 
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TransactionDetail(modifier: Modifier = Modifier, sms: SmsModel?) {
-
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AddDetailScreenPreview() {
-    AddDetailScreen(){}
+    TransactionDetail(smsId = 0L) {}
 }

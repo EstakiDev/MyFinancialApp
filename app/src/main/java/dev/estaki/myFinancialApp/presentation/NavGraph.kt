@@ -21,10 +21,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dev.estaki.myFinancialApp.presentation.addAndEditBankCard.AddOrEditCreditCardScreen
-import dev.estaki.myFinancialApp.presentation.detailScreen.AddDetailScreen
+import dev.estaki.myFinancialApp.presentation.detailScreen.TransactionDetail
 import dev.estaki.myFinancialApp.presentation.main.MainScreen
 import dev.estaki.myFinancialApp.presentation.splash.MySplashScreen
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
@@ -87,8 +86,8 @@ fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
                         type = NavType.LongType
                     }
                 )) { backStackEntry ->
-                AddDetailScreen(
-                    smsId = backStackEntry.arguments?.getLong("smsId"),
+                TransactionDetail(
+                    smsId = backStackEntry.arguments?.getLong("smsId")!!,
                     navController = navController
                 ){
                     topAppbarState = it

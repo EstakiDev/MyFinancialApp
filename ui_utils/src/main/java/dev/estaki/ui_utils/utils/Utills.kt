@@ -1,10 +1,14 @@
 package dev.estaki.ui_utils.utils
 
+import android.content.Context
+import android.content.res.Resources
 import android.graphics.Color
+import android.util.DisplayMetrics
+import android.util.TypedValue
+import kotlin.math.roundToInt
 import kotlin.random.Random
 
-fun generateRandomColor() : Int{
-    val random = Random.Default
-    val color = Color.argb(255,random.nextInt(256),random.nextInt(256),random.nextInt(256))
-    return color
+fun Context.pxToDp(px: Float): Float {
+    val displayMetrics: DisplayMetrics = this.resources.displayMetrics
+    return px / displayMetrics.density
 }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
-import dev.estaki.myFinancialApp.R
+import dev.estaki.ui_utils.R
 import dev.estaki.ui_utils.components.IconWithCircleBackground
 import dev.estaki.ui_utils.ui.theme.ColorCardExpenses
 import dev.estaki.ui_utils.ui.theme.ColorCardIncome
@@ -56,7 +57,6 @@ fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .background(brush = if (smsModel.transactionType == TransactionType.DEPOSIT) ColorCardIncome else ColorCardExpenses),
-                contentAlignment = Alignment.BottomEnd
             ) {
                 Row(
                     modifier = Modifier
@@ -73,12 +73,14 @@ fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
                     )
 
                     Column(
-                        modifier = Modifier.padding(horizontal = 12.dp).fillMaxWidth(0.5F),
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                            .wrapContentSize(),
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.Start
                     ) {
                         Text(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.wrapContentSize(),
                             text = smsModel.bankName,
                             fontWeight = FontWeight.Black,
                             fontSize = 14.sp,
@@ -86,12 +88,12 @@ fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
 
                             )
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.wrapContentSize(),
                             verticalAlignment = Alignment.CenterVertically,
 
-                        ) {
+                            ) {
                             Text(
-                                modifier = Modifier.fillMaxWidth(0.7F),
+                                modifier = Modifier.wrapContentSize(),
                                 text = if (!smsModel.transactionAmount.contains("ریال")) smsModel.transactionAmount.plus(
                                     " ریال "
                                 ) else smsModel.transactionAmount,
@@ -99,7 +101,11 @@ fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
                                 fontSize = 13.sp,
                                 lineHeight = 26.sp,
                                 overflow = TextOverflow.Visible,
-                                style = TextStyle(lineBreak = LineBreak.Paragraph, fontFamily = ariaFaNumFontFamily, lineHeight = 8.sp)
+                                style = TextStyle(
+                                    lineBreak = LineBreak.Paragraph,
+                                    fontFamily = ariaFaNumFontFamily,
+                                    lineHeight = 8.sp
+                                )
                             )
                             Spacer(modifier = Modifier.fillMaxWidth(0.05F))
                             Text(
@@ -113,7 +119,7 @@ fun MyCardItem(smsModel: SmsModel, onCardClick: () -> Unit) {
                         }
 
 
-                        Row(Modifier.fillMaxWidth()) {
+                        Row(Modifier.wrapContentSize()) {
                             Text(
                                 text = smsModel.transactionTime,
                                 fontWeight = FontWeight.Bold,

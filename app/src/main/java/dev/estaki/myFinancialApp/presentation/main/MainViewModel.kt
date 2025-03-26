@@ -1,6 +1,5 @@
 package dev.estaki.myFinancialApp.presentation.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,9 +11,7 @@ import dev.estaki.domain.usecases.GetAllCategoryCount
 import dev.estaki.domain.usecases.GetAllSmsByBankAccountNumber
 import dev.estaki.domain.usecases.GetFirstOpenApp
 import dev.estaki.domain.usecases.SaveFirstAppOpen
-import dev.estaki.myFinancialApp.presentation.BottomSheetState
 import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
-import dev.estaki.myFinancialApp.presentation.actions.SplashScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,6 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.Date
 import javax.inject.Inject
 
@@ -48,33 +46,39 @@ class MainViewModel @Inject constructor(
 
     fun onAction(action: MainScreenActions) {
         when (action) {
-            is MainScreenActions.LoadSmsFromDb -> {
+            is MainScreenActions.LoadCardsFromDb -> {
                 viewModelScope.launch {
                     getAllBankCardFromTbBankCard.invoke().catch {
                         it.printStackTrace()
                     }.collect {
-                        listOfBankAccountNumber = it
-                        if (listOfBankAccountNumber.isNotEmpty())
-                            getAllSmsByBankAccountNumber(listOfBankAccountNumber.first().bankAccountNumber)
+                        _mainScreenState.update { state ->
+                            state.copy(
+                                listBankAccountNumber = it
+                            )}
                     }
                 }
             }
 
             is MainScreenActions.OpenSms -> Unit
             is MainScreenActions.ReloadSmsByScrollCards -> {
+                _mainScreenState.update { state ->
+                    state.copy(
+                        isLoading = true
+                    )}
                 getAllSmsByBankAccountNumber(action.bankAccountNumber)
             }
-
         }
     }
 
-    fun getAllSmsByBankAccountNumber(bankAccountNumber: String) {
+    fun prepareDataForEditOrCreatCard(){
+        _mainScreenState.update { state ->
+            state.copy(
+                isLoading = true,
+                listBankAccountNumber = emptyList()
+            )}
+    }
+    private fun getAllSmsByBankAccountNumber(bankAccountNumber: String) {
         viewModelScope.launch {
-            _mainScreenState.update { state ->
-                state.copy(
-                    isLoading = true,
-                )
-            }
             getAllSmsByBankAccountNumberUseCase.invoke(bankAccountNumber).catch {
                 _mainScreenState.update { state ->
                     state.copy(
@@ -86,11 +90,10 @@ class MainViewModel @Inject constructor(
                 }
                 it.printStackTrace()
             }.collect { smsList ->
-                delay(1_000)
+                delay(200)
                 _mainScreenState.update { state ->
                     state.copy(
                         smsList = smsList,
-                        listBankAccountNumber = listOfBankAccountNumber,
                         isLoading = false,
                     )
                 }
@@ -149,7 +152,7 @@ class MainViewModel @Inject constructor(
         cacheCategoryToDb.invoke(categoryList).catch {
             it.printStackTrace()
         }.collect {
-            Log.d("TAG", "addCategoryToDb: Success $it")
+            Timber.tag("TAG").d("addCategoryToDb: Success $it")
         }
     }
 

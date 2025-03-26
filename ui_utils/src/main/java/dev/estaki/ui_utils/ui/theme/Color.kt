@@ -19,9 +19,7 @@ val CreditColors = listOf<Color>(
 )
 
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+
 val DarkYellow = Color(0xFFDA8300)
 val White = Color(0xFFFFFFFF)
 
@@ -47,7 +45,9 @@ val ColorCardIncomeB = Color(0xCC54BB6A)
 val ColorCardIncomeA = Color(0xCCABD6B4)
 val ColorCardExpensesA = Color(0xCCDA9D9D)
 val ColorCardExpensesB = Color(0xFFFF3F3C)
-
+val BlueSky= Color(0xFF4478a9)
+val NightSky =  Color(0xFF333333)
+val BorderColor = Color(0x40000000)
 val ColorCardIncome = Brush.horizontalGradient(
     colors = listOf(
         ColorCardIncomeB, ColorCardIncomeA

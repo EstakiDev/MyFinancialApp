@@ -65,10 +65,10 @@ fun AddOrEditCreditCardScreen(
     var showWarningDialog by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(true) {
+    LaunchedEffect(state) {
         onComposing(
             MyTopAppBarState(
-                title =  "ویرایش جزئیات کارت",
+                title =  if (state.isLoading) "درحال بارگذاری..." else if (state.bankCardModel != null) "ویرایش جزئیات کارت" else "افزودن کارت",
                 actions = {
                     if (state.bankCardModel != null) {
                         IconButton(onClick = {
@@ -313,7 +313,7 @@ fun AddOrEditCreditCard(
                     cardNumberErr = Pair(true, "شماره کارت نمیتواند خالی باشد")
                 }
                 if (bankAccountNumber.isBlank()) {
-                    bankAccountNumberErr = Pair(true, "نام بانک نمیتواند خالی باشد")
+                    bankAccountNumberErr = Pair(true, "شماره حساب نمیتواند خالی باشد")
                 }
                 if (bankNameErr.first || cardNumberErr.first || bankAccountNumberErr.first) {
 

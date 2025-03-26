@@ -16,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class SmsReceiver : BroadcastReceiver() {
@@ -24,31 +25,8 @@ class SmsReceiver : BroadcastReceiver() {
     private val TAG = "SMSBroadcastReceiver";
 
     override fun onReceive(context: Context, intent: Intent) {
-        Log.d(TAG, "onReceive: SmsReceiver")
+        Timber.tag(TAG).d("onReceive: SmsReceiver")
         if (intent.action == SMS_RECEIVED) {
-//            val bundle = intent.extras
-//            bundle?.let { myBundle ->
-//                val pdus = myBundle.get("pdus") as? Array<*>?
-//                pdus?.let { pdusArray ->
-//                    pdus.forEach { item ->
-//                        CoroutineScope(Dispatchers.IO).launch{
-//                            val smsMessage: SmsMessage = SmsMessage.createFromPdu( item as ByteArray)
-//                            val sender = smsMessage.displayOriginatingAddress
-//                            val messageBody = smsMessage.messageBody
-//                            Log.d(TAG, "onReceive: smsRecived $sender $messageBody")
-//
-//                            NotificationHandler.showSmsNotification(context, title = "مثل اینکه تراکنش جدید داری 👇", message = "بهتره که بخونیش و براش تصمیم بگیری", smsSender = sender, smsBody = messageBody)
-//
-////                            delay(5_000)
-////                            if (SmsValidator.isBankSms(SmsRawModel("1", senderName = sender, description = messageBody,"",""))){
-////                            }else{
-////                                Log.d(TAG, "onReceive: sms not bank sms")
-////                            }
-//                        }
-//                    }
-//                }
-//            }
-
 
             val bundle: Bundle? = intent.extras
             if (bundle != null) {
@@ -72,14 +50,13 @@ class SmsReceiver : BroadcastReceiver() {
                             strBuildMessageBody.append(message)
                             smsSender = sender.toString()
                             // پردازش پیام دریافتی
-                            Log.d("SmsReceiver", "پیام از شماره: $sender محتوای پیام: $message")
+                            Timber.tag("SmsReceiver")
+                                .d("پیام از شماره: $sender محتوای پیام: $message")
                         }
 
                     }
-                    Log.d(
-                        TAG,
-                        "onReceive: \"SmsReceiver Final: ${smsSender} -> ${strBuildMessageBody}\""
-                    )
+                    Timber.tag(TAG)
+                        .d("onReceive: \"SmsReceiver Final: ${smsSender} -> ${strBuildMessageBody}\"")
 
                     delay(5_000)
                     if (SmsValidator.isBankSms(
@@ -115,7 +92,7 @@ class SmsReceiver : BroadcastReceiver() {
                         )
 
                     } else {
-                        Log.d(TAG, "onReceive: sms not bank sms")
+                        Timber.tag(TAG).d("onReceive: sms not bank sms")
                     }
                 }
 

@@ -15,9 +15,9 @@ import androidx.compose.ui.unit.dp
 import dev.estaki.ui_utils.ui.theme.ColorGrayLite
 
 @Composable
-fun IconWithCircleBackground(resId: Int, visibilityState: Boolean = false) {
+fun IconWithCircleBackground(modifier: Modifier = Modifier, resId: Int, visibilityState: Boolean = false) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .alpha(if (visibilityState) 1F else 0F)
             .padding(16.dp)
             .background(color = ColorGrayLite, shape = CircleShape)
