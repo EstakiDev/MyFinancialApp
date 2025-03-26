@@ -98,7 +98,7 @@ class SplashScreenViewModel @Inject constructor(
             it.printStackTrace()
         }.collect {
             Timber.tag("TAG").d("getAllBankAccountNumberFromTbSms: done ")
-            cacheAllBankAccountToDb.invoke(it).catch {
+            cacheAllBankAccountToDb.invoke(it.map { it.copy(isItFromSms = true) }).catch {
                 it.printStackTrace()
             }.collect {
                 Timber.tag("TAG").d("cacheBankAccountToDb: done")

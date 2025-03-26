@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
+import dev.estaki.data.entities.BankAccountEntity
 import dev.estaki.data.entities.SmsEntity
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
@@ -31,7 +32,7 @@ interface SmsDao {
             "       max(transactionDateTime)\n" +
             "  FROM tb_sms\n" +
             " GROUP BY bankAccountNumber;")
-    fun readAllBankAccountNumber(): List<BankCardModel>
+    fun readAllBankAccountNumber(): List<BankAccountEntity>
 
     @Upsert
     fun upsert(sms: SmsEntity)

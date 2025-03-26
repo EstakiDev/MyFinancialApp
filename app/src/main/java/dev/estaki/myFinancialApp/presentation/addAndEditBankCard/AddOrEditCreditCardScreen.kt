@@ -70,7 +70,8 @@ fun AddOrEditCreditCardScreen(
             MyTopAppBarState(
                 title =  if (state.isLoading) "درحال بارگذاری..." else if (state.bankCardModel != null) "ویرایش جزئیات کارت" else "افزودن کارت",
                 actions = {
-                    if (state.bankCardModel != null) {
+                    state.bankCardModel?.let {
+                        if (it.isItFromSms == null || it.isItFromSms == false)
                         IconButton(onClick = {
                             showWarningDialog = true
                         }) {
@@ -80,10 +81,11 @@ fun AddOrEditCreditCardScreen(
                             )
                         }
                     }
+
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController?.navigateUp()
+                        navController.navigateUp()
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -328,7 +330,7 @@ fun AddOrEditCreditCard(
                                 bankName,
                                 bankAccountNumber,
                                 "0",
-                                cardNumber.text
+                                cardNumber.text,
                             )
                         )
                     )

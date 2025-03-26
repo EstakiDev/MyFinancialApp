@@ -6,5 +6,6 @@ data class BankCardModel(
     val bankAccountNumber: String,
     val bankCardBalance: String,
     val bankCardNumber: String?,
+    val isItFromSms: Boolean? = null,
 
     )

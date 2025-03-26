@@ -8,7 +8,8 @@ fun BankCardModel.toDbEntity() = BankAccountEntity(
     bankName = bankName,
     bankAccountNumber = bankAccountNumber,
     bankCardBalance = bankCardBalance,
-    bankCardNumber = bankCardNumber
+    bankCardNumber = bankCardNumber,
+    isItFromSms = isItFromSms
 )
 
 fun BankAccountEntity.toDomainModel() = BankCardModel(
@@ -16,6 +17,7 @@ fun BankAccountEntity.toDomainModel() = BankCardModel(
     bankName = bankName,
     bankAccountNumber = bankAccountNumber,
     bankCardBalance = bankCardBalance,
-    bankCardNumber = bankCardNumber
+    bankCardNumber = bankCardNumber,
+    isItFromSms = isItFromSms == true
 
 )

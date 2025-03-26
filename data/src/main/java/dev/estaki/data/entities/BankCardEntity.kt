@@ -10,4 +10,5 @@ data class BankAccountEntity(
     val bankAccountNumber: String,
     val bankCardNumber: String?,
     val bankCardBalance: String,
+    val isItFromSms: Boolean?,
 )
