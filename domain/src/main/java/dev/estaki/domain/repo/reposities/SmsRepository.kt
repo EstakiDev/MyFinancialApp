@@ -8,4 +8,5 @@ import kotlinx.coroutines.flow.Flow
 interface SmsRepository:BaseRepository<SmsModel,Int,Long> {
     suspend fun getSmsByBankAccountNumber(accountNumber:String):Flow<List<SmsModel>>
     suspend fun getAllBankAccountNumber():Flow<List<BankCardModel>>
+    suspend fun setSmsWasSaw(smsId: Long)
 }

@@ -22,6 +22,7 @@ import dev.estaki.domain.usecases.GetFirstOpenApp
 import dev.estaki.domain.usecases.GetSingleBankAccount
 import dev.estaki.domain.usecases.GetSingleSms
 import dev.estaki.domain.usecases.SaveFirstAppOpen
+import dev.estaki.domain.usecases.SetSmsWasSaw
 import dev.estaki.domain.usecases.UpsertBankCard
 import dev.estaki.domain.usecases.UpsertSms
 
@@ -105,5 +106,10 @@ class UseCasesModule {
     @Provides
     fun provideDeleteBankCardUseCase(bankAccountRepository: BankAccountRepository):DeleteBankCard{
         return DeleteBankCard(bankAccountRepository)
+    }
+
+    @Provides
+    fun provideSetSmsWasSawUseCase(smsRepository: SmsRepository): SetSmsWasSaw{
+        return SetSmsWasSaw(smsRepository)
     }
 }

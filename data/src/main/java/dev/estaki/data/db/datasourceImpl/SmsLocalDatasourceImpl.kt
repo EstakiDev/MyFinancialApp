@@ -59,4 +59,10 @@ class SmsLocalDatasourceImpl(
 
     override suspend fun getAllBankAccountNumber(): Flow<List<BankCardModel>> =
         flow { emit(smsDao.readAllBankAccountNumber().map { it.toDomainModel() }) }.flowOn(Dispatchers.IO)
+
+    override suspend fun setSmsWasSaw(smsId: Long) {
+        withContext(Dispatchers.IO) {
+            smsDao.setSmsWasSaw(smsId)
+        }
+    }
 }

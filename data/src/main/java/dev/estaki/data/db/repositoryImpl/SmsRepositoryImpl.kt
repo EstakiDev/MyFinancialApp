@@ -50,5 +50,9 @@ class SmsRepositoryImpl(
     override suspend fun getAllBankAccountNumber(): Flow<List<BankCardModel>> =
         localDS.getAllBankAccountNumber()
 
+    override suspend fun setSmsWasSaw(smsId: Long) {
+        localDS.setSmsWasSaw(smsId)
+    }
+
 
 }

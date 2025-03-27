@@ -10,6 +10,8 @@ interface SmsDataSource {
     interface Local: BaseDataSource<SmsModel, Int, Long> {
         suspend fun getSmsByBankAccountNumber(accountNumber:String):Flow<List<SmsModel>>
         suspend fun getAllBankAccountNumber():Flow<List<BankCardModel>>
+        suspend fun setSmsWasSaw(smsId: Long)
+
     }
 
     interface Remote:BaseDataSource<SmsModel,Int,Long> {

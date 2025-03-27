@@ -27,6 +27,7 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF715B5F)
 val Pink40 = Color(0xFF7D5260)
 val ColorGrayLite = Color(0xCCECECEC)
+val ColorGrayDark = Color(0xCCA4A4A4)
 val ColorGrayLiteShimmer = Color(0x65ECECEC)
 val ColorShimmerGrayMedium = Color(0xE4EDFFFF)
 

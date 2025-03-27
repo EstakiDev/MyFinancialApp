@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -34,7 +35,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
@@ -125,7 +124,7 @@ fun TransactionDetail(
     LaunchedEffect(false) {
         detailScreenViewModel.onAction(
             TransactionDetailScreenActions.LoadTransaction(
-                smsId = smsId ?: 0L
+                smsId = smsId
             )
         )
     }
@@ -152,7 +151,7 @@ fun TransactionDetailUi(
         val scrollState = rememberScrollState()
         var selectedTransactionType by remember { mutableStateOf(TransactionType.DEPOSIT) }
         var bankCardDropDownExpanded by remember { mutableStateOf(false) }
-        var menuItemData = listOf<BankCardModel>()
+        var menuItemData by remember { mutableStateOf<List<BankCardModel>>(state.bankCardList) }
         var bankAccountNumber by remember {
             mutableStateOf(
                 state.smsModel?.bankAccountNumber ?: ""
@@ -163,7 +162,6 @@ fun TransactionDetailUi(
             mutableStateOf("")
         }
         var localCategoryList by remember { mutableStateOf(state.categoryList) }
-
         LaunchedEffect(key1 = state) {
             if (state.categoryList.isEmpty().not()) {
                 localCategoryList = state.categoryList
@@ -180,6 +178,9 @@ fun TransactionDetailUi(
         }
         LaunchedEffect(key1 = state.bankCardList) {
             menuItemData = state.bankCardList
+        }
+
+        LaunchedEffect(key1 = state.smsModel) {
             bankAccountNumber = state.smsModel?.bankAccountNumber ?: ""
         }
         val context = LocalContext.current
@@ -255,6 +256,7 @@ fun TransactionDetailUi(
                     .fillMaxSize()
                     .verticalScroll(scrollState)
                     .alpha(if (state.isLoading) 0f else 1f)
+                    .padding(bottom = 92.dp)
             ) {
                 Spacer(Modifier.size(8.dp))
 
@@ -416,7 +418,8 @@ fun TransactionDetailUi(
                             timePickerState.value = false
                             Timber.tag("TAG")
                                 .d("CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
-                            time = "${if (it.hour.toString().length == 1) "0${it.hour}" else it.hour}:${it.minute}"
+                            time =
+                                "${if (it.hour.toString().length == 1) "0${it.hour}" else it.hour}:${it.minute}"
                         }) {
                             timePickerState.value = false
                         }
@@ -461,15 +464,19 @@ fun TransactionDetailUi(
                 )
                 Surface(
                     modifier = Modifier
-                        .wrapContentSize()
-                        .padding(8.dp)
+                        .padding(horizontal = 8.dp)
+                        .wrapContentWidth()
+                        .height(45.dp)
                         .clip(RoundedCornerShape(10.dp))
                         .background(LiteWhite)
                         .clickable(onClick = {
                             bankCardDropDownExpanded = true
                         })
+                        .padding(horizontal = 8.dp)
+
                 ) {
                     Row(
+                        modifier = Modifier.background(LiteWhite),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(Icons.Rounded.ArrowDropDown, contentDescription = "")
@@ -488,7 +495,8 @@ fun TransactionDetailUi(
                             menuItemData.forEach { bankCard ->
                                 DropdownMenuItem(
                                     text = {
-                                        Text("${bankCard.bankName} / ${bankCard.bankAccountNumber}",
+                                        Text(
+                                            "${bankCard.bankName} / ${bankCard.bankAccountNumber}",
                                             fontFamily = ariaFaNumFontFamily,
                                             fontWeight = FontWeight.Medium,
                                             fontSize = 15.sp,
@@ -535,7 +543,6 @@ fun TransactionDetailUi(
                     value = text,
                     onValueChange = {
                         text = it
-
                     })
 
                 Spacer(Modifier.size(8.dp))
@@ -635,7 +642,8 @@ fun TransactionDetailUi(
                                 description = text,
                                 categoryIds = state.categoryList.filter { it.isChecked }
                                     .map { it.id },
-                                transactionType = selectedTransactionType
+                                transactionType = selectedTransactionType,
+                                isModified = true
                             )
                         )
                     )

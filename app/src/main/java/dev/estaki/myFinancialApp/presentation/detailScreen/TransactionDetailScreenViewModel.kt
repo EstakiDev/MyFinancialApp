@@ -10,6 +10,7 @@ import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetSingleSms
+import dev.estaki.domain.usecases.SetSmsWasSaw
 import dev.estaki.domain.usecases.UpsertSms
 import dev.estaki.myFinancialApp.presentation.actions.TransactionDetailScreenActions
 import dev.estaki.myFinancialApp.presentation.states.TransactionDetailScreenState
@@ -27,6 +28,7 @@ class TransactionDetailScreenViewModel @Inject constructor(
     private val getAllCategoryList: GetAllCategoryList,
     private val getSingleSmsUseCase: GetSingleSms,
     private val saveSmsUseCase: UpsertSms,
+    private val setSmsWasSawUseCase: SetSmsWasSaw,
     private val getAllBankCardFromTbBankCard: GetAllBankCardFromTbBankCard
 ) : ViewModel() {
 
@@ -44,9 +46,10 @@ class TransactionDetailScreenViewModel @Inject constructor(
                             isLoading = true
                         )
                     }
+                    getAllBankCardFromTb()
                     getCategoryList()
                     loadSmsById(action.smsId)
-                    getAllBankCardFromTb()
+                    setSmsWasSawUseCase.invoke(action.smsId)
                     _state.update {
                         it.copy(
                             isLoading = false
@@ -91,6 +94,17 @@ class TransactionDetailScreenViewModel @Inject constructor(
                     )
                 }
             }
+    }
+    private suspend fun setSmsWasSaw(id: Long) {
+        getSingleSmsUseCase.invoke(id).catch {
+            it.printStackTrace()
+        }.collect {smsModel ->
+            _state.update {
+                it.copy(
+                    smsModel = smsModel
+                )
+            }
+        }
     }
     private fun saveSms(smsModel: SmsModel) {
         viewModelScope.launch {

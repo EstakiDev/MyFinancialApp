@@ -138,7 +138,7 @@ fun MainScreenUi(
                         modifier = Modifier
                             .fillMaxSize()
                             .wrapContentHeight(),
-                        contentPadding = PaddingValues(vertical = 8.dp),
+                        contentPadding = PaddingValues( 4.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
 
