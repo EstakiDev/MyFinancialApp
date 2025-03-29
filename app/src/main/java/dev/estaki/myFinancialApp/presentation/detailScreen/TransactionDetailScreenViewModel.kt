@@ -1,11 +1,9 @@
 package dev.estaki.myFinancialApp.presentation.detailScreen
 
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryList
@@ -14,7 +12,6 @@ import dev.estaki.domain.usecases.SetSmsWasSaw
 import dev.estaki.domain.usecases.UpsertSms
 import dev.estaki.myFinancialApp.presentation.actions.TransactionDetailScreenActions
 import dev.estaki.myFinancialApp.presentation.states.TransactionDetailScreenState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

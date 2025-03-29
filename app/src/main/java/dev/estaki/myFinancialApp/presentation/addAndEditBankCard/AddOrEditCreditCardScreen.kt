@@ -18,6 +18,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -65,7 +66,7 @@ fun AddOrEditCreditCardScreen(
     var showWarningDialog by remember {
         mutableStateOf(false)
     }
-    LaunchedEffect(state) {
+    DisposableEffect(state) {
         onComposing(
             MyTopAppBarState(
                 title =  if (state.isLoading) "درحال بارگذاری..." else if (state.bankCardModel != null) "ویرایش جزئیات کارت" else "افزودن کارت",
@@ -95,6 +96,15 @@ fun AddOrEditCreditCardScreen(
                 },
             )
         )
+        onDispose {
+            onDispose {
+                onComposing(
+                    MyTopAppBarState(
+                        title = "درحال بارگذاری...",
+                    )
+                )
+            }
+        }
     }
     if (showWarningDialog) {
         MyAlertDialog(

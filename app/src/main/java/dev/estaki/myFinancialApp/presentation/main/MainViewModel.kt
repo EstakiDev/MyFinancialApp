@@ -61,21 +61,21 @@ class MainViewModel @Inject constructor(
 
             is MainScreenActions.OpenSms -> Unit
             is MainScreenActions.ReloadSmsByScrollCards -> {
-                _mainScreenState.update { state ->
-                    state.copy(
-                        isLoading = true
-                    )}
+                if(action.bankAccountNumber != _mainScreenState.value.currentBankAccountNumber)
+                    _mainScreenState.update { state -> state.copy(isLoading = true)}
                 getAllSmsByBankAccountNumber(action.bankAccountNumber)
             }
         }
     }
 
-    fun prepareDataForEditOrCreatCard(){
-        _mainScreenState.update { state ->
-            state.copy(
-                isLoading = true,
-                listBankAccountNumber = emptyList()
-            )}
+    fun prepareDataForEditOrCreateCard(){
+        viewModelScope.launch {
+            _mainScreenState.update { state ->
+                state.copy(
+                    isLoading = true,
+                    listBankAccountNumber = emptyList()
+                )}
+        }
     }
     private fun getAllSmsByBankAccountNumber(bankAccountNumber: String) {
         viewModelScope.launch {
@@ -95,6 +95,7 @@ class MainViewModel @Inject constructor(
                     state.copy(
                         smsList = smsList,
                         isLoading = false,
+                        currentBankAccountNumber = bankAccountNumber
                     )
                 }
             }

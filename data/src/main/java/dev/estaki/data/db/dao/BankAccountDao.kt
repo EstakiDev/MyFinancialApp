@@ -12,7 +12,7 @@ import dev.estaki.domain.models.BankCardModel
 @Dao
 interface BankAccountDao {
 
-    @Insert(onConflict = OnConflictStrategy.Companion.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     fun insertAll(smsList :List<BankAccountEntity>):List<Long>
 
     @Query("SELECT * FROM tb_bank_account ORDER BY id DESC")
