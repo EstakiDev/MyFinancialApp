@@ -1,5 +1,6 @@
 package dev.estaki.myFinancialApp.presentation.detailScreen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -67,12 +68,14 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.gmail.hamedvakhide.compose_jalali_datepicker.JalaliDatePickerDialog
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
@@ -82,14 +85,19 @@ import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
 import dev.estaki.myFinancialApp.presentation.states.TransactionDetailScreenState
 import dev.estaki.myFinancialApp.presentation.timepicker.MyTimePicker
 import dev.estaki.ui_utils.R
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.components.AmountTextField
 import dev.estaki.ui_utils.components.MyOutlinedButton
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.ui_utils.ui.theme.DarkYellow
+import dev.estaki.ui_utils.ui.theme.LiteRed
 import dev.estaki.ui_utils.ui.theme.LiteWhite
+import dev.estaki.ui_utils.ui.theme.RedDark
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
 import ir.huri.jcal.JalaliCalendar
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.Date
 
@@ -117,11 +125,9 @@ fun TransactionDetail(
                             contentDescription = "back"
                         )
                     }
-                }
-            )
+                })
         )
-        onDispose {
-        }
+        onDispose {}
     }
 
     LaunchedEffect(false) {
@@ -132,9 +138,7 @@ fun TransactionDetail(
         )
     }
     TransactionDetailUi(
-        onAction = detailScreenViewModel::onAction,
-        navController = navController,
-        state = state
+        onAction = detailScreenViewModel::onAction, navController = navController, state = state
     )
 
 }
@@ -160,6 +164,17 @@ fun TransactionDetailUi(
                 state.smsModel?.bankAccountNumber ?: ""
             )
         }
+        var amountErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
+        var bankNameErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
+        var dateErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
+        var timeErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
+        var bankAccountNumberErr by remember {
+            mutableStateOf<Pair<Boolean, String>>(
+                Pair(
+                    false, ""
+                )
+            )
+        }
 
         var text by rememberSaveable {
             mutableStateOf("")
@@ -170,13 +185,10 @@ fun TransactionDetailUi(
                 localCategoryList = state.categoryList
             }
             state.smsModel?.let { smsM ->
-                if (smsM.categoryIds.isNotEmpty())
-                    localCategoryList = state.categoryList.map {
-                        if (smsM.categoryIds.contains(it.id))
-                            it.copy(isChecked = true)
-                        else
-                            it
-                    }
+                if (smsM.categoryIds.isNotEmpty()) localCategoryList = state.categoryList.map {
+                    if (smsM.categoryIds.contains(it.id)) it.copy(isChecked = true)
+                    else it
+                }
             }
         }
         LaunchedEffect(key1 = state.bankCardList) {
@@ -211,8 +223,7 @@ fun TransactionDetailUi(
             MutableInteractionSource()
         }
         val segmentedButtonList = mapOf<TransactionType, String>(
-            TransactionType.DEPOSIT to "دخل",
-            TransactionType.WITHDRAW to "خرج"
+            TransactionType.DEPOSIT to "دخل", TransactionType.WITHDRAW to "خرج"
         )
 
 
@@ -275,7 +286,16 @@ fun TransactionDetailUi(
                         AmountTextField(
                             amount = amount,
                             modifier = Modifier.fillMaxWidth(0.5F),
-                            unit = "ريال"
+                            unit = "ريال",
+                            isError = amountErr.first,
+                            supportingText = {
+                                Text(
+                                    text = amountErr.second,
+                                    color = if (timeErr.first) RedDark else LiteWhite,
+                                    lineHeight = 14.sp
+                                )
+                            }
+
                         ) {
                             Timber.tag("TAG").d("length: ${it.selection.length}")
                             Timber.tag("TAG").d("length+1: ${it.selection.length + 1}")
@@ -290,12 +310,17 @@ fun TransactionDetailUi(
                             },
                             label = {
                                 Text(
-                                    "نام بانک",
-                                    style = TextStyle(
-                                        fontSize = 14.sp,
-                                        fontFamily = ariaFaNumFontFamily
-                                    ),
-                                    fontWeight = FontWeight.Bold
+                                    "نام بانک", style = TextStyle(
+                                        fontSize = 14.sp, fontFamily = ariaFaNumFontFamily
+                                    ), fontWeight = FontWeight.Bold
+                                )
+                            },
+                            isError = bankNameErr.first,
+                            supportingText = {
+                                Text(
+                                    text = bankNameErr.second,
+                                    color = if (timeErr.first) RedDark else LiteWhite,
+                                    lineHeight = 14.sp
                                 )
                             },
                             modifier = Modifier.fillMaxWidth(1F),
@@ -321,12 +346,17 @@ fun TransactionDetailUi(
                             readOnly = true,
                             label = {
                                 Text(
-                                    text = "تاریخ",
-                                    style = TextStyle(
-                                        fontSize = 17.sp,
-                                        fontFamily = ariaFaNumFontFamily
-                                    ),
-                                    fontWeight = FontWeight.Bold
+                                    text = "تاریخ", style = TextStyle(
+                                        fontSize = 17.sp, fontFamily = ariaFaNumFontFamily
+                                    ), fontWeight = FontWeight.Bold
+                                )
+                            },
+                            isError = dateErr.first,
+                            supportingText = {
+                                Text(
+                                    text = dateErr.second,
+                                    color = if (dateErr.first) RedDark else LiteWhite,
+                                    lineHeight = 14.sp
                                 )
                             },
                             textStyle = TextStyle(
@@ -353,12 +383,17 @@ fun TransactionDetailUi(
                             interactionSource = timeInteractionSource,
                             label = {
                                 Text(
-                                    "ساعت",
-                                    style = TextStyle(
-                                        fontSize = 17.sp,
-                                        fontFamily = ariaFaNumFontFamily
-                                    ),
-                                    fontWeight = FontWeight.Bold
+                                    "ساعت", style = TextStyle(
+                                        fontSize = 17.sp, fontFamily = ariaFaNumFontFamily
+                                    ), fontWeight = FontWeight.Bold
+                                )
+                            },
+                            isError = timeErr.first,
+                            supportingText = {
+                                Text(
+                                    text = timeErr.second,
+                                    color = if (timeErr.first) RedDark else LiteWhite,
+                                    lineHeight = 14.sp
                                 )
                             },
                             textStyle = TextStyle(
@@ -375,57 +410,54 @@ fun TransactionDetailUi(
 
                     }
                     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-                        if (initialDateForDatePicker.isNotEmpty() && initialDateForDatePicker.size == 3)
-                            JalaliDatePickerDialog(
-                                openDialog = datePickerState,
-                                initialDate = JalaliCalendar(
-                                    initialDateForDatePicker[0].toInt(),
-                                    initialDateForDatePicker[1].toInt(),
-                                    initialDateForDatePicker[2].toInt()
-                                ),
-                                onSelectDay = { //it:JalaliCalendar
-                                    Timber.tag("Date")
-                                        .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
-                                },
-                                onConfirm = {
-                                    Timber.tag("Date")
-                                        .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
-                                    date = "${it.year}/${it.month}/${it.day}"
-                                },
-                                fontFamily = FontFamily(
-                                    Font(R.font.aria_bold)
-                                ),
-                                fontSize = 17.sp,
-                            )
-                        else
-                            JalaliDatePickerDialog(
-                                openDialog = datePickerState,
-                                onSelectDay = { //it:JalaliCalendar
-                                    Timber.tag("Date")
-                                        .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
-                                },
-                                onConfirm = {
-                                    Timber.tag("Date")
-                                        .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
-                                    date = "${it.year}/${it.month}/${it.day}"
-                                },
-                                fontFamily = FontFamily(
-                                    Font(R.font.aria_bold)
-                                ),
-                                fontSize = 17.sp,
-                            )
+                        if (initialDateForDatePicker.isNotEmpty() && initialDateForDatePicker.size == 3) JalaliDatePickerDialog(
+                            openDialog = datePickerState,
+                            initialDate = JalaliCalendar(
+                                initialDateForDatePicker[0].toInt(),
+                                initialDateForDatePicker[1].toInt(),
+                                initialDateForDatePicker[2].toInt()
+                            ),
+                            onSelectDay = { //it:JalaliCalendar
+                                Timber.tag("Date")
+                                    .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
+                            },
+                            onConfirm = {
+                                Timber.tag("Date")
+                                    .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                                date = "${it.year}/${it.month}/${it.day}"
+                            },
+                            fontFamily = FontFamily(
+                                Font(R.font.aria_bold)
+                            ),
+                            fontSize = 17.sp,
+                        )
+                        else JalaliDatePickerDialog(
+                            openDialog = datePickerState,
+                            onSelectDay = { //it:JalaliCalendar
+                                Timber.tag("Date")
+                                    .d("onSelect: ${it.day} ${it.monthString} ${it.year}")
+                            },
+                            onConfirm = {
+                                Timber.tag("Date")
+                                    .d("onConfirm: ${it.day} ${it.monthString} ${it.year}")
+                                date = "${it.year}/${it.month}/${it.day}"
+                            },
+                            fontFamily = FontFamily(
+                                Font(R.font.aria_bold)
+                            ),
+                            fontSize = 17.sp,
+                        )
                     }
 
-                    if (timePickerState.value)
-                        MyTimePicker(onConfirm = {
-                            timePickerState.value = false
-                            Timber.tag("TAG")
-                                .d("CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
-                            time =
-                                "${if (it.hour.toString().length == 1) "0${it.hour}" else it.hour}:${it.minute}"
-                        }) {
-                            timePickerState.value = false
-                        }
+                    if (timePickerState.value) MyTimePicker(onConfirm = {
+                        timePickerState.value = false
+                        Timber.tag("TAG")
+                            .d("CreateNewDetail: hour: ${it.hour} minute ${it.minute} ")
+                        time =
+                            "${if (it.hour.toString().length == 1) "0${it.hour}" else it.hour}:${it.minute}"
+                    }) {
+                        timePickerState.value = false
+                    }
 
                 }
                 SingleChoiceSegmentedButtonRow(
@@ -434,21 +466,15 @@ fun TransactionDetailUi(
                         .padding(12.dp)
                 ) {
                     segmentedButtonList.forEach { item ->
-                        SegmentedButton(
-                            selected = selectedTransactionType == item.key,
-                            onClick = {
-                                selectedTransactionType = item.key
-                            },
-                            enabled = true,
-                            shape = RoundedCornerShape(10.dp),
-                            icon = {
-                                Icon(
-                                    painter = painterResource(if (item.key == TransactionType.DEPOSIT) R.drawable.ic_income_32 else R.drawable.ic_expenses_32),
-                                    contentDescription = "income",
-                                    tint = if (item.key == TransactionType.DEPOSIT) Color.Green else Color.Red
-                                )
-                            }
-                        ) {
+                        SegmentedButton(selected = selectedTransactionType == item.key, onClick = {
+                            selectedTransactionType = item.key
+                        }, enabled = true, shape = RoundedCornerShape(10.dp), icon = {
+                            Icon(
+                                painter = painterResource(if (item.key == TransactionType.DEPOSIT) R.drawable.ic_income_32 else R.drawable.ic_expenses_32),
+                                contentDescription = "income",
+                                tint = if (item.key == TransactionType.DEPOSIT) Color.Green else Color.Red
+                            )
+                        }) {
                             Text(
                                 text = item.value, style = TextStyle(
                                     fontSize = 15.sp,
@@ -478,42 +504,53 @@ fun TransactionDetailUi(
                         .padding(horizontal = 8.dp)
 
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier.background(LiteWhite),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalArrangement = Arrangement.Center
                     ) {
-                        Icon(Icons.Rounded.ArrowDropDown, contentDescription = "")
-                        Text(
-                            text = bankAccountNumber.ifBlank { "انتخاب کنید" },
-                            Modifier.padding(start = 12.dp),
-                            fontFamily = ariaFaNumFontFamily,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp,
-                        )
-                        DropdownMenu(
-                            expanded = bankCardDropDownExpanded,
-                            scrollState = rememberScrollState(),
-                            onDismissRequest = { bankCardDropDownExpanded = false }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            menuItemData.forEach { bankCard ->
-                                DropdownMenuItem(
-                                    text = {
+                            Icon(Icons.Rounded.ArrowDropDown, contentDescription = "")
+                            Text(
+                                text = bankAccountNumber.ifBlank { "انتخاب کنید" },
+                                Modifier.padding(start = 12.dp),
+                                fontFamily = ariaFaNumFontFamily,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp,
+                            )
+                            DropdownMenu(
+                                expanded = bankCardDropDownExpanded,
+                                scrollState = rememberScrollState(),
+                                onDismissRequest = { bankCardDropDownExpanded = false }) {
+                                menuItemData.forEach { bankCard ->
+                                    DropdownMenuItem(text = {
                                         Text(
                                             "${bankCard.bankName} / ${bankCard.bankAccountNumber}",
                                             fontFamily = ariaFaNumFontFamily,
                                             fontWeight = FontWeight.Medium,
                                             fontSize = 15.sp,
                                         )
-                                    },
-                                    onClick = {
+                                    }, onClick = {
                                         bankAccountNumber = bankCard.bankAccountNumber
                                         bankCardDropDownExpanded = false
-                                    }
-                                )
+                                    })
+                                }
                             }
+
+                        }
+                        AnimatedVisibility(bankAccountNumberErr.first) {
+                            Text(
+                                text = bankAccountNumberErr.second,
+                                modifier = Modifier.alpha(if (bankAccountNumberErr.first) 1F else 0F),
+                                color = RedDark,
+                                fontSize = 12.sp
+
+                            )
                         }
 
                     }
+
                 }
 
                 TextField(
@@ -569,17 +606,14 @@ fun TransactionDetailUi(
                         it.id
                     }) { item ->
                         Surface(
-                            shape = RoundedCornerShape(10.dp),
-                            onClick = {
+                            shape = RoundedCornerShape(10.dp), onClick = {
                                 localCategoryList = localCategoryList.map {
-                                    if (it.id == item.id)
-                                        it.copy(isChecked = !it.isChecked)
+                                    if (it.id == item.id) it.copy(isChecked = !it.isChecked)
                                     else it
                                 }
                             }) {
                             Card(
-                                modifier = Modifier
-                                    .wrapContentSize()
+                                modifier = Modifier.wrapContentSize()
 
                             ) {
 
@@ -629,30 +663,59 @@ fun TransactionDetailUi(
                     .fillMaxWidth()
                     .padding(12.dp)
                     .align(Alignment.BottomCenter)
-                    .alpha(if (state.isLoading) 0f else 1f),
-                text = "ذخیره"
+                    .alpha(if (state.isLoading) 0f else 1f), text = "ذخیره"
             ) {
-                state.smsModel?.let { sms ->
 
-                    onAction.invoke(
-                        TransactionDetailScreenActions.SaveTransaction(
-                            sms.copy(
-                                transactionAmount = amount.text,
-                                bankAccountNumber = bankAccountNumber,
-                                transactionDate = date,
-                                transactionTime = time,
-                                bankName = bankName,
-                                description = text,
-                                categoryIds = state.categoryList.filter { it.isChecked }
-                                    .map { it.id },
-                                transactionType = selectedTransactionType,
-                                isModified = true
+                if (bankName.isBlank()) {
+                    bankNameErr = Pair(true, "نام بانک نمیتواند خالی باشد")
+                }
+                if (amount.text.isBlank()) {
+                    amountErr = Pair(true, "مبلغ نمیتواند خالی باشد")
+                }
+                if (bankAccountNumber.isBlank()) {
+                    bankAccountNumberErr = Pair(true, "شماره حساب نمیتواند خالی باشد")
+                }
+                if (date.isBlank()) {
+                    dateErr = Pair(true, "تاریخ نمیتواند خالی باشد")
+                }
+                if (time.isBlank()) {
+                    timeErr = Pair(true, "ساعت تراکنش نمیتواند خالی باشد")
+                }
+                if (amountErr.first.not() || bankNameErr.first.not() || dateErr.first.not() || timeErr.first.not() || bankAccountNumberErr.first.not()) {
+                    coroutine.launch {
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "متاسفانه عملیات مورد نظر با خطا مواجه شد! \n لطفا مقادیر خالی را پرکنید. ",
+                                type = MyCustomSnackBarType.ERROR
                             )
                         )
-                    )
+                    }
 
-                    navController?.navigateUp()
+
+                } else {
+                    state.smsModel?.let { sms ->
+
+                        onAction.invoke(
+                            TransactionDetailScreenActions.SaveTransaction(
+                                sms.copy(
+                                    transactionAmount = amount.text,
+                                    bankAccountNumber = bankAccountNumber,
+                                    transactionDate = date,
+                                    transactionTime = time,
+                                    bankName = bankName,
+                                    description = text,
+                                    categoryIds = state.categoryList.filter { it.isChecked }
+                                        .map { it.id },
+                                    transactionType = selectedTransactionType,
+                                    isModified = true
+                                )
+                            )
+                        )
+
+                        navController?.navigateUp()
+                    }
                 }
+
             }
 
             BallPulseProgressIndicator(

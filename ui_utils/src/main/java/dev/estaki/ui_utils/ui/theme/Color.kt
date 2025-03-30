@@ -42,6 +42,7 @@ val ColorOfCenterShimmer = Color(0xFFF0F0F0)
 
 val GreenDark = Color(0xFF00861D)
 val RedDark = Color(0xFFAA0014)
+val LiteRed = Color(0x6AF38F9D)
 val LiteWhite = Color(0x2AFFFFFF)
 val ColorCardIncomeB = Color(0xCC54BB6A)
 val ColorCardIncomeA = Color(0xCCABD6B4)

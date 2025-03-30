@@ -30,6 +30,8 @@ fun AmountTextField(
     amount: TextFieldValue,
     label: String = "مبلغ",
     unit: String,
+    isError: Boolean = false,
+    supportingText : @Composable (()->Unit)? = null,
     onValueChange: (newAmount: TextFieldValue) -> Unit
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -44,6 +46,8 @@ fun AmountTextField(
                     )
                     onValueChange.invoke(newValue)
                 },
+                isError = isError,
+                supportingText = supportingText,
                 label = {
                     Text(
                         label,
