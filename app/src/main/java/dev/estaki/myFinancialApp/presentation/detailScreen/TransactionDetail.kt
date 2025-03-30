@@ -79,6 +79,7 @@ import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
+import dev.estaki.kt_pure_utils.resetErr
 import dev.estaki.myFinancialApp.presentation.actions.TransactionDetailScreenActions
 import dev.estaki.myFinancialApp.presentation.main.MyCardItem
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
@@ -666,6 +667,12 @@ fun TransactionDetailUi(
                     .alpha(if (state.isLoading) 0f else 1f), text = "ذخیره"
             ) {
 
+                bankNameErr = resetErr()
+                amountErr = resetErr()
+                bankAccountNumberErr = resetErr()
+                dateErr = resetErr()
+                timeErr = resetErr()
+
                 if (bankName.isBlank()) {
                     bankNameErr = Pair(true, "نام بانک نمیتواند خالی باشد")
                 }
@@ -681,7 +688,7 @@ fun TransactionDetailUi(
                 if (time.isBlank()) {
                     timeErr = Pair(true, "ساعت تراکنش نمیتواند خالی باشد")
                 }
-                if (amountErr.first.not() || bankNameErr.first.not() || dateErr.first.not() || timeErr.first.not() || bankAccountNumberErr.first.not()) {
+                if (amountErr.first || bankNameErr.first || dateErr.first || timeErr.first || bankAccountNumberErr.first) {
                     coroutine.launch {
                         SnackBarController.sendEvent(
                             SnackBarEvent(
