@@ -328,6 +328,8 @@ fun AddOrEditCreditCard(
                 }
                 if (cardNumber.text.isBlank()) {
                     cardNumberErr = Pair(true, "شماره کارت نمیتواند خالی باشد")
+                }else if (cardNumber.text.replace(" ","").length < 16){
+                    cardNumberErr = Pair(true, "شماره کارت نمیتواند کمتر از 16 رقم باشد")
                 }
                 if (bankAccountNumber.isBlank()) {
                     bankAccountNumberErr = Pair(true, "شماره حساب نمیتواند خالی باشد")
