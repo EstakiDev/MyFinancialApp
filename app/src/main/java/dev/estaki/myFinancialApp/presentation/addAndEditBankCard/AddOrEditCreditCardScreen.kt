@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,12 +39,15 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.kt_pure_utils.formatCardNumber
 import dev.estaki.kt_pure_utils.resetErr
 import dev.estaki.myFinancialApp.presentation.actions.AddCreditCardActions
 import dev.estaki.myFinancialApp.presentation.states.AddAndEditBankAccountScreenState
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.components.CreditCard
 import dev.estaki.ui_utils.components.MyAlertDialog
 import dev.estaki.ui_utils.components.MyOutlinedButton
@@ -51,6 +55,7 @@ import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.ui_utils.ui.theme.RedDark
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +160,7 @@ fun AddOrEditCreditCard(
     var bankNameErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
     var bankAccountNumberErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
     var cardNumberErr by remember { mutableStateOf<Pair<Boolean, String>>(Pair(false, "")) }
-
+    val scope = rememberCoroutineScope()
 
 
     LaunchedEffect(state.bankCardModel) {
@@ -328,7 +333,14 @@ fun AddOrEditCreditCard(
                     bankAccountNumberErr = Pair(true, "شماره حساب نمیتواند خالی باشد")
                 }
                 if (bankNameErr.first || cardNumberErr.first || bankAccountNumberErr.first) {
-
+                    scope.launch {
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "متاسفانه عملیات مورد نظر با خطا مواجه شد! \n لطفا مقادیر خالی را پرکنید. ",
+                                type = MyCustomSnackBarType.ERROR
+                            )
+                        )
+                    }
                 } else {
                     onAction.invoke(
                         AddCreditCardActions.SaveCard(

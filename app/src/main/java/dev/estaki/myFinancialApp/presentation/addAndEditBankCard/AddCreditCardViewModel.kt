@@ -87,6 +87,12 @@ class AddCreditCardViewModel @Inject constructor(
                     }
                     try {
                         upsertBankCard.invoke(action.bankCardModel)
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "تغییرات مورد نظر شما ذخیره شد.",
+                                type = MyCustomSnackBarType.SUCCESS
+                            )
+                        )
                     }catch (e:Exception){
                         e.printStackTrace()
                         SnackBarController.sendEvent(
@@ -102,12 +108,7 @@ class AddCreditCardViewModel @Inject constructor(
                             isLoading = false
                         )
                     }
-                    SnackBarController.sendEvent(
-                        SnackBarEvent(
-                            "تغییرات مورد نظر شما ذخیره شد.",
-                            type = MyCustomSnackBarType.SUCCESS
-                        )
-                    )
+
                 }
             }
 
