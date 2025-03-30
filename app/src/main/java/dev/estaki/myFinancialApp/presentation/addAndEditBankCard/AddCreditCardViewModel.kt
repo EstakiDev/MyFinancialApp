@@ -5,11 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.usecases.DeleteBankCard
 import dev.estaki.domain.usecases.GetSingleBankAccount
 import dev.estaki.domain.usecases.UpsertBankCard
 import dev.estaki.myFinancialApp.presentation.actions.AddCreditCardActions
 import dev.estaki.myFinancialApp.presentation.states.AddAndEditBankAccountScreenState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,25 +41,40 @@ class AddCreditCardViewModel @Inject constructor(
                             isLoading = true
                         )
                     }
-                    getSingleBankAccount.invoke(action.bankAccountNumber).catch {
-                        it.printStackTrace()
-                        delay(1_000)
-                        _cardState.update {
-                            it.copy(
-                                isLoading = false,
-                                isError = true,
-                                errorMessage = "خطا در دریافت اطلاعات کارت"
+                    if (action.bankAccountNumber.isNotBlank()){
+                        getSingleBankAccount.invoke(action.bankAccountNumber).catch {
+                            it.printStackTrace()
+                            delay(1_000)
+                            SnackBarController.sendEvent(
+                                SnackBarEvent(
+                                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                                    type = MyCustomSnackBarType.ERROR
+                                )
                             )
+                            _cardState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    isError = true,
+                                    errorMessage = "خطا در دریافت اطلاعات کارت"
+                                )
+                            }
+                        }.collect { item ->
+                            delay(1_000)
+                            _cardState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    bankCardModel = item
+                                )
+                            }
                         }
-                    }.collect { item ->
-                        delay(1_000)
+                    }else{
                         _cardState.update {
                             it.copy(
                                 isLoading = false,
-                                bankCardModel = item
                             )
                         }
                     }
+
                 }
             }
 
@@ -67,13 +85,29 @@ class AddCreditCardViewModel @Inject constructor(
                             isLoading = true
                         )
                     }
-                    upsertBankCard.invoke(action.bankCardModel)
+                    try {
+                        upsertBankCard.invoke(action.bankCardModel)
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                                type = MyCustomSnackBarType.ERROR
+                            )
+                        )
+                    }
                     delay(1_000)
                     _cardState.update {
                         it.copy(
                             isLoading = false
                         )
                     }
+                    SnackBarController.sendEvent(
+                        SnackBarEvent(
+                            "تغییرات مورد نظر شما ذخیره شد.",
+                            type = MyCustomSnackBarType.SUCCESS
+                        )
+                    )
                 }
             }
 
@@ -86,6 +120,12 @@ class AddCreditCardViewModel @Inject constructor(
                     }
                     deleteBankCard.invoke(action.bankCardModel).catch {
                         it.printStackTrace()
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                                type = MyCustomSnackBarType.ERROR
+                            )
+                        )
                     }.collect {
                         _cardState.update {
                             it.copy(
@@ -93,7 +133,14 @@ class AddCreditCardViewModel @Inject constructor(
                             )
                         }
                     }
+                    SnackBarController.sendEvent(
+                        SnackBarEvent(
+                            "تغییرات مورد نظر شما ذخیره شد.",
+                            type = MyCustomSnackBarType.SUCCESS
+                        )
+                    )
                     delay(2000)
+
 
                 }
             }

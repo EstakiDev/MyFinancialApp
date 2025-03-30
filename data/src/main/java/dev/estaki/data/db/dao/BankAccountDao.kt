@@ -12,6 +12,9 @@ import dev.estaki.domain.models.BankCardModel
 @Dao
 interface BankAccountDao {
 
+    @Query("SELECT COUNT(*) FROM tb_bank_account")
+    fun getAllCount():Long
+
     @Insert(onConflict = OnConflictStrategy.Companion.REPLACE)
     fun insertAll(smsList :List<BankAccountEntity>):List<Long>
 

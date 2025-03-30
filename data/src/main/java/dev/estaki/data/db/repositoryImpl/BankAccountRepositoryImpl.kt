@@ -39,9 +39,7 @@ class BankAccountRepositoryImpl(
 
     override suspend fun addAll(item: List<BankCardModel>): Flow<List<Long>> = localDS.addAll(item)
 
-    override suspend fun getAllCount(): Flow<Long> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAllCount(): Flow<Long> = localDS.getAllCount()
 
 
 }

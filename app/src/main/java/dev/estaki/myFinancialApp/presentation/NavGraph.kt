@@ -3,6 +3,11 @@ package dev.estaki.myFinancialApp.presentation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -11,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -22,30 +28,68 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.myFinancialApp.presentation.addAndEditBankCard.AddOrEditCreditCardScreen
 import dev.estaki.myFinancialApp.presentation.detailScreen.TransactionDetail
 import dev.estaki.myFinancialApp.presentation.main.MainScreen
 import dev.estaki.myFinancialApp.presentation.splash.MySplashScreen
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
+import dev.estaki.ui_utils.components.MyCustomSnackBar
+import dev.estaki.ui_utils.components._observeAsState
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
-    val scrollBehavior =TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+fun Nav(modifier: Modifier = Modifier, navController: NavHostController) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
     var topAppbarState by remember {
-        mutableStateOf(MyTopAppBarState(
-            title = "مدیریت اتوماتیک دخل و خرج",
-            scrollBehavior = scrollBehavior
-        ))
+        mutableStateOf(
+            MyTopAppBarState(
+                title = "مدیریت اتوماتیک دخل و خرج",
+                scrollBehavior = scrollBehavior
+            )
+        )
     }
 
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+    val scope = rememberCoroutineScope()
+
+    val a by _observeAsState(
+        initialValue = SnackBarEvent(message = "", type = MyCustomSnackBarType.SUCCESS),
+        flow = SnackBarController.events,
+        snackBarHostState
+    ) { event ->
+        scope.launch {
+//            snackBarHostState.currentSnackbarData?.dismiss()
+            val result = snackBarHostState.showSnackbar(
+                message = event.message,
+                actionLabel = event.action?.name,
+                duration = SnackbarDuration.Long,
+                withDismissAction = true
+            )
+
+            if (result == SnackbarResult.ActionPerformed) {
+                event.action?.action?.invoke()
+            }
+        }
+    }
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackBarHostState) { snackBarData: SnackbarData ->
+                MyCustomSnackBar(snackBarEvent = a, type = a.type){
+                    snackBarData.performAction()
+                }
+            }
+        },
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             TopAppBar(
-
                 title = {
                     Text(
                         text = topAppbarState.title,
@@ -69,14 +113,14 @@ fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
             composable(
                 route = "SplashScreen",
             ) {
-                MySplashScreen(navController = navController){
+                MySplashScreen(navController = navController) {
                     topAppbarState = it
                 }
             }
             composable(
                 route = "MainScreen",
             ) {
-                MainScreen(navController){
+                MainScreen(navController) {
                     topAppbarState = it
                 }
             }
@@ -89,7 +133,7 @@ fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
                 TransactionDetail(
                     smsId = backStackEntry.arguments?.getLong("smsId")!!,
                     navController = navController
-                ){
+                ) {
                     topAppbarState = it
                 }
             }
@@ -108,7 +152,7 @@ fun Nav(modifier: Modifier = Modifier,navController: NavHostController) {
                     creditAccountNumber = backStackEntry.arguments?.getString("creditAccountNumber")!!,
                     position = backStackEntry.arguments?.getInt("position")!!,
                     navController = navController
-                ){
+                ) {
                     topAppbarState = it
                 }
             }

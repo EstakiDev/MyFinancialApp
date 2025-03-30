@@ -3,6 +3,7 @@ package dev.estaki.myFinancialApp.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.usecases.CacheCategoryToDb
@@ -13,6 +14,8 @@ import dev.estaki.domain.usecases.GetFirstOpenApp
 import dev.estaki.domain.usecases.SaveFirstAppOpen
 import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,6 +53,12 @@ class MainViewModel @Inject constructor(
                 viewModelScope.launch {
                     getAllBankCardFromTbBankCard.invoke().catch {
                         it.printStackTrace()
+                        SnackBarController.sendEvent(
+                            SnackBarEvent(
+                                "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                                type = MyCustomSnackBarType.ERROR
+                            )
+                        )
                     }.collect {
                         _mainScreenState.update { state ->
                             state.copy(
@@ -79,7 +88,14 @@ class MainViewModel @Inject constructor(
     }
     private fun getAllSmsByBankAccountNumber(bankAccountNumber: String) {
         viewModelScope.launch {
-            getAllSmsByBankAccountNumberUseCase.invoke(bankAccountNumber).catch {
+            getAllSmsByBankAccountNumberUseCase.invoke(bankAccountNumber).catch{
+                it.printStackTrace()
+                SnackBarController.sendEvent(
+                    SnackBarEvent(
+                        "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                        type = MyCustomSnackBarType.ERROR
+                    )
+                )
                 _mainScreenState.update { state ->
                     state.copy(
                         smsList = emptyList(),
@@ -106,6 +122,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getAllCategoryCount.invoke().catch {
                 it.printStackTrace()
+                SnackBarController.sendEvent(
+                    SnackBarEvent(
+                        "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                        type = MyCustomSnackBarType.ERROR
+                    )
+                )
             }.collect { count ->
                 if (count < 1)
                     addCategoryToDb()
@@ -117,6 +139,12 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             getAllCategoryCount.invoke().catch {
                 it.printStackTrace()
+                SnackBarController.sendEvent(
+                    SnackBarEvent(
+                        "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                        type = MyCustomSnackBarType.ERROR
+                    )
+                )
             }.collect { count ->
                 if (count < 1)
                     addCategoryToDb()
@@ -152,6 +180,12 @@ class MainViewModel @Inject constructor(
 
         cacheCategoryToDb.invoke(categoryList).catch {
             it.printStackTrace()
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
         }.collect {
             Timber.tag("TAG").d("addCategoryToDb: Success $it")
         }

@@ -11,6 +11,7 @@ import dev.estaki.domain.sharedPrefrence.PreferenceHelper
 import dev.estaki.domain.usecases.CacheAllBankAccountToDb
 import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
+import dev.estaki.domain.usecases.CountAllBankAccountInDb
 import dev.estaki.domain.usecases.DeleteBankCard
 import dev.estaki.domain.usecases.GetAllBankAccountNumberFromTbSms
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
@@ -111,5 +112,10 @@ class UseCasesModule {
     @Provides
     fun provideSetSmsWasSawUseCase(smsRepository: SmsRepository): SetSmsWasSaw{
         return SetSmsWasSaw(smsRepository)
+    }
+
+    @Provides
+    fun provideCountAllBankAccountInDbUseCase(bankAccountRepository: BankAccountRepository): CountAllBankAccountInDb{
+        return CountAllBankAccountInDb(bankAccountRepository)
     }
 }

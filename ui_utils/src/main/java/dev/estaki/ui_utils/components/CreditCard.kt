@@ -136,23 +136,7 @@ fun CreditCard(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-//                        Text(
-//                            textAlign = TextAlign.Center,
-//                            text = "نقی معمولی",
-//                            fontSize = 11.sp,
-//                            fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.far_bank))),
-//                            color = Color(0xFFB7B39F)
-//
-//                        )
-                            Row {
-                                Text(
-                                    textAlign = TextAlign.Center,
-                                    text = " موجودی: ",
-                                    fontSize = 13.sp,
-                                    fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.far_bank))),
-                                    color = Color(0xFFB7B39F)
 
-                                )
                                 Text(
                                     textAlign = TextAlign.Center,
                                     text = "${item?.bankCardBalance}",
@@ -161,7 +145,6 @@ fun CreditCard(
                                     color = Color(0xFFB7B39F)
 
                                 )
-                            }
 
                             Text(
                                 textAlign = TextAlign.Center,

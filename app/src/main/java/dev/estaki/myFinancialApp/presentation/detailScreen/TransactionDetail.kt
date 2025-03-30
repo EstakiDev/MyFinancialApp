@@ -121,11 +121,6 @@ fun TransactionDetail(
             )
         )
         onDispose {
-            onComposing(
-                MyTopAppBarState(
-                    title = "درحال بارگذاری...",
-                )
-            )
         }
     }
 

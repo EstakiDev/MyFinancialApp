@@ -6,17 +6,21 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.SmsRawModel
 import dev.estaki.domain.processor.SmsProcessor
 import dev.estaki.domain.usecases.CacheAllBankAccountToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
+import dev.estaki.domain.usecases.CountAllBankAccountInDb
 import dev.estaki.domain.usecases.GetAllBankAccountNumberFromTbSms
 import dev.estaki.domain.usecases.GetAllSms
 import dev.estaki.myFinancialApp.convertToTime
 import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.actions.SplashScreenActions
 import dev.estaki.myFinancialApp.presentation.states.SplashScreenState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,6 +36,7 @@ class SplashScreenViewModel @Inject constructor(
     private val cashSmsToDb: CacheSmsToDb,
     private val getAllBankAccountNumberFromTbSms: GetAllBankAccountNumberFromTbSms,
     private val cacheAllBankAccountToDb: CacheAllBankAccountToDb,
+    private val countAllBankAccountInDb: CountAllBankAccountInDb,
     private val getAllSms: GetAllSms
 ) : ViewModel() {
     private val _splashScreenState = MutableStateFlow(SplashScreenState())
@@ -52,7 +57,12 @@ class SplashScreenViewModel @Inject constructor(
             }
 
             SplashScreenActions.MustGoToMainScreen -> {
-                _splashScreenState.update { it.copy(isLoading = false,isFinishedAndGoToMainScreen = true) }
+                _splashScreenState.update {
+                    it.copy(
+                        isLoading = false,
+                        isFinishedAndGoToMainScreen = true
+                    )
+                }
             }
         }
     }
@@ -96,13 +106,49 @@ class SplashScreenViewModel @Inject constructor(
     private suspend fun cacheBankAccountToDb() {
         getAllBankAccountNumberFromTbSms.invoke().catch {
             it.printStackTrace()
-        }.collect {
-            Timber.tag("TAG").d("getAllBankAccountNumberFromTbSms: done ")
-            cacheAllBankAccountToDb.invoke(it.map { it.copy(isItFromSms = true) }).catch {
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
+        }.collect { listOfNewBankAccount ->
+            val mutableListOfNewBankAccount = listOfNewBankAccount.toMutableList()
+            countAllBankAccountInDb.invoke().catch {
                 it.printStackTrace()
-            }.collect {
-                Timber.tag("TAG").d("cacheBankAccountToDb: done")
+                SnackBarController.sendEvent(
+                    SnackBarEvent(
+                        "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                        type = MyCustomSnackBarType.ERROR
+                    )
+                )
+            }.collect { list ->
+                mutableListOfNewBankAccount.removeIf { new ->
+                    list.any {old ->
+                        new.bankAccountNumber == old.bankAccountNumber && new.bankCardBalance == old.bankCardBalance
+                    }
+                }
+
+                Timber.tag("TAG").d("getAllBankAccountNumberFromTbSms: done ")
+                cacheAllBankAccountToDb.invoke(
+                    mutableListOfNewBankAccount.map {
+                        it.copy(isItFromSms = true)
+                    }
+                ).catch {
+                    it.printStackTrace()
+                    SnackBarController.sendEvent(
+                        SnackBarEvent(
+                            "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                            type = MyCustomSnackBarType.ERROR
+                        )
+                    )
+                }.collect {
+                    Timber.tag("TAG").d("cacheBankAccountToDb: done")
+                }
+
             }
+
+
         }
     }
 
@@ -111,6 +157,12 @@ class SplashScreenViewModel @Inject constructor(
         var result = listOf<SmsModel>()
         getAllSms.invoke().catch {
             it.printStackTrace()
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
         }.collect { smsList ->
             result = smsList
             Timber.tag("TAG").d("getSavedSmsInDb: done")
@@ -125,6 +177,12 @@ class SplashScreenViewModel @Inject constructor(
 
         cashSmsToDb.invoke(smsList).catch {
             it.printStackTrace()
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
         }.collect {
             Timber.tag("TAG").d("parseSmsToModel: cashSmsToDb done $it")
         }

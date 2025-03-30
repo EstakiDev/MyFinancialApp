@@ -14,7 +14,9 @@ import kotlinx.coroutines.withContext
 class BankAccountLocalDataSourceImpl(private val bankAccountDao: BankAccountDao) :
     BankAccountDataSource.Local {
     override suspend fun readAll(): Flow<List<BankCardModel>> =
-        flow { emit(bankAccountDao.readAll().map { it.toDomainModel() }) }.flowOn(Dispatchers.IO)
+        flow { emit(
+            bankAccountDao.readAll().map { it.toDomainModel() }
+        ) }.flowOn(Dispatchers.IO)
 
     override suspend fun read(id: Long): Flow<BankCardModel> =
         flow { emit(bankAccountDao.read(id).toDomainModel()) }.flowOn(Dispatchers.IO)
@@ -45,9 +47,12 @@ class BankAccountLocalDataSourceImpl(private val bankAccountDao: BankAccountDao)
                 ))
         }.flowOn(Dispatchers.IO)
 
-    override suspend fun getAllCount(): Flow<Long> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun getAllCount(): Flow<Long> =
+        flow {
+            emit(
+                bankAccountDao.getAllCount()
+            )
+        }.flowOn(Dispatchers.IO)
 
     override suspend fun getByBankAccountNumber(accountNumber: String): Flow<BankCardModel> =
         flow {
