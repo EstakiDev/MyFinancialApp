@@ -125,19 +125,19 @@ class SplashScreenViewModel @Inject constructor(
                 val mutableListOfOldBankAccount = list.toMutableList()
                 val mutableListOfNewBankAccount = listOfNewBankAccount.toMutableList()
 
-                mutableListOfOldBankAccount.map { old ->
-                    old.copy(
-                        bankCardBalance =
-                            mutableListOfNewBankAccount.find { item ->
-                                item.bankAccountNumber == old.bankAccountNumber
-                            }?.bankCardBalance.toString(),
+                val newList = mutableListOfNewBankAccount.map { new ->
+                    val test = mutableListOfOldBankAccount.find { item ->
+                        item.bankAccountNumber == new.bankAccountNumber
+                    }?.bankCardNumber
+                    new.copy(
+                        bankCardNumber = test,
                         isItFromSms = true
                     )
                 }
 
                 Timber.tag("TAG").d("getAllBankAccountNumberFromTbSms: done ")
                 cacheAllBankAccountToDb.invoke(
-                    mutableListOfOldBankAccount
+                    newList
                 ).catch {
                     it.printStackTrace()
                     SnackBarController.sendEvent(

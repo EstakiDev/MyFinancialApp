@@ -121,7 +121,8 @@ fun CreditCard(
                         Text(
                             modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            text = item?.bankCardNumber?.ifBlank { "**** **** **** ****" }?:"**** **** **** ****",
+                            text = if (item?.bankCardNumber.equals("null")) "**** **** **** ****" else (item?.bankCardNumber
+                                ?: "**** **** **** ****").ifBlank { "**** **** **** ****" },
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.ocr_a))),
                             fontSize = 17.sp,
@@ -137,14 +138,14 @@ fun CreditCard(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
-                                Text(
-                                    textAlign = TextAlign.Center,
-                                    text = "${item?.bankCardBalance}",
-                                    fontSize = 13.sp,
-                                    fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.ocr_a))),
-                                    color = Color(0xFFB7B39F)
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = "${item?.bankCardBalance}",
+                                fontSize = 13.sp,
+                                fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.ocr_a))),
+                                color = Color(0xFFB7B39F)
 
-                                )
+                            )
 
                             Text(
                                 textAlign = TextAlign.Center,
@@ -260,7 +261,8 @@ fun CreditCard(
                         Text(
                             modifier = modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
-                            text = bankCardNumber.ifBlank { "**** **** **** ****" }?:"**** **** **** ****",
+                            text = bankCardNumber.ifBlank { "**** **** **** ****" }
+                                ?: "**** **** **** ****",
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.ocr_a))),
                             fontSize = 17.sp,
@@ -294,7 +296,7 @@ fun CreditCard(
                                 )
                                 Text(
                                     textAlign = TextAlign.Center,
-                                    text = bankCardBalance?:"",
+                                    text = bankCardBalance ?: "",
                                     fontSize = 13.sp,
                                     fontFamily = FontFamily(fonts = listOf(Font(resId = R.font.ocr_a))),
                                     color = Color(0xFFB7B39F)
