@@ -20,9 +20,7 @@ class SmsRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(entity: SmsModel): Flow<Int> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun delete(entity: SmsModel): Flow<Int> = localDS.delete(entity)
 
     override suspend fun deleteAll(): Int {
         TODO("Not yet implemented")

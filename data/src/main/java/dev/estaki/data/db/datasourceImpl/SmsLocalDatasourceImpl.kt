@@ -27,9 +27,9 @@ class SmsLocalDatasourceImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun delete(entity: SmsModel): Flow<Int> {
-        TODO("Not yet implemented")
-    }
+    override suspend fun delete(entity: SmsModel): Flow<Int> = flow { emit(
+        smsDao.delete(entity.toDbEntity())
+    ) }.flowOn(Dispatchers.IO)
 
     override suspend fun deleteAll(): Flow<Int> {
         TODO("Not yet implemented")

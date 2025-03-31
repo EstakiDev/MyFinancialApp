@@ -29,6 +29,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -80,6 +82,7 @@ import dev.estaki.domain.models.BankCardModel
 import dev.estaki.domain.models.SmsModel
 import dev.estaki.domain.models.TransactionType
 import dev.estaki.kt_pure_utils.resetErr
+import dev.estaki.myFinancialApp.presentation.actions.AddCreditCardActions
 import dev.estaki.myFinancialApp.presentation.actions.TransactionDetailScreenActions
 import dev.estaki.myFinancialApp.presentation.main.MyCardItem
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
@@ -89,6 +92,7 @@ import dev.estaki.ui_utils.R
 import dev.estaki.ui_utils.SnackBarController
 import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.components.AmountTextField
+import dev.estaki.ui_utils.components.MyAlertDialog
 import dev.estaki.ui_utils.components.MyOutlinedButton
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
@@ -112,7 +116,26 @@ fun TransactionDetail(
     onComposing: (MyTopAppBarState) -> Unit
 ) {
     val state by detailScreenViewModel.state.collectAsState()
-
+    var showWarningDialog by remember {
+        mutableStateOf(false)
+    }
+    if (showWarningDialog) {
+        MyAlertDialog(
+            onDismissRequest = {
+                showWarningDialog =false
+            },
+            onConfirmation = {
+                state.smsModel?.let {
+                    detailScreenViewModel.onAction(TransactionDetailScreenActions.DeleteTransaction(it))
+                }
+                showWarningDialog =false
+                navController?.navigateUp()
+            },
+            "هشدار",
+            "از حذف کردن این تراکنش بانکی اطمینان دارید؟",
+            icon = Icons.Rounded.Warning
+        )
+    }
     DisposableEffect(true) {
         onComposing(
             MyTopAppBarState(
@@ -126,7 +149,21 @@ fun TransactionDetail(
                             contentDescription = "back"
                         )
                     }
-                })
+                },
+                actions = {
+                    state.smsModel?.let {
+                        IconButton(onClick = {
+                            showWarningDialog = true
+                        }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Delete,
+                                contentDescription = "delete"
+                            )
+                        }
+                    }
+
+                },
+            )
         )
         onDispose {}
     }
@@ -237,7 +274,7 @@ fun TransactionDetailUi(
         ) ?: SmsModel(
             id = null,
             bankName = bankName,
-            bankAccountNumber = "",
+            bankAccountNumber = bankAccountNumber,
             transactionType = selectedTransactionType,
             transactionAmount = amount.text,
             transactionDate = date,
@@ -317,6 +354,7 @@ fun TransactionDetailUi(
                                 )
                             },
                             isError = bankNameErr.first,
+                            readOnly = true,
                             supportingText = {
                                 Text(
                                     text = bankNameErr.second,
@@ -534,6 +572,7 @@ fun TransactionDetailUi(
                                         )
                                     }, onClick = {
                                         bankAccountNumber = bankCard.bankAccountNumber
+                                        bankName = bankCard.bankName
                                         bankCardDropDownExpanded = false
                                     })
                                 }
@@ -700,7 +739,7 @@ fun TransactionDetailUi(
 
 
                 } else {
-                    state.smsModel?.let { sms ->
+                    newSmsModel.let { sms ->
 
                         onAction.invoke(
                             TransactionDetailScreenActions.SaveTransaction(

@@ -110,7 +110,8 @@ dependencies {
     //WorkManneger
     implementation(libs.androidx.work.runtime)
 
-
+    //LeakCanary
+    debugImplementation(libs.leakcanary.android)
 
 
 

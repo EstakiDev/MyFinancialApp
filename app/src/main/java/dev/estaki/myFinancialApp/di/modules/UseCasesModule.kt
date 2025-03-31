@@ -13,6 +13,7 @@ import dev.estaki.domain.usecases.CacheCategoryToDb
 import dev.estaki.domain.usecases.CacheSmsToDb
 import dev.estaki.domain.usecases.CountAllBankAccountInDb
 import dev.estaki.domain.usecases.DeleteBankCard
+import dev.estaki.domain.usecases.DeleteSms
 import dev.estaki.domain.usecases.GetAllBankAccountNumberFromTbSms
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryCount
@@ -117,5 +118,10 @@ class UseCasesModule {
     @Provides
     fun provideCountAllBankAccountInDbUseCase(bankAccountRepository: BankAccountRepository): CountAllBankAccountInDb{
         return CountAllBankAccountInDb(bankAccountRepository)
+    }
+
+    @Provides
+    fun provideDeleteSmsUseCase(smsRepository: SmsRepository): DeleteSms{
+        return DeleteSms(smsRepository)
     }
 }

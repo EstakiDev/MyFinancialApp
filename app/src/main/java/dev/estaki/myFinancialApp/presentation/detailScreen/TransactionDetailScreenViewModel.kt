@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.SmsModel
+import dev.estaki.domain.usecases.DeleteSms
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetSingleSms
@@ -28,6 +29,7 @@ class TransactionDetailScreenViewModel @Inject constructor(
     private val getAllCategoryList: GetAllCategoryList,
     private val getSingleSmsUseCase: GetSingleSms,
     private val saveSmsUseCase: UpsertSms,
+    private val deleteSms: DeleteSms,
     private val setSmsWasSawUseCase: SetSmsWasSaw,
     private val getAllBankCardFromTbBankCard: GetAllBankCardFromTbBankCard
 ) : ViewModel() {
@@ -38,7 +40,21 @@ class TransactionDetailScreenViewModel @Inject constructor(
 
     fun onAction(action: TransactionDetailScreenActions){
         when(action){
-            is TransactionDetailScreenActions.DeleteTransaction -> {}
+            is TransactionDetailScreenActions.DeleteTransaction -> {
+                viewModelScope.launch {
+                    _state.update {
+                        it.copy(
+                            isLoading = true
+                        )
+                    }
+                    deleteTransaction(action.smsModel)
+                    _state.update {
+                        it.copy(
+                            isLoading = false
+                        )
+                    }
+                }
+            }
             is TransactionDetailScreenActions.LoadTransaction -> {
                 viewModelScope.launch {
                     _state.update {
@@ -83,6 +99,24 @@ class TransactionDetailScreenViewModel @Inject constructor(
         }
     }
 
+    private suspend fun deleteTransaction(smsModel: SmsModel) {
+        deleteSms.invoke(smsModel).catch {
+            it.printStackTrace()
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "متاسفانه عملیات مورد نظر با خطا مواجه شد!",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
+        }.collect {
+            SnackBarController.sendEvent(
+                SnackBarEvent(
+                    "تغییرات مورد نظر شما ذخیره شد.",
+                    type = MyCustomSnackBarType.SUCCESS
+                )
+            )
+        }
+    }
     private suspend fun getAllBankCardFromTb() {
         getAllBankCardFromTbBankCard.invoke().catch {
             it.printStackTrace()

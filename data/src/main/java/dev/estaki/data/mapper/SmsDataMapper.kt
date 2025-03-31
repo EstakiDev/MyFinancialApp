@@ -6,7 +6,7 @@ import dev.estaki.domain.models.CategoryModel
 import dev.estaki.domain.models.SmsModel
 
 fun SmsModel.toDbEntity() = SmsEntity(
-    id = id!!,
+    id = id,
     bankName = bankName,
     bankAccountNumber = bankAccountNumber,
     transactionType = transactionType,
