@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.SmsModel
-import dev.estaki.domain.usecases.DeleteSms
+import dev.estaki.domain.usecases.SetIsRemovedSms
 import dev.estaki.domain.usecases.GetAllBankCardFromTbBankCard
 import dev.estaki.domain.usecases.GetAllCategoryList
 import dev.estaki.domain.usecases.GetSingleSms
@@ -29,7 +29,7 @@ class TransactionDetailScreenViewModel @Inject constructor(
     private val getAllCategoryList: GetAllCategoryList,
     private val getSingleSmsUseCase: GetSingleSms,
     private val saveSmsUseCase: UpsertSms,
-    private val deleteSms: DeleteSms,
+    private val setIsRemovedSms: SetIsRemovedSms,
     private val setSmsWasSawUseCase: SetSmsWasSaw,
     private val getAllBankCardFromTbBankCard: GetAllBankCardFromTbBankCard
 ) : ViewModel() {
@@ -100,7 +100,7 @@ class TransactionDetailScreenViewModel @Inject constructor(
     }
 
     private suspend fun deleteTransaction(smsModel: SmsModel) {
-        deleteSms.invoke(smsModel).catch {
+        setIsRemovedSms. invoke(smsModel).catch {
             it.printStackTrace()
             SnackBarController.sendEvent(
                 SnackBarEvent(

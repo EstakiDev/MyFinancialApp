@@ -21,5 +21,6 @@ data class SmsEntity(
     val smsSender: String,
     val smsBody: String,
     val isModified: Boolean = false,
-    val isSeen: Boolean = false
+    val isSeen: Boolean = false,
+    val isRemoved: Boolean = false,
 )

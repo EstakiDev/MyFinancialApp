@@ -65,4 +65,7 @@ class SmsLocalDatasourceImpl(
             smsDao.setSmsWasSaw(smsId)
         }
     }
+
+    override suspend fun setIsRemoved(smsId: Long): Flow<Int> =
+    flow { emit(smsDao.setIsRemoved(smsId))}.flowOn(Dispatchers.IO)
 }

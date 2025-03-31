@@ -52,5 +52,9 @@ class SmsRepositoryImpl(
         localDS.setSmsWasSaw(smsId)
     }
 
+    override suspend fun setIsRemoved(smsId: Long): Flow<Int> {
+        return localDS.setIsRemoved(smsId)
+    }
+
 
 }
