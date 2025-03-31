@@ -126,11 +126,11 @@ class SplashScreenViewModel @Inject constructor(
                 val mutableListOfNewBankAccount = listOfNewBankAccount.toMutableList()
 
                 val newList = mutableListOfNewBankAccount.map { new ->
-                    val test = mutableListOfOldBankAccount.find { item ->
+                    val cardNumber = mutableListOfOldBankAccount.find { item ->
                         item.bankAccountNumber == new.bankAccountNumber
                     }?.bankCardNumber
                     new.copy(
-                        bankCardNumber = test,
+                        bankCardNumber = cardNumber,
                         isItFromSms = true
                     )
                 }
