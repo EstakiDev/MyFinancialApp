@@ -140,9 +140,6 @@ class AddCreditCardViewModel @Inject constructor(
                             type = MyCustomSnackBarType.SUCCESS
                         )
                     )
-                    delay(2000)
-
-
                 }
             }
         }

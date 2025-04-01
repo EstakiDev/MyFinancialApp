@@ -31,9 +31,8 @@ fun PermissionBottomSheet(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
         ModalBottomSheet(
-            onDismissRequest = {
-                onDismissRequest.invoke()
-            },
+            onDismissRequest = onDismissRequest
+            ,
             sheetState = modalBottomSheetState
         ) {
 

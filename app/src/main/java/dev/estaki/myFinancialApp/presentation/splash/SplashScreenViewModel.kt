@@ -43,9 +43,6 @@ class SplashScreenViewModel @Inject constructor(
 
     fun onAction(action: SplashScreenActions) {
         when (action) {
-            is SplashScreenActions.GetPermissions -> {
-                _splashScreenState.update { it.copy(mustGetPermissions = true) }
-            }
 
             is SplashScreenActions.ExtractSmsFromContentResolver -> {
                 viewModelScope.launch {

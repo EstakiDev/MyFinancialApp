@@ -20,6 +20,8 @@ fun MyAlertDialog(
     dialogTitle: String,
     dialogText: String,
     icon: ImageVector,
+    hasDismissBtn: Boolean = true,
+    confirmButtonText: String = "باشه"
 ) {
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
@@ -41,21 +43,22 @@ fun MyAlertDialog(
             },
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        onConfirmation()
-                    }
+                    onClick = onConfirmation
                 ) {
-                    Text("باشه",style = TextStyle(fontFamily = ariaFaNumFontFamily,fontWeight = FontWeight.SemiBold))
+                    Text(confirmButtonText,style = TextStyle(fontFamily = ariaFaNumFontFamily,fontWeight = FontWeight.SemiBold))
                 }
             },
             dismissButton = {
-                TextButton(
-                    onClick = {
-                        onDismissRequest()
+                if (hasDismissBtn){
+                    TextButton(
+                        onClick = {
+                            onDismissRequest()
+                        }
+                    ) {
+                        Text("انصراف",style = TextStyle(fontFamily = ariaFaNumFontFamily,fontWeight = FontWeight.SemiBold))
                     }
-                ) {
-                    Text("انصراف",style = TextStyle(fontFamily = ariaFaNumFontFamily,fontWeight = FontWeight.SemiBold))
                 }
+
             }
         )
     }

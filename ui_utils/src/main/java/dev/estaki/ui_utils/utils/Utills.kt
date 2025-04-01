@@ -1,6 +1,10 @@
 package dev.estaki.ui_utils.utils
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.util.DisplayMetrics
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -22,18 +26,20 @@ fun LazyListState.isScrollingUp(): State<Boolean> {
         var lastScroll = Int.MAX_VALUE
         snapshotFlow {
             firstVisibleItemIndex to firstVisibleItemScrollOffset
-        }.collect {(currentIndex,currentScrollOffset) ->
-            Timber.tag("LAZY_COlUMN").d("currentIndex -> $currentIndex")
-            Timber.tag("LAZY_COlUMN").d("lastIndex -> $lastIndex")
-            Timber.tag("LAZY_COlUMN").d("currentScrollOffset -> $currentScrollOffset")
-            Timber.tag("LAZY_COlUMN").d("lastScroll -> $lastScroll")
-
+        }.collect { (currentIndex, currentScrollOffset) ->
             if (currentIndex != lastIndex || currentScrollOffset != lastScroll || (this@isScrollingUp.layoutInfo.totalItemsCount - currentIndex < 10)) {
-                value = currentIndex < lastIndex || (currentIndex == lastIndex && currentScrollOffset < lastScroll)
-//                Timber.tag("LAZY_COlUMN").d("isScrollingUp -> $value")
+                value =
+                    currentIndex < lastIndex || (currentIndex == lastIndex && currentScrollOffset < lastScroll)
                 lastIndex = currentIndex
                 lastScroll = currentScrollOffset
             }
         }
     }
+}
+
+fun Activity.showAppSettings() {
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", packageName,null)
+        ).also(::startActivity)
 }

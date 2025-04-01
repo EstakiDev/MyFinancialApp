@@ -66,12 +66,12 @@ fun Nav(modifier: Modifier = Modifier, navController: NavHostController) {
         snackBarHostState
     ) { event ->
         scope.launch {
-//            snackBarHostState.currentSnackbarData?.dismiss()
+            snackBarHostState.currentSnackbarData?.dismiss()
             val result = snackBarHostState.showSnackbar(
                 message = event.message,
                 actionLabel = event.action?.name,
                 duration = SnackbarDuration.Long,
-                withDismissAction = true
+               // withDismissAction = true
             )
 
             if (result == SnackbarResult.ActionPerformed) {

@@ -31,10 +31,11 @@ import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.ui_utils.R
 import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.ui.theme.ariaFaNumFontFamily
+import timber.log.Timber
 
 
 @Composable
-fun MyCustomSnackBar(modifier: Modifier = Modifier,snackBarEvent: SnackBarEvent,type :MyCustomSnackBarType,onAction: () -> Unit = {}) {
+fun MyCustomSnackBar(modifier: Modifier = Modifier,snackBarEvent: SnackBarEvent,type :MyCustomSnackBarType,onAction: () -> Unit ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
 
         Card(
@@ -61,7 +62,10 @@ fun MyCustomSnackBar(modifier: Modifier = Modifier,snackBarEvent: SnackBarEvent,
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.sp, lineHeight = 20.sp
                 )
-                TextButton(modifier = modifier.width(100.dp), onClick = onAction) {
+                TextButton(modifier = modifier.width(150.dp), onClick = {
+                    onAction.invoke()
+                    Timber.i("TextButton clicked")
+                }) {
                     Text(snackBarEvent.action?.name ?: "باشه", fontFamily = ariaFaNumFontFamily)
                 }
             }
@@ -107,5 +111,5 @@ fun MyCustomSnackBarPre(modifier: Modifier = Modifier) {
         type = MyCustomSnackBarType.SUCCESS,
         modifier = modifier,
         snackBarEvent = SnackBarEvent("test", type = MyCustomSnackBarType.SUCCESS)
-    )
+    ){}
 }
