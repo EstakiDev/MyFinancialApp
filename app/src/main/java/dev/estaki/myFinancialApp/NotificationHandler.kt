@@ -8,8 +8,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import dev.estaki.monify.R
 import dev.estaki.myFinancialApp.presentation.main.MainActivity
-import java.security.Permission
 
 object NotificationHandler {
     private const val CHANNEL_ID = "bank_sms_channel"
@@ -46,7 +46,6 @@ object NotificationHandler {
             }
 
             var body = "فرستنده اش $smsSender هست\n "
-            body = body.plus("\n")
             body = body.plus("\n")
             body = body.plus(smsBody)
             val notification = NotificationCompat.Builder(context,CHANNEL_ID)

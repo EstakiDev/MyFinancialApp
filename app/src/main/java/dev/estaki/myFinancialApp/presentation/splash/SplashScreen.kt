@@ -28,7 +28,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,22 +49,17 @@ import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import com.valentinilk.shimmer.shimmer
-import dev.estaki.domain.error.MyCustomSnackBarType
-import dev.estaki.myFinancialApp.R
+import dev.estaki.monify.R
 import dev.estaki.myFinancialApp.isPermissionsGranted
 import dev.estaki.myFinancialApp.presentation.actions.SplashScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
 import dev.estaki.myFinancialApp.presentation.states.SplashScreenState
-import dev.estaki.ui_utils.SnackBarAction
-import dev.estaki.ui_utils.SnackBarController
-import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.components.MyAlertDialog
 import dev.estaki.ui_utils.components.PermissionBottomSheet
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnLiteTheme
 import dev.estaki.ui_utils.ui.theme.coolakFaNumFontFamily
 import dev.estaki.ui_utils.utils.showAppSettings
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)

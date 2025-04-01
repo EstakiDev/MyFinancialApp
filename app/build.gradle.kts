@@ -4,14 +4,16 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
-    namespace = "dev.estaki.myFinancialApp"
+    namespace = "dev.estaki.monify"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "dev.estaki.myFinancialApp"
+        applicationId = "dev.estaki.monify"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -112,6 +114,12 @@ dependencies {
 
     //LeakCanary
     debugImplementation(libs.leakcanary.android)
+
+    //Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
+
 
 
 

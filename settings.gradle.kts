@@ -1,11 +1,7 @@
 import java.net.URI
 
 include(":kt_pure_utils")
-
-
 include(":ui_utils")
-
-
 
 pluginManagement {
     repositories {
@@ -34,7 +30,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MyFinancialApp"
+rootProject.name = "Monify"
 include(":app")
 include(":data")
 include(":domain")
