@@ -89,7 +89,7 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                 val dateRegexMatch = dateRegex.find(sms.description)
                 val date = dateRegexMatch?.groups?.first()?.value
 
-                val timeRegex = Regex("([0-9]{2}+)(:[0-9]{2}+)(:[0-9]{2})*")
+                val timeRegex = Regex("([0-9]{1,2}+)(:[0-9]{2}+)(:[0-9]{2})*")
                 val timeRegexMatch = timeRegex.find(sms.description)
                 val time = timeRegexMatch?.groups?.first()?.value
 
@@ -97,17 +97,11 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                 var finalBankAccountNumber: String =
                     parsBankAccountNumber(sms.senderName, sms.description)
 
-
-                var transactionType: TransactionType = if (!split.find {
-                        it.contains("برداشت") || it.contains("-")
-                    }.isNullOrBlank()) TransactionType.WITHDRAW else TransactionType.DEPOSIT
-
-
                 var amount = parsTransactionAmount(sms.description)
 
+                var transactionType: TransactionType = if (amount.contains("برداشت") || amount.contains("-")) TransactionType.WITHDRAW else TransactionType.DEPOSIT
 
                 listOfModel.add(
-
                     SmsModel(
                         id = sms._id.toLong(),
                         bankName = if (split.first()
@@ -116,7 +110,7 @@ class SmsProcessor(private var smsRawModelList: MutableList<SmsRawModel>) {
                         bankAccountNumber = finalBankAccountNumber.trim().removeFarsiChar(),
                         transactionType = transactionType,
                         transactionAmount = amount.removeFarsiChar().trim(),
-                        transactionDate = sms.receiveDate ?: "-",
+                        transactionDate = sms.receiveDate,
                         transactionTime = time ?: "-",
                         bankCardBalance = (split.find {
                             (it.contains("موجودی") ||
