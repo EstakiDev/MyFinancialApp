@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
 import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
+import dev.estaki.kt_pure_utils.arabicToDecimal
 import dev.estaki.kt_pure_utils.formatCardNumber
 import dev.estaki.kt_pure_utils.resetErr
 import dev.estaki.myFinancialApp.presentation.actions.AddCreditCardActions
@@ -347,14 +348,14 @@ fun AddOrEditCreditCard(
                     onAction.invoke(
                         AddCreditCardActions.SaveCard(
                             state.bankCardModel?.copy(
-                                bankName = bankName,
-                                bankCardNumber = cardNumber.text,
+                                bankName = bankName.arabicToDecimal(),
+                                bankCardNumber = cardNumber.text.arabicToDecimal(),
                             ) ?: BankCardModel(
                                 0,
-                                bankName,
-                                bankAccountNumber,
+                                bankName.arabicToDecimal(),
+                                bankAccountNumber.arabicToDecimal(),
                                 "0",
-                                cardNumber.text,
+                                cardNumber.text.arabicToDecimal(),
                             )
                         )
                     )

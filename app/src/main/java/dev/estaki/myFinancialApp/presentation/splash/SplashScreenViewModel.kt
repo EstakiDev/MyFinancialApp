@@ -92,6 +92,8 @@ class SplashScreenViewModel @Inject constructor(
                     cacheSmsToDb(list.toMutableList())
                     cacheBankAccountToDb()
                     onAction(SplashScreenActions.MustGoToMainScreen)
+                } else {
+                    onAction(SplashScreenActions.MustGoToMainScreen)
                 }
                 it.close()
             }

@@ -109,8 +109,8 @@ class MainViewModel @Inject constructor(
                 delay(200)
                 _mainScreenState.update { state ->
                     state.copy(
-                        smsList = smsList,
                         isLoading = false,
+                        smsList = smsList,
                         currentBankAccountNumber = bankAccountNumber
                     )
                 }

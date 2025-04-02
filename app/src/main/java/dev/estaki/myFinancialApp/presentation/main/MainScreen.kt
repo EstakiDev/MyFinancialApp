@@ -57,10 +57,13 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import com.ehsanmsz.mszprogressindicator.progressindicator.BallPulseProgressIndicator
+import dev.estaki.domain.error.MyCustomSnackBarType
 import dev.estaki.domain.models.BankCardModel
 import dev.estaki.myFinancialApp.presentation.actions.MainScreenActions
 import dev.estaki.myFinancialApp.presentation.states.MainScreenState
 import dev.estaki.myFinancialApp.presentation.states.MyTopAppBarState
+import dev.estaki.ui_utils.SnackBarController
+import dev.estaki.ui_utils.SnackBarEvent
 import dev.estaki.ui_utils.components.AddCreditCard
 import dev.estaki.ui_utils.components.CreditCard
 import dev.estaki.ui_utils.ui.theme.ColorTextGrayOnDarkTheme
@@ -154,7 +157,24 @@ fun MainScreenUi(
     var cardPosition by remember { mutableIntStateOf(0) }
     val scope = rememberCoroutineScope()
     val isScrollingUp = lazyColumnState.isScrollingUp().value
-
+    LaunchedEffect(
+        state.listBankAccountNumber,
+        state.smsList,
+        state.isLoading,
+        state.currentBankAccountNumber
+    ) {
+//        if (state.listBankAccountNumber.isNotEmpty()) {
+//            onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(state.listBankAccountNumber[cardPosition].bankAccountNumber))
+//        } else
+        if (state.listBankAccountNumber.isEmpty() && state.smsList.isEmpty() && state.isLoading.not()) {
+            SnackBarController.sendEvent(
+                event = SnackBarEvent(
+                    message = "متاسفانه هیچ تراکنش بانکی ار درون پیامک های شما یافت نشد! \n شما میتوانید به صورت دستی کارت اعتباری و تراکنش جدید تعریف کنید. ",
+                    type = MyCustomSnackBarType.ERROR
+                )
+            )
+        }
+    }
     Box(Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             if (state.listBankAccountNumber.isNotEmpty()) {
@@ -169,7 +189,7 @@ fun MainScreenUi(
                     }
                     BankCardView(
                         modifier = modifier,
-                        listOfBackAccountNumber = state.listBankAccountNumber,
+                        listOfBankAccountNumber = state.listBankAccountNumber,
                         pagerState = pagerState,
                         onItemClicked = { bankAccountNumber, position, isEditMode ->
                             if (isEditMode) {
@@ -198,9 +218,35 @@ fun MainScreenUi(
                         pagerState.animateScrollToPage(cardPosition)
                     }
                 }
-
+            } else {
+                BankCardView(
+                    modifier = modifier,
+                    listOfBankAccountNumber = emptyList(),
+                    pagerState = pagerState,
+                    onItemClicked = { bankAccountNumber, position, isEditMode ->
+                        if (isEditMode) {
+                            navController.navigate(
+                                "AddOrEditCreditCard/$bankAccountNumber/$position"
+                            ) {
+                                popUpTo("AddOrEditCreditCard/$bankAccountNumber/$position") {
+                                    inclusive = true
+                                }
+                            }
+                        } else {
+                            navController.navigate(
+                                "AddOrEditCreditCard/$bankAccountNumber/0"
+                            ) {
+                                popUpTo("AddOrEditCreditCard/$bankAccountNumber/0") {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    },
+                    onScroll = { bankAccountNumber, position ->
+                        onActions.invoke(MainScreenActions.ReloadSmsByScrollCards(bankAccountNumber))
+                    }
+                )
             }
-
 
             if (state.isLoading) {
                 Box(modifier.fillMaxSize()) {
@@ -281,7 +327,19 @@ fun MainScreenUi(
                 .align(Alignment.BottomStart)
                 .padding(12.dp),
             onClick = {
-                navController.navigate("AddDetailScreen/0")
+                scope.launch {
+                    if (state.listBankAccountNumber.isEmpty()) {
+                        SnackBarController.sendEvent(
+                            event = SnackBarEvent(
+                                message = "افزودن تراکنش بانکی پس از تعریف یک کارت اعتباری و شماره حساب امکان پذیر خواهد بود. \n لطفا ابتدا کارت اعتباری را اضافه کنید. ",
+                                type = MyCustomSnackBarType.ERROR
+                            )
+                        )
+                    } else {
+                        navController.navigate("AddDetailScreen/0")
+                    }
+                }
+
             }
         ) {
             Icon(
@@ -299,7 +357,7 @@ fun MainScreenUi(
 @Composable
 fun BankCardView(
     modifier: Modifier = Modifier,
-    listOfBackAccountNumber: List<BankCardModel>,
+    listOfBankAccountNumber: List<BankCardModel>,
     pagerState: PagerState,
     onItemClicked: (bankAccountNumber: String, position: Int, isEditMode: Boolean) -> Unit,
     onScroll: (bankAccountNumber: String, position: Int) -> Unit,
@@ -309,7 +367,7 @@ fun BankCardView(
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             onScroll.invoke(
-                if (pagerState.currentPage < listOfBackAccountNumber.size) listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber else "",
+                if (pagerState.currentPage < listOfBankAccountNumber.size) listOfBankAccountNumber[pagerState.currentPage].bankAccountNumber else "",
                 page
             )
         }
@@ -355,14 +413,16 @@ fun BankCardView(
                             onItemClicked.invoke(bankAccountNumber, page, false)
                         }
                     else
-                        CreditCard(
-                            item = listOfBackAccountNumber[pagerState.currentPage],
-                            position = page
-                        ) {
-                            val bankAccountNumber =
-                                listOfBackAccountNumber[pagerState.currentPage].bankAccountNumber
-                            onItemClicked.invoke(bankAccountNumber, page, true)
+                        if (listOfBankAccountNumber.isNotEmpty()) {
+                            CreditCard(
+                                item = listOfBankAccountNumber[pagerState.currentPage],
+                                position = page
+                            ) {
+                                val bankAccountNumber =
+                                    listOfBankAccountNumber[pagerState.currentPage].bankAccountNumber
+                                onItemClicked.invoke(bankAccountNumber, page, true)
 
+                            }
                         }
 
                 }

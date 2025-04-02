@@ -1,9 +1,5 @@
 package dev.estaki.kt_pure_utils
 
-import java.text.DecimalFormat
-import kotlin.io.path.Path
-import kotlin.jvm.Throws
-
 fun String.removeSpecialChar(): String =
     if (this.contains("*"))
         this.filter { it != '*' }
@@ -76,4 +72,16 @@ fun String.formatCardNumber(): String  {
 
 fun resetErr(): Pair<Boolean, String>{
     return Pair(false,"")
+}
+
+const val arabic = "\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9"
+fun String.arabicToDecimal(): String {
+    val chars = CharArray(this.length)
+    for (i in 0..<this.length) {
+        var ch = this[i]
+        if (ch.code >= 0x0660 && ch.code <= 0x0669) ch -= (0x0660 - '0'.code).toChar().code
+        else if (ch.code >= 0x06f0 && ch.code <= 0x06F9) ch -= (0x06f0 - '0'.code).toChar().code
+        chars[i] = ch
+    }
+    return String(chars)
 }
