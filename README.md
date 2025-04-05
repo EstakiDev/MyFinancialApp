@@ -24,10 +24,10 @@
 ## Technologies Used
 
 *   **Kotlin:** The primary programming language for the app.
+*   ** MVI Architecture design pattern 
 *   **Jetpack Compose:** Modern UI toolkit for building native Android UIs.
 *   **Android Architecture Components:**
     *   **ViewModel:** For managing UI-related data and lifecycle.
-    *   **LiveData:** For observing data changes.
     * **Hilt:** For dependency injection.
 *   **Coroutines:** For asynchronous programming.
 *   *   **Flow:** For observing data changes.
