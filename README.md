@@ -1,28 +1,15 @@
 # Monify - Automatic Expense Tracker
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-2.0.0-blue.svg?style=flat-square&logo=kotlin)](https://kotlinlang.org/)
-[![Android](https://img.shields.io/badge/Android-14-green.svg?style=flat-square&logo=android)](https://www.android.com/)
-[![Compose](https://img.shields.io/badge/Compose-2.0.0-purple.svg?style=flat-square&logo=android)](https://developer.android.com/jetpack/compose)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-
-** Preview of this Application: PLEASE WAIT...
-![](https://github.com/EstakiDev/Monify/blob/develop/app-preview.gif)
-
-**Monify** is an Android application designed to help you automatically track your income and expenses by analyzing your bank SMS messages. It provides a simple and intuitive way to manage your finances without the hassle of manual entry.
-
-مرسی! توضیحاتت خیلی دقیق بود و کمک کرد تصویر دقیقی از ساختار پروژه بگیرم. الان README رو طوری می‌نویسم که ساختار ماژول‌ها کاملاً مشخص باشه و حس حرفه‌ای‌بودن پروژه رو نشون بده.
-
-
----
-
-نسخه نهایی README (به‌روز شده با ساختار واقعی ماژول‌ها):
-
-# Monify – Personal Finance Tracker  
 [![Built with Kotlin](https://img.shields.io/badge/Built%20with-Kotlin-orange?logo=kotlin)](https://kotlinlang.org/)
 [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-purple?logo=android)](https://developer.android.com/jetpack/compose)
 [![Architecture: Clean + MVI](https://img.shields.io/badge/Architecture-Clean%20%2B%20MVI-blue)]()
 [![Modules: Multi-Module](https://img.shields.io/badge/Project%20Structure-Multi--Module-critical)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+** Preview of this Application: PLEASE WAIT...
+![](https://github.com/EstakiDev/Monify/blob/develop/app-preview.gif)
+
+> **Monify** is an Android application designed to help you automatically track your income and expenses by analyzing your bank SMS messages. It provides a simple and intuitive way to manage your finances without the hassle of manual entry.
 
 > **Monify** is a modern personal finance tracker app built with Kotlin and Jetpack Compose.  
 > It provides users with an intuitive interface to manage their transactions while embracing clean architecture and modular design.
@@ -165,6 +152,4 @@ Monify is licensed under the MIT License.
 If you find this project helpful, please star it and share it with your friends and community!
 
 ---
-
-اگه بخوای، همین متن رو به فارسی هم برات آماده می‌کنم. یا حتی دو زبانه (EN + FA) که توی گیت‌هاب جلوه‌ی قوی‌تری داشته باشه. دوست داری فایل `README.md` نهایی‌ش رو هم آماده کنم برات تا بذاری توی ریپو؟
 
